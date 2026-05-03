@@ -1,0 +1,434 @@
+/* ============================================================ */
+/* WIND ANIMATION BACKGROUND - EXACT REFERENCE MATCH */
+/* ============================================================ */
+
+/* ============================================================ */
+/* BACKGROUND CONTAINER */
+/* ============================================================ */
+
+.wind-animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FDFBF7 0%, #F9F6EF 50%, #FDFBF7 100%);
+}
+
+.wind-svg-background {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================================ */
+/* WIND CURVE STYLING */
+/* ============================================================ */
+
+.wind-curve {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Removed mix-blend-mode: multiply to drastically improve scrolling performance */
+}
+
+/* ============================================================ */
+/* LAYER ANIMATIONS - CONTINUOUS FLOW */
+/* ============================================================ */
+
+/* Layer 1: FAST-MOVING PRIMARY WAVES (18 seconds) */
+.wind-layer-1 {
+  animation: windFlow-layer1 18s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes windFlow-layer1 {
+  0% {
+    transform: translateX(-400px) translateY(0px);
+  }
+  50% {
+    transform: translateX(0px) translateY(-8px);
+  }
+  100% {
+    transform: translateX(400px) translateY(0px);
+  }
+}
+
+/* Layer 2: MEDIUM-SPEED SECONDARY WAVES (25 seconds) */
+.wind-layer-2 {
+  animation: windFlow-layer2 25s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes windFlow-layer2 {
+  0% {
+    transform: translateX(-500px) translateY(0px);
+  }
+  50% {
+    transform: translateX(0px) translateY(6px);
+  }
+  100% {
+    transform: translateX(500px) translateY(0px);
+  }
+}
+
+/* Layer 3: SLOW-MOVING BASE WAVES (35 seconds) */
+.wind-layer-3 {
+  animation: windFlow-layer3 35s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes windFlow-layer3 {
+  0% {
+    transform: translateX(-600px) translateY(0px);
+  }
+  50% {
+    transform: translateX(0px) translateY(-10px);
+  }
+  100% {
+    transform: translateX(600px) translateY(0px);
+  }
+}
+
+/* ============================================================ */
+/* FLOATING LEAVES/PARTICLES ANIMATIONS */
+/* ============================================================ */
+
+/* Particle Layer 1: Large floating leaves */
+.particle-layer-1 {
+  animation: particle-float-1 8s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes particle-float-1 {
+  0% {
+    transform: translateX(0px) translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(30px) translateY(-20px) rotate(45deg);
+  }
+  50% {
+    transform: translateX(50px) translateY(-35px) rotate(90deg);
+  }
+  75% {
+    transform: translateX(30px) translateY(-20px) rotate(135deg);
+  }
+  100% {
+    transform: translateX(0px) translateY(0px) rotate(180deg);
+  }
+}
+
+/* Particle Layer 2: Small floating particles */
+.particle-layer-2 {
+  animation: particle-float-2 12s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes particle-float-2 {
+  0% {
+    transform: translateX(0px) translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(20px) translateY(-15px) rotate(30deg);
+  }
+  50% {
+    transform: translateX(35px) translateY(-25px) rotate(60deg);
+  }
+  75% {
+    transform: translateX(20px) translateY(-15px) rotate(90deg);
+  }
+  100% {
+    transform: translateX(0px) translateY(0px) rotate(120deg);
+  }
+}
+
+/* ============================================================ */
+/* INDIVIDUAL FLOATING EFFECTS FOR LEAVES */
+/* ============================================================ */
+
+.floating-leaf {
+  animation: leaf-sway 4s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(1) {
+  animation: leaf-sway-1 4.5s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(2) {
+  animation: leaf-sway-2 5s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(3) {
+  animation: leaf-sway-3 5.5s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(4) {
+  animation: leaf-sway-4 6s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(5) {
+  animation: leaf-sway-5 6.5s ease-in-out infinite;
+}
+
+.floating-leaf:nth-child(6) {
+  animation: leaf-sway-6 7s ease-in-out infinite;
+}
+
+/* Leaf sway animation 1 */
+@keyframes leaf-sway-1 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(-25deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateX(25px) translateY(-15px) rotate(15deg);
+    opacity: 0.45;
+  }
+}
+
+/* Leaf sway animation 2 */
+@keyframes leaf-sway-2 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(35deg);
+    opacity: 0.32;
+  }
+  50% {
+    transform: translateX(-20px) translateY(-12px) rotate(80deg);
+    opacity: 0.42;
+  }
+}
+
+/* Leaf sway animation 3 */
+@keyframes leaf-sway-3 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(-15deg);
+    opacity: 0.38;
+  }
+  50% {
+    transform: translateX(30px) translateY(-18px) rotate(40deg);
+    opacity: 0.48;
+  }
+}
+
+/* Leaf sway animation 4 */
+@keyframes leaf-sway-4 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(45deg);
+    opacity: 0.33;
+  }
+  50% {
+    transform: translateX(-25px) translateY(-14px) rotate(90deg);
+    opacity: 0.43;
+  }
+}
+
+/* Leaf sway animation 5 */
+@keyframes leaf-sway-5 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(-35deg);
+    opacity: 0.36;
+  }
+  50% {
+    transform: translateX(28px) translateY(-16px) rotate(20deg);
+    opacity: 0.46;
+  }
+}
+
+/* Leaf sway animation 6 */
+@keyframes leaf-sway-6 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(20deg);
+    opacity: 0.30;
+  }
+  50% {
+    transform: translateX(-22px) translateY(-13px) rotate(65deg);
+    opacity: 0.40;
+  }
+}
+
+/* ============================================================ */
+/* INDIVIDUAL FLOATING EFFECTS FOR PARTICLES */
+/* ============================================================ */
+
+.floating-particle {
+  animation: particle-drift 5s ease-in-out infinite;
+}
+
+.floating-particle:nth-child(1) {
+  animation: particle-drift-1 5s ease-in-out infinite;
+}
+
+.floating-particle:nth-child(2) {
+  animation: particle-drift-2 6s ease-in-out infinite;
+}
+
+.floating-particle:nth-child(3) {
+  animation: particle-drift-3 7s ease-in-out infinite;
+}
+
+.floating-particle:nth-child(4) {
+  animation: particle-drift-4 8s ease-in-out infinite;
+}
+
+/* Particle drift animation 1 */
+@keyframes particle-drift-1 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateX(20px) translateY(-10px);
+    opacity: 0.35;
+  }
+}
+
+/* Particle drift animation 2 */
+@keyframes particle-drift-2 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translateX(-15px) translateY(-8px);
+    opacity: 0.38;
+  }
+}
+
+/* Particle drift animation 3 */
+@keyframes particle-drift-3 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px);
+    opacity: 0.26;
+  }
+  50% {
+    transform: translateX(18px) translateY(-9px);
+    opacity: 0.36;
+  }
+}
+
+/* Particle drift animation 4 */
+@keyframes particle-drift-4 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px);
+    opacity: 0.24;
+  }
+  50% {
+    transform: translateX(-18px) translateY(-7px);
+    opacity: 0.34;
+  }
+}
+
+/* ============================================================ */
+/* Z-INDEX LAYERING FOR CONTENT */
+/* ============================================================ */
+
+main,
+header,
+footer,
+section,
+nav,
+article,
+aside {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================ */
+/* MOBILE RESPONSIVE ADJUSTMENTS */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+  .wind-animation-container {
+    opacity: 0.7;
+  }
+
+  /* Slightly speed up animations on tablet for better perception */
+  .wind-layer-1 {
+    animation: windFlow-layer1 16s linear infinite;
+  }
+
+  .wind-layer-2 {
+    animation: windFlow-layer2 23s linear infinite;
+  }
+
+  .wind-layer-3 {
+    animation: windFlow-layer3 33s linear infinite;
+  }
+}
+
+@media (max-width: 480px) {
+  .wind-animation-container {
+    opacity: 0.6;
+  }
+
+  /* Further speed up on mobile */
+  .wind-layer-1 {
+    animation: windFlow-layer1 14s linear infinite;
+  }
+
+  .wind-layer-2 {
+    animation: windFlow-layer2 20s linear infinite;
+  }
+
+  .wind-layer-3 {
+    animation: windFlow-layer3 28s linear infinite;
+  }
+
+  /* Reduce particle visibility on very small screens */
+  .particle-layer-1,
+  .particle-layer-2 {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================================ */
+/* ACCESSIBILITY - RESPECT MOTION PREFERENCE */
+/* ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .wind-layer-1,
+  .wind-layer-2,
+  .wind-layer-3,
+  .particle-layer-1,
+  .particle-layer-2,
+  .floating-leaf,
+  .floating-particle {
+    animation: none !important;
+  }
+
+  .wind-animation-container {
+    opacity: 0.4;
+  }
+}
+
+/* ============================================================ */
+/* PERFORMANCE OPTIMIZATION */
+/* ============================================================ */
+
+.wind-layer,
+.particle-layer,
+.floating-leaf,
+.floating-particle {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.wind-svg-background {
+  contain: layout style paint;
+}

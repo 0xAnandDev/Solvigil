@@ -1,0 +1,22 @@
+{
+  "name": "solvigil-backend",
+  "version": "1.0.0",
+  "description": "Backend for Solvigil Smart Contract Security Scanner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.1",
+    "@solidity-parser/parser": "^0.14.5",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

@@ -1,0 +1,124 @@
+/* Custom CSS styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #E4DDD3; /* theme('colors.ice') */
+}
+
+/* Scroll Animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+
+/* Subtle Background Wave */
+.bg-wave {
+  background: linear-gradient(
+    120deg,
+    #E4DDD3 0%,
+    #EBE6DF 25%,
+    #E4DDD3 50%,
+    rgba(0, 161, 155, 0.12) 75%,
+    #E4DDD3 100%
+  );
+  background-size: 300% 300%;
+  animation: waveMotion 20s ease-in-out infinite;
+}
+
+.bg-wave-light {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(0, 161, 155, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 200%;
+  animation: waveMotion 15s ease-in-out infinite;
+}
+
+@keyframes waveMotion {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 161, 155, 0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 4px 10px -6px rgba(0, 161, 155, 0.1);
+  border-color: rgba(0, 161, 155, 0.4);
+}
+
+/* Desktop horizontal workflow connector */
+@media (min-width: 1024px) {
+  .workflow-connector {
+    position: relative;
+  }
+  .workflow-connector:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 56px; /* Align with circle center (p-8 + w-12/2 = 32px + 24px) */
+    left: 100%; /* Start exactly at the right edge of the card */
+    width: 1.5rem; /* Gap between cards (lg:gap-6 = 24px) */
+    height: 2px;
+    background: linear-gradient(90deg, #00A19B 50%, transparent 50%);
+    background-size: 8px 2px;
+    animation: flowLine 1s linear infinite;
+    z-index: 0;
+  }
+}
+
+/* Tablet/Mobile vertical workflow connector */
+@media (max-width: 1023px) {
+  .workflow-connector {
+    position: relative;
+  }
+  .workflow-connector:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -3rem; /* Gap between cards (gap-12 = 48px) */
+    left: 48px; /* Align with circle center on mobile (p-6 + w-12/2 = 24px + 24px) */
+    width: 2px;
+    height: 3rem; /* Exactly span the gap */
+    background: linear-gradient(180deg, #00A19B 50%, transparent 50%);
+    background-size: 2px 8px;
+    animation: flowLineVertical 1s linear infinite;
+    z-index: 0;
+  }
+}
+
+@keyframes flowLine {
+  0% { background-position: 0 0; }
+  100% { background-position: -40px 0; }
+}
+
+@keyframes flowLineVertical {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 -20px; }
+}
+
+/* Wind animation moved to wind-animation.css */

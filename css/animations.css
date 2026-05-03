@@ -1,0 +1,176 @@
+/* Animations for the scanner interface */
+
+/* Modal fade and slide */
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse animation for loading text dots */
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.loading-dots span {
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+/* Fade in for elements */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Scale animation for success icon */
+@keyframes scaleIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Premium Animations */
+@keyframes modalAppear {
+  0% { opacity: 0; transform: scale(0.92) translateY(-20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes iconGlow {
+  0% { box-shadow: 0 0 0 0 rgba(0, 161, 155, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(0, 161, 155, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 161, 155, 0); }
+}
+
+@keyframes itemSlideIn {
+  0% { opacity: 0; transform: translateX(-15px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes checkboxCheck {
+  0% { transform: scale(0.8) rotate(-45deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes buttonHover {
+  0% { transform: translateY(0); box-shadow: 0 4px 12px rgba(0, 161, 155, 0.2); }
+  100% { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 161, 155, 0.3); }
+}
+
+@keyframes declineHover {
+  0% { background: transparent; box-shadow: none; }
+  100% { background: rgba(239, 68, 68, 0.1); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15); }
+}
+
+@keyframes chevronRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(180deg); }
+}
+
+@keyframes blockedPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+}
+
+@keyframes dropZoneBreathing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 161, 155, 0.1); border-color: rgba(0, 161, 155, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 161, 155, 0); border-color: rgba(0, 161, 155, 0.7); }
+}
+
+@keyframes dropZoneGlow {
+  0% { box-shadow: 0 0 0 0 rgba(0, 161, 155, 0.4); }
+  100% { box-shadow: 0 0 0 15px rgba(0, 161, 155, 0); }
+}
+
+@keyframes dragOverGlow {
+  0% { box-shadow: 0 0 20px rgba(0, 161, 155, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(0, 161, 155, 0.5); }
+  100% { box-shadow: 0 0 20px rgba(0, 161, 155, 0.3); }
+}
+
+@keyframes fileUploadSuccess {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  50% { transform: translateY(-5px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes checkmarkDraw {
+  0% { stroke-dashoffset: 50; stroke-dasharray: 50; }
+  100% { stroke-dashoffset: 0; stroke-dasharray: 50; }
+}
+
+@keyframes spin1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes spin2 {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes spin3 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes cardSlideIn {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardHover {
+  0% { transform: translateY(0); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+  100% { transform: translateY(-8px); box-shadow: 0 12px 32px rgba(0, 161, 155, 0.15); }
+}
+
+@keyframes scoreCount {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(100px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px); opacity: 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

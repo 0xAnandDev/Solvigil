@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyze Your Smart Contract | Solvigil</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/scanner-styles.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/results.css">
+</head>
+<body>
+  
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <a href="/index.html" class="logo-container">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="logo-text">solvigil</span>
+      </a>
+      <div></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Upload Section -->
+      <section id="upload-section">
+        <div class="section-header">
+          <h1 class="section-title">Analyze Your Smart Contract</h1>
+          <p class="section-subtitle">Upload your Solidity code and get instant security insights</p>
+        </div>
+
+        <div class="dropzone-container">
+          <div class="dropzone" id="dropzone">
+            <svg class="dropzone-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <h2 class="dropzone-title">Drop your .sol file here</h2>
+            <p class="dropzone-subtitle">or click to upload</p>
+            <p class="dropzone-info">Supported: Solidity (.sol) | Max size: 2 MB</p>
+            <input type="file" id="file-input" class="file-input" accept=".sol">
+            <button class="btn-secondary mt-4" id="btn-choose-file">Choose File</button>
+          </div>
+        </div>
+
+        <!-- File Display (Hidden initially) -->
+        <div class="file-display" id="file-display">
+          <div class="file-display-header">
+            <svg class="file-display-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="file-display-title">File Successfully Loaded</span>
+          </div>
+          <div class="file-details">
+            <div class="file-name-size">
+              <span id="file-name">Contract.sol</span>
+              <br>
+              <span id="file-size" style="color: #999;">12.5 KB</span>
+            </div>
+            <div class="file-actions">
+              <button id="btn-remove-file">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message (Hidden initially) -->
+        <div class="error-message" id="error-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span id="error-text">Only Solidity (.sol) files are supported.</span>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="trust-indicators">
+          <div class="trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            No wallet required
+          </div>
+          <div class="trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Secure analysis
+          </div>
+          <div class="trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            No gas fees
+          </div>
+        </div>
+
+        <div class="actions-container">
+          <button class="btn-primary" id="btn-analyze" disabled>Analyze Contract</button>
+          <div style="margin-top: 16px;">
+            <button class="btn-text" id="btn-view-terms">View Terms & Conditions</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Processing State -->
+      <section id="processing-section" class="processing-state">
+        <div class="spinner">
+          <div class="spinner-ring1"></div>
+          <div class="spinner-ring2"></div>
+          <div class="spinner-ring3"></div>
+        </div>
+        <h2 class="processing-title">Analyzing Smart Contract</h2>
+        <div class="processing-steps" id="processing-steps">
+          Parsing code structure<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p style="margin-top: 16px; font-size: 14px; color: var(--color-text-secondary);">This usually takes 1-2 seconds</p>
+      </section>
+
+      <!-- Results Section -->
+      <!-- Results Section -->
+      <section id="results-section" class="results-section" style="display: none;">
+        
+        <!-- Header with Score -->
+        <div class="results-header">
+          <div class="score-container">
+            <div class="score-circle">
+              <svg class="circle-svg" viewBox="0 0 120 120">
+                <circle class="circle-bg" cx="60" cy="60" r="54"></circle>
+                <circle class="circle-progress" cx="60" cy="60" r="54"></circle>
+              </svg>
+              <div class="score-number">
+                <span id="score-value">0</span>
+                <span class="score-label">/100</span>
+              </div>
+            </div>
+            <div class="score-status">
+              <h2 id="status-title">Analyzing...</h2>
+              <p id="status-description">Please wait</p>
+              <div class="confidence-badge">
+                Confidence: <span id="confidence-level">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+          <div class="stat-card critical">
+            <div class="stat-number" id="stat-critical">0</div>
+            <div class="stat-label">Critical</div>
+          </div>
+          <div class="stat-card high">
+            <div class="stat-number" id="stat-high">0</div>
+            <div class="stat-label">High</div>
+          </div>
+          <div class="stat-card medium">
+            <div class="stat-number" id="stat-medium">0</div>
+            <div class="stat-label">Medium</div>
+          </div>
+          <div class="stat-card low">
+            <div class="stat-number" id="stat-low">0</div>
+            <div class="stat-label">Low</div>
+          </div>
+        </div>
+
+        <!-- Vulnerabilities Container -->
+        <div class="vulnerabilities-container" id="vulnerabilities-container">
+          <!-- Vulnerability cards will be inserted here -->
+        </div>
+
+        <!-- No Vulnerabilities Message -->
+        <div class="safe-contract-message" id="safe-message" style="display: none;">
+          <svg class="safe-icon" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#10B981"/>
+            <path d="M 35 50 L 45 60 L 65 40" stroke="white" stroke-width="3" fill="none"/>
+          </svg>
+          <h2>✅ Contract is Safe!</h2>
+          <p>No critical vulnerabilities detected</p>
+          <p class="safe-note">⚠️ Note: Automated analysis is not a substitute for professional audits</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="results-actions">
+          <button class="btn btn-download" id="btn-download-report">📥 Download Report</button>
+          <button class="btn btn-analyze-again" id="btn-analyze-another">🔄 Analyze Another</button>
+          <button class="btn btn-secondary" id="btn-review-code">🔍 Review Code</button>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Terms & Conditions Modal -->
+  <div class="modal-overlay" id="terms-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="modal-title">Solvigil Security Agreement</h3>
+          <p class="modal-subtitle">Before you analyze any smart contract, please<br>review our security & usage agreement.</p>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        <ul class="agreement-list">
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Processing: Secure & private
+          </li>
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Analysis: Automated, not audit
+          </li>
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Responsibility: Yours to verify
+          </li>
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Code: Never stored permanently
+          </li>
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Data: Never shared or sold
+          </li>
+          <li class="agreement-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Transactions: None required
+          </li>
+        </ul>
+
+        <label class="custom-checkbox-container">
+          <div class="custom-checkbox" id="terms-checkbox-ui">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <input type="checkbox" id="terms-checkbox" class="hidden-checkbox">
+          <span class="checkbox-label">I understand and agree to these terms</span>
+        </label>
+
+        <div class="expandable-section">
+          <div class="expandable-header" id="btn-expand-terms">
+            <span>Full Terms & Conditions</span>
+            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div class="expandable-content" id="terms-full-content">
+            <div class="terms-content-inner">
+              <p><strong>📜 Processing & Security:</strong><br>
+              Your uploaded smart contract file is processed securely in our system. Files are analyzed in real-time and not stored permanently.</p>
+              
+              <p><strong>🔍 Analysis Limitations:</strong><br>
+              Solvigil performs automated analysis and may not detect all vulnerabilities. This is NOT a substitute for professional security audits.</p>
+              
+              <p><strong>⚖️ Your Responsibility:</strong><br>
+              You are solely responsible for verifying and testing your smart contracts before deployment. Use findings at your own discretion.</p>
+              
+              <p><strong>🔐 Data Privacy:</strong><br>
+              • We do not share or sell your data<br>
+              • No wallet connection is required<br>
+              • No blockchain transactions are performed<br>
+              • Analysis results are for your eyes only</p>
+              
+              <p><strong>⚠️ Liability:</strong><br>
+              Solvigil is provided as a free tool without guarantees of accuracy or completeness. Use at your own risk.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div class="modal-actions-premium">
+          <button class="btn-accept" id="btn-accept-terms" disabled>Accept & Start</button>
+          <button class="btn-decline" id="btn-decline-terms">Decline</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blocked Interface Overlay -->
+  <div class="blocked-overlay" id="blocked-overlay">
+    <div class="blocked-card">
+      <div class="blocked-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </div>
+      <h3 class="blocked-title">Terms Not Accepted</h3>
+      <p class="blocked-message">You must accept the terms and conditions to use Solvigil.</p>
+      <div class="blocked-actions">
+        <button class="btn-primary" id="btn-review-terms">Review Terms</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Require Terms Modal -->
+  <div class="modal-overlay" id="require-terms-modal" style="z-index: 1005;">
+    <div class="modal-content" style="max-width: 400px; padding: 32px 24px; text-align: center;">
+      <div style="width: 48px; height: 48px; color: #F59E0B; margin: 0 auto 16px;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="modal-title" style="font-size: 20px; margin-bottom: 8px;">Action Required</h3>
+      <p class="modal-subtitle" style="margin-bottom: 24px; color: #666;">To perform analyzing, you need to accept the terms & conditions first.</p>
+      <div class="modal-actions-premium" style="display: flex; gap: 12px;">
+        <button class="btn-decline" id="btn-cancel-require" style="flex: 1; padding: 10px; border-color: #E5E7EB; color: #666;">Cancel</button>
+        <button class="btn-accept" id="btn-review-require" style="flex: 1; padding: 10px;">Review Terms</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <!-- Code Review Modal -->
+  <div class="modal-overlay" id="code-review-modal" style="z-index: 1010; padding: 20px;">
+    <div class="modal-content" style="max-width: 800px; width: 100%; height: 80vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden;">
+      <div class="modal-header" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding: 16px 24px; background: #fafafa;">
+        <h3 class="modal-title" style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">Contract Source Code</h3>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button id="btn-copy-all-code" style="background: #00A19B; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">Copy All Code</button>
+          <button id="btn-close-code-review" style="background: none; border: none; cursor: pointer; color: #666; padding: 4px; border-radius: 4px; transition: background 0.2s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" style="flex-grow: 1; overflow-y: auto; padding: 0; background: #ffffff; color: #333;">
+        <div id="code-review-container" style="font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.6; display: table; width: 100%;">
+          <!-- Code lines will be injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/scanner/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Results | Solvigil</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #00A19B;
+      --primary-light: #E6F6F5;
+      --secondary: #F5E6D3;
+      --text-dark: #1A1A1A;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --bg: #F9FAFB;
+      --surface: #FFFFFF;
+
+      --status-safe: #10B981;
+      --status-review: #F59E0B;
+      --status-vulnerable: #F97316;
+      --status-critical: #EF4444;
+
+      --critical: #EF4444;
+      --high: #F97316;
+      --medium: #F59E0B;
+      --low: #3B82F6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-dark);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header Section */
+    .header-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 40px;
+    }
+
+    .contract-info {
+      flex: 1;
+    }
+
+    .contract-header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .contract-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: var(--secondary);
+      color: var(--text-dark);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      gap: 6px;
+    }
+
+    .file-meta {
+      font-size: 14px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-container {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .score-circle svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .score-bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 8;
+    }
+
+    .score-progress {
+      fill: none;
+      stroke: var(--status-review);
+      stroke-width: 8;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 314;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.5s ease-out;
+    }
+
+    .score-value {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      position: absolute;
+    }
+
+    .score-status {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+      position: relative;
+    }
+
+    .tab-indicator {
+      display: none;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 4px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s, transform 0.1s;
+    }
+
+    .tab-btn:active {
+      transform: scale(0.97);
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+    }
+
+    .tab-btn.active::after {
+      background: var(--primary);
+    }
+
+    .tab-btn:not(.active):hover {
+      color: var(--text-dark);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content.show {
+      opacity: 1;
+    }
+
+    /* Findings Tab */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .summary-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .summary-box.critical { border-top: 3px solid var(--critical); }
+    .summary-box.high { border-top: 3px solid var(--high); }
+    .summary-box.medium { border-top: 3px solid var(--medium); }
+    .summary-box.low { border-top: 3px solid var(--low); }
+
+    .summary-count {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .summary-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .summary-box.critical .summary-count { color: var(--critical); }
+    .summary-box.high .summary-count { color: var(--high); }
+    .summary-box.medium .summary-count { color: var(--medium); }
+    .summary-box.low .summary-count { color: var(--low); }
+
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .vuln-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-left-width: 4px;
+      opacity: 0;
+      animation: fadeInSlideUp 0.4s ease forwards;
+    }
+
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .vuln-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+    .vuln-card.critical { border-left-color: var(--critical); }
+    .vuln-card.high { border-left-color: var(--high); }
+    .vuln-card.medium { border-left-color: var(--medium); }
+    .vuln-card.low { border-left-color: var(--low); }
+
+    .vuln-header {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vuln-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .vuln-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vuln-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-critical { background: #FEE2E2; color: var(--critical); border: 1px solid #FCA5A5; }
+    .badge-high { background: #FFEDD5; color: var(--high); border: 1px solid #FDBA74; }
+    .badge-medium { background: #FEF3C7; color: var(--medium); border: 1px solid #FCD34D; }
+    .badge-low { background: #DBEAFE; color: var(--low); border: 1px solid #93C5FD; }
+
+    .vuln-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-dark);
+    }
+
+    .vuln-confidence {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .vuln-location {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .loc-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .vuln-desc {
+      font-size: 15px;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .vuln-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .vuln-expand-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dark);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .vuln-expand-btn:hover {
+      background: var(--bg);
+      border-color: #D1D5DB;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .vuln-expand-btn:active {
+      transform: scale(0.97);
+    }
+
+    .vuln-expand-btn svg {
+      width: 14px; height: 14px;
+      transition: transform 0.2s;
+    }
+
+    .vuln-expand-btn.open svg {
+      transform: rotate(180deg);
+    }
+
+    .vuln-details {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.4);
+    }
+
+    .vuln-details.open {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .detail-section {
+      padding: 24px;
+    }
+
+    .detail-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .code-block-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    
+    .code-block-wrapper:last-child {
+      margin-bottom: 0;
+    }
+
+    .code-label {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: #1F2937;
+      color: #F3F4F6;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      border: 1px solid #374151;
+      z-index: 1;
+    }
+
+    .code-label.vulnerable { color: #FCA5A5; }
+    .code-label.fixed { color: #6EE7B7; }
+
+    .code-block {
+      background: #1F2937;
+      color: #F3F4F6;
+      font-family: 'Monaco', 'Menlo', 'Courier', monospace;
+      font-size: 13px;
+      padding: 20px 16px 16px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      line-height: 1.5;
+      border: 1px solid #374151;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .code-block:hover {
+      border-color: rgba(0, 161, 155, 0.4);
+      box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.1);
+    }
+    
+    .code-line.vulnerable,
+    .vulnerable-line {
+      background-color: rgba(239, 68, 68, 0.15);
+      display: block;
+      margin: 0 -16px;
+      padding: 0 16px;
+    }
+
+    .recommendation-text {
+      font-size: 14px;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* Attack Simulation Tab */
+    .sim-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeInSlideUp 0.4s ease forwards;
+    }
+
+    .sim-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+
+    .sim-icon {
+      font-size: 24px;
+      width: 48px;
+      height: 48px;
+      background: var(--secondary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .sim-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .sim-flow-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sim-pill {
+      background: var(--primary-light);
+      border: 1px solid rgba(0, 161, 155, 0.2);
+      color: var(--text-dark);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideUp 0.4s forwards;
+    }
+
+    .sim-pill.attacker {
+      background: #FEE2E2;
+      border-color: #FCA5A5;
+      color: #991B1B;
+    }
+
+    .sim-arrow {
+      color: var(--border);
+      font-size: 20px;
+      font-weight: bold;
+      
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideUp 0.4s forwards;
+    }
+
+    /* Staggered animation delays */
+    .sim-flow-vertical > *:nth-child(1) { animation-delay: 0.1s; }
+    .sim-flow-vertical > *:nth-child(2) { animation-delay: 0.2s; }
+    .sim-flow-vertical > *:nth-child(3) { animation-delay: 0.3s; }
+    .sim-flow-vertical > *:nth-child(4) { animation-delay: 0.4s; }
+    .sim-flow-vertical > *:nth-child(5) { animation-delay: 0.5s; }
+    .sim-flow-vertical > *:nth-child(6) { animation-delay: 0.6s; }
+    .sim-flow-vertical > *:nth-child(7) { animation-delay: 0.7s; }
+    .sim-flow-vertical > *:nth-child(8) { animation-delay: 0.8s; }
+    .sim-flow-vertical > *:nth-child(9) { animation-delay: 0.9s; }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Action Buttons */
+    .actions-bar {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px rgba(0, 161, 155, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #008B86;
+      box-shadow: 0 6px 12px rgba(0, 161, 155, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text-dark);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: #D1D5DB;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-dark);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline-teal {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .btn-outline-teal:hover {
+      background: #008B86;
+      box-shadow: 0 6px 12px rgba(0, 161, 155, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .score-animate {
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+      
+      /* Header Section */
+      .header-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 16px;
+      }
+      .contract-header-row {
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+      .file-meta {
+        justify-content: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .score-container {
+        width: 100%;
+      }
+      .score-circle {
+        width: 100px;
+        height: 100px;
+      }
+      .score-value {
+        font-size: 28px;
+      }
+
+      /* Tabs */
+      .tabs {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px;
+      }
+      .tab-btn {
+        padding: 12px 20px;
+        min-height: 48px;
+        white-space: nowrap;
+      }
+
+      /* Vulnerability Cards */
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .vuln-card {
+        border-radius: 8px;
+      }
+      .vuln-header {
+        padding: 16px;
+      }
+      .vuln-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .vuln-title-group {
+        flex-wrap: wrap;
+      }
+      .vuln-location {
+        flex-wrap: wrap;
+      }
+      .vuln-actions {
+        flex-direction: column;
+      }
+      .vuln-expand-btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+      }
+      .detail-section {
+        padding: 16px;
+      }
+      .code-block {
+        padding: 20px 12px 12px 12px;
+        font-size: 12px;
+      }
+
+      /* Action Buttons */
+      .actions-bar {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .actions-bar .btn {
+        width: 100%;
+        min-height: 48px;
+      }
+
+      /* Attack Simulation */
+      .sim-card {
+        padding: 16px;
+      }
+      .sim-header {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+      .sim-pill {
+        padding: 12px 16px;
+        font-size: 13px;
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <!-- HEADER SECTION -->
+  <header class="header-card">
+    <div class="contract-info">
+      <div class="contract-header-row">
+        <h1 class="contract-name">Vault.sol</h1>
+        <div class="confidence-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          High Confidence
+        </div>
+      </div>
+      <div class="file-meta">
+        <span>Contract: Vault Storage Component</span>
+        <span>•</span>
+        <span>Size: 4.2 KB</span>
+      </div>
+    </div>
+    
+    <div class="score-container score-animate">
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120">
+          <circle class="score-bg" cx="60" cy="60" r="50" />
+          <circle class="score-progress" cx="60" cy="60" r="50" id="score-progress-bar" />
+        </svg>
+        <div class="score-value" id="score-value-text">0</div>
+      </div>
+      <div class="score-status" id="score-status-text">Needs Review</div>
+    </div>
+  </header>
+
+  <!-- TWO TABS -->
+  <div class="tabs">
+    <div class="tab-indicator" id="tab-indicator"></div>
+    <button class="tab-btn active" onclick="switchTab(event, 'findings')">Findings</button>
+    <button class="tab-btn" onclick="switchTab(event, 'simulation')">Attack Simulation</button>
+  </div>
+
+  <!-- FINDINGS TAB -->
+  <div id="tab-findings" class="tab-content active show">
+    <!-- Summary Boxes -->
+    <div class="summary-grid">
+      <div class="summary-box critical">
+        <div class="summary-count">1</div>
+        <div class="summary-label">Critical</div>
+      </div>
+      <div class="summary-box high">
+        <div class="summary-count">1</div>
+        <div class="summary-label">High</div>
+      </div>
+      <div class="summary-box medium">
+        <div class="summary-count">0</div>
+        <div class="summary-label">Medium</div>
+      </div>
+      <div class="summary-box low">
+        <div class="summary-count">0</div>
+        <div class="summary-label">Low</div>
+      </div>
+    </div>
+
+    <!-- Vulnerabilities List -->
+    <div class="findings-list">
+      
+      <!-- Critical Vulnerability Card -->
+      <div class="vuln-card critical" style="animation-delay: 0.1s;">
+        <div class="vuln-header">
+          
+          <div class="vuln-header-top">
+            <div class="vuln-title-group">
+              <div class="vuln-badge badge-critical">Critical</div>
+              <div class="vuln-title">Reentrancy</div>
+            </div>
+            <div class="vuln-confidence">Confidence: HIGH</div>
+          </div>
+          
+          <div class="vuln-location">
+            <span class="loc-item">Line 42</span>
+            <span class="loc-item">Column 12</span>
+          </div>
+          
+          <div class="vuln-desc">State variables are updated after an external call, allowing malicious contracts to repeatedly call the function before the balance is safely updated.</div>
+          
+          <div class="vuln-actions">
+            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-1')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              View Code
+            </button>
+            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-1')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z"></path></svg>
+              How to Fix
+            </button>
+          </div>
+          
+        </div>
+        
+        <div class="vuln-details" id="code-1">
+          <div class="detail-section">
+            <div class="detail-title">Vulnerable Code</div>
+            <div class="code-block-wrapper">
+              <div class="code-block"><span class="vulnerable-line">(bool success, ) = msg.sender.call{value: amount}("");</span>
+<span class="vulnerable-line">require(success, "Transfer failed");</span>
+<span class="vulnerable-line">balances[msg.sender] -= amount; // State is updated after the external call</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vuln-details" id="fix-1">
+          <div class="detail-section">
+            <div class="detail-title">How to Fix</div>
+            <div class="recommendation-text">Implement the Checks-Effects-Interactions pattern. Always update state variables (like balances) before making external calls to untrusted addresses. Alternatively, apply a ReentrancyGuard modifier.</div>
+            
+            <div class="code-block-wrapper">
+              <div class="code-label vulnerable">❌ VULNERABLE</div>
+              <div class="code-block"><span class="vulnerable-line">(bool success, ) = msg.sender.call{value: amount}("");</span>
+<span class="vulnerable-line">require(success, "Transfer failed");</span>
+<span class="vulnerable-line">balances[msg.sender] -= amount; // State is updated after</span></div>
+            </div>
+            
+            <div class="code-block-wrapper">
+              <div class="code-label fixed">✅ FIXED</div>
+              <div class="code-block">balances[msg.sender] -= amount; // Update state FIRST
+(bool success, ) = msg.sender.call{value: amount}("");
+require(success, "Transfer failed");</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- High Vulnerability Card -->
+      <div class="vuln-card high" style="animation-delay: 0.2s;">
+        <div class="vuln-header">
+          
+          <div class="vuln-header-top">
+            <div class="vuln-title-group">
+              <div class="vuln-badge badge-high">High</div>
+              <div class="vuln-title">Unchecked Call Return Value</div>
+            </div>
+            <div class="vuln-confidence">Confidence: MEDIUM</div>
+          </div>
+          
+          <div class="vuln-location">
+            <span class="loc-item">Line 115</span>
+          </div>
+          
+          <div class="vuln-desc">The return value of a low-level external call is not checked. If the call fails, execution will continue silently, potentially causing state inconsistencies.</div>
+          
+          <div class="vuln-actions">
+            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-2')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              View Code
+            </button>
+            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-2')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z"></path></svg>
+              How to Fix
+            </button>
+          </div>
+          
+        </div>
+        
+        <div class="vuln-details" id="code-2">
+          <div class="detail-section">
+            <div class="detail-title">Vulnerable Code</div>
+            <div class="code-block-wrapper">
+              <div class="code-block">targetContract.call(abi.encodeWithSignature("doSomething()"));</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vuln-details" id="fix-2">
+          <div class="detail-section">
+            <div class="detail-title">How to Fix</div>
+            <div class="recommendation-text">Always check the boolean return value from low-level calls (call, send, delegatecall). Wrap the call in a require() statement to ensure the transaction reverts if the target contract throws an error.</div>
+            
+            <div class="code-block-wrapper">
+              <div class="code-label vulnerable">❌ VULNERABLE</div>
+              <div class="code-block"><span class="vulnerable-line">targetContract.call(abi.encodeWithSignature("doSomething()"));</span></div>
+            </div>
+            
+            <div class="code-block-wrapper">
+              <div class="code-label fixed">✅ FIXED</div>
+              <div class="code-block">(bool success, ) = targetContract.call(abi.encodeWithSignature("doSomething()"));
+require(success, "External call failed");</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ATTACK SIMULATION TAB -->
+  <div id="tab-simulation" class="tab-content">
+    
+    <div class="sim-card" style="animation-delay: 0.1s;">
+      <div class="sim-header">
+        <div class="sim-icon">🔄</div>
+        <div>
+          <div class="sim-title">Reentrancy Attack Simulator</div>
+          <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on Line 42</div>
+        </div>
+      </div>
+      
+      <div class="sim-flow-vertical">
+        <div class="sim-pill attacker">Step 1: Attacker calls withdraw() requesting 1 ETH</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill">Step 2: Vault sends 1 ETH to Attacker via .call()</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill attacker">Step 3: Attacker's fallback() is triggered upon receiving ETH</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill attacker">Step 4: Inside fallback(), Attacker calls withdraw() AGAIN</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill">Step 5: Vault sends another 1 ETH (balance wasn't updated!)</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill attacker">Step 6: Vault is drained.</div>
+      </div>
+    </div>
+
+    <div class="sim-card" style="animation-delay: 0.25s;">
+      <div class="sim-header">
+        <div class="sim-icon">💥</div>
+        <div>
+          <div class="sim-title">Unchecked Call Exploit Simulator</div>
+          <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on Line 115</div>
+        </div>
+      </div>
+      
+      <div class="sim-flow-vertical">
+        <div class="sim-pill">Step 1: Vault executes external call to TargetContract</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill attacker">Step 2: TargetContract encounters an error and REVERTS</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill">Step 3: Vault ignores the revert and continues execution</div>
+        <div class="sim-arrow">↓</div>
+        <div class="sim-pill attacker">Step 4: Vault state is updated inconsistently, leading to loss of funds</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM ACTION BUTTONS -->
+  <div class="actions-bar" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+    <button class="btn btn-outline-teal" onclick="showReviewModal()">
+      🔍 Review Contract
+    </button>
+    <button class="btn btn-primary" onclick="window.location.href='/scanner.html'">
+      🔄 Analyze Another
+    </button>
+    <div style="position: relative; display: inline-block;">
+      <button class="btn btn-primary" onclick="toggleDownloadDropdown(event)">
+        📥 Download Report
+      </button>
+      <div id="download-dropdown" style="display: none; position: absolute; bottom: 100%; left: 0; background: white; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); margin-bottom: 8px; overflow: hidden; z-index: 100; min-width: 180px;">
+        <button onclick="downloadReport('pdf')" style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; border-bottom: 1px solid #f0f0f0; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📄 PDF Format</button>
+        <button onclick="downloadReport('json')" style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📋 JSON Format</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Code Review Modal -->
+<div class="modal-overlay" id="code-review-modal" style="display: none; opacity: 0; transition: opacity 0.3s ease; z-index: 1010; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+  <div class="modal-content" style="max-width: 800px; width: 100%; height: 80vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    <div class="modal-header" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding: 16px 24px; background: #fafafa;">
+      <h3 class="modal-title" style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">Contract Source Code</h3>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button id="btn-close-code-review" onclick="closeReviewModal()" style="background: none; border: none; cursor: pointer; color: #666; padding: 4px; border-radius: 4px; transition: background 0.2s;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body" style="flex-grow: 1; overflow-y: auto; padding: 0; background: #1F2937; color: #F3F4F6;">
+      <div id="code-review-container" style="font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.6; display: table; width: 100%;">
+        <!-- Code lines will be injected here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab Switching
+  function switchTab(event, tabId) {
+    const btn = event.currentTarget || event.target;
+    if (btn.classList.contains('active')) return;
+
+    // Move indicator
+    const indicator = document.getElementById('tab-indicator');
+    indicator.style.width = btn.offsetWidth + 'px';
+    indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
+
+    // Update buttons
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Handle Content Transition
+    const currentTab = document.querySelector('.tab-content.active');
+    const nextTab = document.getElementById('tab-' + tabId);
+
+    if (currentTab) {
+      currentTab.classList.remove('show');
+      setTimeout(() => {
+        currentTab.classList.remove('active');
+        nextTab.classList.add('active');
+        // Small delay to ensure display block applies before opacity transition
+        setTimeout(() => nextTab.classList.add('show'), 10);
+      }, 200); // 200ms duration
+    }
+  }
+
+  // Toggle Details
+  function toggleDetails(btn, detailsId) {
+    const details = document.getElementById(detailsId);
+    
+    if (details.classList.contains('open')) {
+      details.classList.remove('open');
+      btn.innerHTML = btn.innerHTML.replace('Hide', 'View');
+    } else {
+      // Find parent card and close other sections if desired
+      const card = btn.closest('.vuln-card');
+      card.querySelectorAll('.vuln-details').forEach(d => d.classList.remove('open'));
+      
+      // Update text back to "View" on all buttons in this card
+      card.querySelectorAll('.vuln-expand-btn').forEach(b => {
+        if (b.innerHTML.includes('Hide')) {
+          b.innerHTML = b.innerHTML.replace('Hide', 'View');
+        }
+      });
+      
+      details.classList.add('open');
+      btn.innerHTML = btn.innerHTML.replace('View', 'Hide');
+      
+      // Smooth scroll the expanded detail section into view after rendering
+      setTimeout(() => {
+        details.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+  }
+
+  // Score Animation
+  function animateAnalysisScore(finalScore) {
+    const duration = 2000; // ms
+    const scoreText = document.getElementById('score-value-text');
+    const progressBar = document.getElementById('score-progress-bar');
+    const statusText = document.getElementById('score-status-text');
+    
+    let color = 'var(--status-critical)';
+    let status = 'Critical Risk';
+    
+    if (finalScore >= 80) { color = 'var(--status-safe)'; status = 'Safe'; }
+    else if (finalScore >= 50) { color = 'var(--status-review)'; status = 'Needs Review'; }
+    else if (finalScore >= 30) { color = 'var(--status-vulnerable)'; status = 'Vulnerable'; }
+
+    if (statusText) {
+      statusText.style.color = color;
+      statusText.innerText = status;
+    }
+    
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentScore = Math.floor(easeOut * finalScore);
+      
+      if (scoreText) scoreText.innerText = currentScore;
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        if (scoreText) scoreText.innerText = finalScore;
+        if (progressBar) progressBar.style.stroke = color;
+      }
+    };
+    window.requestAnimationFrame(step);
+
+    setTimeout(() => {
+      if (progressBar) {
+        const radius = 50;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (finalScore / 100) * circumference;
+        progressBar.style.strokeDashoffset = offset;
+      }
+    }, 100);
+  }
+
+  function getAttackIcon(type) {
+    const t = (type || '').toLowerCase();
+    if (t.includes('reentrancy')) return '💣';
+    if (t.includes('access control') || t.includes('authorization')) return '🔓';
+    if (t.includes('overflow') || t.includes('underflow')) return '💥';
+    if (t.includes('unchecked') || t.includes('return value')) return '⚠️';
+    if (t.includes('dos') || t.includes('denial of service')) return '🧨';
+    if (t.includes('version') || t.includes('compiler') || t.includes('pragma')) return '🧠';
+    return '⚔️';
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+
+    function formatCodeWithVulnerableLines(code) {
+      if (!code) return 'No code provided';
+      // simple wrapper to apply vulnerable line highlighting
+      return code.split('\n').map(line => `<span class="vulnerable-line">${escapeHtml(line)}</span>`).join('\n');
+    }
+
+    window.copyCode = function(btn) {
+      const code = btn.getAttribute('data-code');
+      const decoded = code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      navigator.clipboard.writeText(decoded).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        setTimeout(() => btn.innerHTML = originalText, 2000);
+      });
+    };
+
+    window.toggleDownloadDropdown = function(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('download-dropdown');
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    };
+
+    document.addEventListener('click', () => {
+      const dropdown = document.getElementById('download-dropdown');
+      if (dropdown) dropdown.style.display = 'none';
+    });
+
+    window.downloadReport = function(format) {
+      const analysisData = window.currentAnalysis;
+      if (!analysisData) return alert('No analysis data to download.');
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(analysisData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `solvigil-report-${new Date().getTime()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else if (format === 'pdf') {
+        // Since we don't have a backend PDF generator or html2pdf library linked,
+        // we'll trigger the browser's native print-to-pdf dialog as a clean alternative.
+        window.print();
+      }
+    };
+
+    window.showReviewModal = function() {
+      const modal = document.getElementById('code-review-modal');
+      const container = document.getElementById('code-review-container');
+      const code = sessionStorage.getItem('solvigil_contract_code') || '// No source code available in session';
+      
+      const vulnerableLines = new Set();
+      if (window.currentAnalysis && window.currentAnalysis.vulnerabilities) {
+        window.currentAnalysis.vulnerabilities.forEach(v => {
+          if (v.line) vulnerableLines.add(parseInt(v.line));
+        });
+      }
+
+      let html = '';
+      code.split('\n').forEach((line, index) => {
+        const lineNum = index + 1;
+        const isVuln = vulnerableLines.has(lineNum);
+        const bg = isVuln ? 'background: rgba(239, 68, 68, 0.2);' : '';
+        const numColor = isVuln ? '#ef4444' : '#6B7280';
+        
+        html += `<div style="display: table-row; ${bg}">
+          <div style="display: table-cell; padding: 0 16px; text-align: right; border-right: 1px solid #374151; color: ${numColor}; user-select: none; width: 50px;">${lineNum}</div>
+          <div style="display: table-cell; padding: 0 16px; white-space: pre-wrap; word-break: break-all;">${escapeHtml(line) || ' '}</div>
+        </div>`;
+      });
+
+      container.innerHTML = html;
+      modal.style.display = 'flex';
+      setTimeout(() => modal.style.opacity = '1', 10);
+    };
+
+    window.closeReviewModal = function() {
+      const modal = document.getElementById('code-review-modal');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+
+  // Populate UI
+  async function loadAndPopulateData() {
+    try {
+      // 1. RECEIVE DATA FROM BACKEND (or Local Storage / Mock)
+      let analysisData = window.currentAnalysis;
+      
+      if (!analysisData) {
+        const stored = sessionStorage.getItem('solvigil_analysis_result');
+        if (stored) {
+          analysisData = JSON.parse(stored);
+        } else {
+          // Fallback to mock data
+          const response = await fetch('/data/sample-vulnerabilities.json');
+          if (response.ok) {
+            const vulnerabilities = await response.json();
+            let critical = 0, high = 0, medium = 0, low = 0;
+            vulnerabilities.forEach(v => {
+              if (v.severity === 'CRITICAL') critical++;
+              else if (v.severity === 'HIGH') high++;
+              else if (v.severity === 'MEDIUM') medium++;
+              else low++;
+            });
+            analysisData = {
+              securityScore: 45,
+              contractInfo: { name: 'Vault.sol', size: '4.2 KB' },
+              details: {
+                confidence: 'High Confidence',
+                severityBreakdown: { critical, high, medium, low }
+              },
+              vulnerabilities: vulnerabilities
+            };
+          }
+        }
+      }
+
+      if (!analysisData) return;
+      
+      // Keep globally for Download functionality
+      window.currentAnalysis = analysisData;
+
+      // 4. UPDATE HEADER
+      animateAnalysisScore(analysisData.securityScore || 100);
+      
+      if (analysisData.contractInfo) {
+        const nameEl = document.querySelector('.contract-name');
+        if (nameEl) nameEl.textContent = analysisData.contractInfo.name || 'Contract.sol';
+      }
+
+      // Update Summary Grid
+      const breakdown = analysisData.details?.severityBreakdown || analysisData.summary || { critical: 0, high: 0, medium: 0, low: 0 };
+      const summaryGrid = document.querySelector('.summary-grid');
+      if (summaryGrid) {
+        summaryGrid.innerHTML = `
+          <div class="summary-box critical">
+            <div class="summary-count">${breakdown.critical}</div>
+            <div class="summary-label">Critical</div>
+          </div>
+          <div class="summary-box high">
+            <div class="summary-count">${breakdown.high}</div>
+            <div class="summary-label">High</div>
+          </div>
+          <div class="summary-box medium">
+            <div class="summary-count">${breakdown.medium}</div>
+            <div class="summary-label">Medium</div>
+          </div>
+          <div class="summary-box low">
+            <div class="summary-count">${breakdown.low}</div>
+            <div class="summary-label">Low</div>
+          </div>
+        `;
+      }
+
+      // 2. POPULATE FINDINGS TAB
+      const findingsList = document.querySelector('.findings-list');
+      if (findingsList) {
+        findingsList.innerHTML = '';
+        
+        const severityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'INFO': 4 };
+        const sorted = [...(analysisData.vulnerabilities || [])].sort((a, b) => 
+          (severityOrder[a.severity] ?? 5) - (severityOrder[b.severity] ?? 5)
+        );
+
+        if (sorted.length === 0) {
+          findingsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No vulnerabilities found.</div>';
+        }
+
+        sorted.forEach((vuln, index) => {
+          const type = vuln.type || vuln.name || 'Unknown';
+          const sevClass = (vuln.severity || 'low').toLowerCase();
+          
+          let html = `
+            <div class="vuln-card ${sevClass}" style="animation-delay: ${index * 0.1}s">
+              <div class="vuln-header">
+                <div class="vuln-header-top">
+                  <div class="vuln-title-group">
+                    <div class="vuln-badge badge-${sevClass}">${vuln.severity}</div>
+                    <div class="vuln-title">${type}</div>
+                  </div>
+                  <div class="vuln-confidence">Confidence: ${vuln.confidence || 'MEDIUM'}</div>
+                </div>
+                
+                <div class="vuln-location">
+                  <span class="loc-item">Line ${vuln.line || '?'}</span>
+                  ${vuln.column ? `<span class="loc-item">Column ${vuln.column}</span>` : ''}
+                </div>
+                
+                <div class="vuln-desc">${escapeHtml(vuln.description || '')}</div>
+                
+                <div class="vuln-actions">
+                  <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-${index}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    View Code
+                  </button>
+                  <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-${index}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z"></path></svg>
+                    How to Fix
+                  </button>
+                </div>
+              </div>
+              
+              <div class="vuln-details" id="code-${index}">
+                <div class="detail-section">
+                  <div class="detail-title">Vulnerable Code</div>
+                  <div class="code-block-wrapper">
+                    <div class="code-block">${formatCodeWithVulnerableLines(vuln.code || vuln.vulnerableCode)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vuln-details" id="fix-${index}">
+                <div class="detail-section">
+                  <div class="detail-title">How to Fix</div>
+                  <div class="recommendation-text">${escapeHtml(vuln.fix || vuln.fixRecommendation || 'No recommendation')}</div>
+                  <div class="code-block-wrapper">
+                    <div class="code-label fixed">✅ FIXED</div>
+                    <div class="code-block">${escapeHtml(vuln.fixExplanation || vuln.fixedCode || 'No fix code provided')}</div>
+                  </div>
+                  <div style="margin-top: 16px; text-align: right;">
+                    <button class="btn-primary" style="padding: 8px 16px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="${escapeHtml(vuln.fixExplanation || vuln.fixedCode || '')}">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      Copy Fix Code
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          findingsList.innerHTML += html;
+        });
+      }
+
+      // 3. POPULATE ATTACK SIMULATION TAB
+      const simTab = document.getElementById('tab-simulation');
+      if (simTab) {
+        simTab.innerHTML = '';
+        const vulnerabilities = analysisData.vulnerabilities || [];
+        
+        if (vulnerabilities.length === 0) {
+          simTab.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No attack simulations available.</div>';
+        }
+
+        vulnerabilities.forEach((vuln, index) => {
+          const icon = getAttackIcon(vuln.type);
+          const type = vuln.type || vuln.name || 'Attack';
+          const steps = vuln.simulation || ['Deploy malicious contract', 'Execute exploit'];
+          
+          let simHtml = `
+            <div class="sim-card" style="animation-delay: ${index * 0.15}s">
+              <div class="sim-header">
+                <div class="sim-icon">${icon}</div>
+                <div>
+                  <div class="sim-title">${type} Simulator</div>
+                  <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on Line ${vuln.line || '?'}</div>
+                </div>
+              </div>
+              <div class="sim-flow-vertical">
+          `;
+          
+          steps.forEach((step, index) => {
+            const isAttacker = step.toLowerCase().includes('attacker') || step.toLowerCase().includes('malicious');
+            const pillClass = isAttacker ? 'sim-pill attacker' : 'sim-pill';
+            
+            simHtml += `<div class="${pillClass}" style="animation-delay: ${index * 0.15}s">Step ${index + 1}: ${escapeHtml(step)}</div>`;
+            if (index < steps.length - 1) {
+              simHtml += `<div class="sim-arrow" style="animation-delay: ${index * 0.15 + 0.05}s">↓</div>`;
+            }
+          });
+          
+          simHtml += `</div></div>`;
+          simTab.innerHTML += simHtml;
+        });
+      }
+
+    } catch (e) {
+      console.error("Error populating data", e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize tab indicator
+    const activeBtn = document.querySelector('.tab-btn.active');
+    const indicator = document.getElementById('tab-indicator');
+    if (activeBtn && indicator) {
+      indicator.style.width = activeBtn.offsetWidth + 'px';
+      indicator.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+    }
+    
+    // Call our populator
+    loadAndPopulateData();
+  });
+</script>
+</body>
+</html>

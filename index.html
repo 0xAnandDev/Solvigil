@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solvigil - Smart Contract Security Analyzer</title>
+  <meta name="description" content="Detect vulnerabilities in Solidity smart contracts with rule-based analysis, clear explanations, and attack simulations.">
+  <meta name="keywords" content="smart contract security, solidity, blockchain, vulnerability detection">
+  <meta property="og:title" content="Solvigil - Smart Contract Security Analyzer">
+  <meta property="og:description" content="Scan your .sol files for vulnerabilities instantly.">
+  <meta property="og:url" content="https://solvigil.app">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@AnandBlockchain">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Wind Animation Styles -->
+  <link rel="stylesheet" href="/css/wind-animation.css">
+  
+  <!-- Main Script (Vite entry point) -->
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body class="font-body text-primary bg-ice overflow-x-hidden selection:bg-mint selection:text-white">
+
+  <!-- Wind Animation Background -->
+  <div class="wind-animation-container">
+    <!-- SVG Background with flowing curves and particles -->
+    <svg class="wind-svg-background" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <!-- Gradient 1: Soft Pale Teal -->
+        <linearGradient id="windGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#9ACFCA;stop-opacity:0.3" />
+          <stop offset="50%" style="stop-color:#C3E8E1;stop-opacity:0.5" />
+          <stop offset="100%" style="stop-color:#9ACFCA;stop-opacity:0.3" />
+        </linearGradient>
+
+        <!-- Gradient 2: Slightly darker Mint -->
+        <linearGradient id="windGradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#8ABCB7;stop-opacity:0.4" />
+          <stop offset="50%" style="stop-color:#B3E0D8;stop-opacity:0.6" />
+          <stop offset="100%" style="stop-color:#8ABCB7;stop-opacity:0.3" />
+        </linearGradient>
+
+        <!-- Gradient 3: Very Pale Teal Wash -->
+        <linearGradient id="windGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#D0F0E8;stop-opacity:0.5" />
+          <stop offset="50%" style="stop-color:#E2F7F2;stop-opacity:0.7" />
+          <stop offset="100%" style="stop-color:#D0F0E8;stop-opacity:0.4" />
+        </linearGradient>
+
+        <filter id="leafBlur1" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3,3" />
+        </filter>
+
+        <filter id="leafBlur2" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1,1" />
+        </filter>
+
+        <!-- Standard leaf shape -->
+        <g id="leaf">
+          <path d="M0,15 C5,-2 25,-2 30,15 C25,32 5,32 0,15 Z" />
+        </g>
+      </defs>
+
+      <!-- ======================================= -->
+      <!-- LAYER 1: FAST-MOVING PRIMARY WAVES -->
+      <!-- ======================================= -->
+      <g class="wind-layer wind-layer-1">
+        <!-- Large wave 1 -->
+        <path class="wind-curve" 
+              d="M -400,250 Q 150,150 400,350 T 1000,400 T 1600,300 T 2200,450" 
+              stroke="url(#windGradient1)" 
+              stroke-width="120" 
+              fill="none" 
+              opacity="0.8" />
+        
+        <!-- Large wave 2 -->
+        <path class="wind-curve" 
+              d="M -400,450 Q 120,300 380,450 T 980,350 T 1580,500 T 2180,400" 
+              stroke="url(#windGradient2)" 
+              stroke-width="140" 
+              fill="none" 
+              opacity="0.7" />
+        
+        <!-- Large wave 3 -->
+        <path class="wind-curve" 
+              d="M -400,600 Q 140,500 420,600 T 1040,500 T 1660,650 T 2280,550" 
+              stroke="url(#windGradient3)" 
+              stroke-width="100" 
+              fill="none" 
+              opacity="0.9" />
+      </g>
+
+      <!-- ======================================= -->
+      <!-- LAYER 2: MEDIUM-SPEED SECONDARY WAVES -->
+      <!-- ======================================= -->
+      <g class="wind-layer wind-layer-2">
+        <path class="wind-curve" 
+              d="M -500,300 Q 200,180 500,320 T 1200,280 T 1900,420 T 2600,350" 
+              stroke="url(#windGradient2)" 
+              stroke-width="160" 
+              fill="none" 
+              opacity="0.6" />
+        
+        <path class="wind-curve" 
+              d="M -500,550 Q 180,420 460,550 T 1120,450 T 1780,600 T 2440,500" 
+              stroke="url(#windGradient1)" 
+              stroke-width="130" 
+              fill="none" 
+              opacity="0.7" />
+      </g>
+
+      <!-- ======================================= -->
+      <!-- LAYER 3: SLOW-MOVING BASE WAVES -->
+      <!-- ======================================= -->
+      <g class="wind-layer wind-layer-3">
+        <path class="wind-curve" 
+              d="M -600,400 Q 300,250 650,450 T 1500,350 T 2350,550 T 3200,450" 
+              stroke="url(#windGradient3)" 
+              stroke-width="200" 
+              fill="none" 
+              opacity="0.8" />
+        
+        <path class="wind-curve" 
+              d="M -600,700 Q 280,550 580,750 T 1360,600 T 2140,800 T 2920,650" 
+              stroke="url(#windGradient2)" 
+              stroke-width="180" 
+              fill="none" 
+              opacity="0.5" />
+      </g>
+
+      <!-- ======================================= -->
+      <!-- LAYER 4: FLOATING LEAF SHAPES (Darker Teal) -->
+      <!-- ======================================= -->
+      <g class="particle-layer particle-layer-1">
+        <!-- Deep out of focus leaf -->
+        <use href="#leaf" class="floating-leaf" x="120" y="180" 
+             fill="#7EB3A7" opacity="0.6" 
+             transform="rotate(-25 150 200) scale(1.5)"
+             filter="url(#leafBlur1)" />
+        
+        <!-- Crisp leaf -->
+        <use href="#leaf" class="floating-leaf" x="780" y="150" 
+             fill="#7EB3A7" opacity="0.8" 
+             transform="rotate(35 800 150) scale(0.8)"
+             filter="url(#leafBlur2)" />
+        
+        <!-- Mid-focus leaf -->
+        <use href="#leaf" class="floating-leaf" x="1050" y="300" 
+             fill="#7EB3A7" opacity="0.75" 
+             transform="rotate(-15 1050 300) scale(1.2)"
+             filter="url(#leafBlur2)" />
+        
+        <!-- Lower deep focus leaf -->
+        <use href="#leaf" class="floating-leaf" x="350" y="550" 
+             fill="#7EB3A7" opacity="0.5" 
+             transform="rotate(45 350 550) scale(1.8)"
+             filter="url(#leafBlur1)" />
+        
+        <!-- Crisp tiny leaf -->
+        <use href="#leaf" class="floating-leaf" x="900" y="650" 
+             fill="#7EB3A7" opacity="0.9" 
+             transform="rotate(-35 900 650) scale(0.6)"
+             filter="url(#leafBlur2)" />
+        
+        <use href="#leaf" class="floating-leaf" x="550" y="250" 
+             fill="#7EB3A7" opacity="0.7" 
+             transform="rotate(20 550 250)"
+             filter="url(#leafBlur2)" />
+      </g>
+
+      <!-- ======================================= -->
+      <!-- LAYER 5: ADDITIONAL FLOATING LEAVES/PARTICLES -->
+      <!-- ======================================= -->
+      <g class="particle-layer particle-layer-2">
+        <use href="#leaf" class="floating-particle" x="250" y="400" 
+             fill="#7EB3A7" opacity="0.65" 
+             transform="rotate(60 250 400) scale(0.9)"
+             filter="url(#leafBlur2)" />
+        
+        <circle class="floating-particle" cx="1050" cy="450" r="3" 
+                fill="#7EB3A7" opacity="0.5" 
+                filter="url(#leafBlur2)" />
+        
+        <circle class="floating-particle" cx="500" cy="700" r="4" 
+                fill="#7EB3A7" opacity="0.4" 
+                filter="url(#leafBlur1)" />
+        
+        <use href="#leaf" class="floating-particle" x="1150" y="200" 
+             fill="#7EB3A7" opacity="0.55" 
+             transform="rotate(-40 1150 200) scale(1.1)"
+             filter="url(#leafBlur1)" />
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="fixed top-0 w-full z-50 bg-ice/80 backdrop-blur-md border-b border-mint-light/30 transition-all duration-300">
+    <div class="w-full px-4 sm:px-6 md:px-8 lg:px-12 h-20 flex items-center justify-between">
+      <!-- Logo at top-left edge -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-mint flex items-center justify-center text-white shadow-lg shadow-mint/20 group-hover:scale-105 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="font-logo font-bold text-2xl sm:text-3xl md:text-[36px] tracking-tight text-primary lowercase" style="letter-spacing: -0.02em;">solvigil</span>
+      </a>
+      <!-- Empty navigation area -->
+      <div></div>
+    </div>
+  </header>
+
+  <!-- Section 1: Hero -->
+  <section class="relative min-h-screen flex items-center pt-24 pb-16 px-4 sm:px-6 md:px-8 bg-wave overflow-hidden">
+    <div class="max-w-[1200px] mx-auto w-full relative z-10 animate-on-scroll">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-extrabold tracking-tight text-primary leading-[1.1] mb-6">
+          Scan. Detect. <span class="text-mint relative whitespace-nowrap">Protect.<svg class="absolute w-full h-3 -bottom-1 left-0 text-mint/30" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0,5 Q50,10 100,5" stroke="currentColor" stroke-width="3" fill="none"/></svg></span>
+        </h1>
+        <p class="text-base sm:text-lg md:text-xl text-secondary mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
+          Detect vulnerabilities in Solidity contracts before they're exploited. Clear explanations. Real attack simulations. Instant fixes.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/scanner.html" class="bg-mint text-white h-12 md:h-14 px-8 rounded-full font-semibold text-lg hover:bg-[#008680] hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-mint/25 w-full sm:w-auto flex items-center justify-center">
+            Start Scanning
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: What is Solvigil? -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8 relative z-10">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="text-center max-w-[700px] mx-auto mb-16 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold mb-6 inline-block relative">
+          What is Solvigil?
+          <div class="absolute -bottom-2 left-0 w-full h-1 bg-mint rounded-full"></div>
+        </h2>
+        <p class="text-base md:text-lg text-secondary leading-relaxed mt-6">
+          Solvigil is a smart contract security analyzer that scans Solidity (.sol) files to detect vulnerabilities, explain them clearly, simulate attacks, and suggest fixes. It makes blockchain security understandable and accessible to developers of all levels.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Feature 1 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-l-4 border-l-mint animate-on-scroll delay-100 flex flex-col group">
+          <div class="w-14 h-14 rounded-xl bg-mint/10 flex items-center justify-center text-mint mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Rule-Based Detection</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">Advanced pattern-matching logic detects common vulnerabilities like reentrancy, access control issues, overflow/underflow, and more.</p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-l-4 border-l-mint animate-on-scroll delay-200 flex flex-col group">
+          <div class="w-14 h-14 rounded-xl bg-mint/10 flex items-center justify-center text-mint mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Clear Explanations</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">Every vulnerability comes with detailed explanations, severity levels, vulnerable code highlighting, and step-by-step fix recommendations.</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-l-4 border-l-mint animate-on-scroll delay-300 flex flex-col group">
+          <div class="w-14 h-14 rounded-xl bg-mint/10 flex items-center justify-center text-mint mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Attack Simulation</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">Understand the attack flow with simulated exploits and real-world examples. See exactly how vulnerabilities can be abused.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: The Solvigil Workflow -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8 relative bg-white/20">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="mb-16 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold text-mint">How It Works</h2>
+      </div>
+
+      <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-start gap-12 lg:gap-6 relative z-10">
+        <!-- Step 1 -->
+        <div class="flex-1 glass-card rounded-xl p-6 md:p-8 animate-on-scroll delay-100 workflow-connector group">
+          <div class="w-12 h-12 rounded-full bg-mint flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg shadow-mint/30 group-hover:scale-110 transition-transform">
+            01
+          </div>
+          <div class="mb-4 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Upload Your Code</h3>
+          <p class="text-secondary text-sm md:text-base">Drag and drop your .sol file or paste your Solidity code directly into the interface.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex-1 glass-card rounded-xl p-6 md:p-8 animate-on-scroll delay-200 workflow-connector group">
+          <div class="w-12 h-12 rounded-full bg-mint flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg shadow-mint/30 group-hover:scale-110 transition-transform">
+            02
+          </div>
+          <div class="mb-4 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Parse & Analyze</h3>
+          <p class="text-secondary text-sm md:text-base">Code is converted into an Abstract Syntax Tree (AST) and analyzed with rule-based detection logic.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex-1 glass-card rounded-xl p-6 md:p-8 animate-on-scroll delay-300 workflow-connector group">
+          <div class="w-12 h-12 rounded-full bg-mint flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg shadow-mint/30 group-hover:scale-110 transition-transform">
+            03
+          </div>
+          <div class="mb-4 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Detect Vulnerabilities</h3>
+          <p class="text-secondary text-sm md:text-base">Detection rules identify security issues including reentrancy, access control, unchecked calls, integer overflow/underflow, and more.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex-1 glass-card rounded-xl p-6 md:p-8 animate-on-scroll delay-400 group">
+          <div class="w-12 h-12 rounded-full bg-mint flex items-center justify-center text-white font-bold text-xl mb-6 shadow-lg shadow-mint/30 group-hover:scale-110 transition-transform">
+            04
+          </div>
+          <div class="mb-4 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Get Results & Fix</h3>
+          <p class="text-secondary text-sm md:text-base">Receive detailed report with severity levels, code highlighting, attack simulations, and recommended fixes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Key Vulnerabilities Detected -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="mb-12 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold">Vulnerabilities We Detect</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Vuln 1 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#EF4444] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-100 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Reentrancy</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#EF4444]/10 text-[#EF4444] rounded-full">Critical</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">External calls before state updates allow attackers to manipulate state across multiple contexts.</p>
+          </div>
+        </div>
+
+        <!-- Vuln 2 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#F97316] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-200 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Access Control Issues</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#F97316]/10 text-[#F97316] rounded-full">High</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">Missing ownership checks or improper permission validation allowing unauthorized actions.</p>
+          </div>
+        </div>
+
+        <!-- Vuln 3 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#F97316] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-300 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Unchecked External Calls</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#F97316]/10 text-[#F97316] rounded-full">High</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">No validation of call results can hide failures from the contract execution flow entirely.</p>
+          </div>
+        </div>
+
+        <!-- Vuln 4 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#EF4444] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-400 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Integer Overflow/Underflow</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#EF4444]/10 text-[#EF4444] rounded-full">Critical</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">Unsafe arithmetic operations without proper validation (primarily found in pre-Solidity 0.8).</p>
+          </div>
+        </div>
+
+        <!-- Vuln 5 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#EAB308] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-100 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Solidity Version Risks</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#EAB308]/10 text-[#CA8A04] rounded-full">Medium</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">Using outdated or deprecated Solidity versions mapped to historically known vulnerabilities.</p>
+          </div>
+        </div>
+
+        <!-- Vuln 6 -->
+        <div class="bg-white/70 backdrop-blur-md rounded-xl p-6 border-l-4 border-l-[#F97316] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all animate-on-scroll delay-200 flex flex-col sm:flex-row sm:items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="font-heading font-bold text-[20px] md:text-[24px]">Denial of Service (DoS)</h3>
+              <span class="text-xs font-bold uppercase px-3 py-1 bg-[#F97316]/10 text-[#F97316] rounded-full">High</span>
+            </div>
+            <p class="text-secondary text-sm md:text-base">Attacks and logic blocks that can freeze, exhaust gas, or permanently halt contract functionality.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Core Architecture & Tech Stack -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8 bg-white/30 border-y border-mint-light/50">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold mb-4">Built With Modern Technology</h2>
+        <p class="text-base md:text-lg text-secondary max-w-2xl mx-auto">Solvigil is built on a three-layer architecture designed for accuracy, performance, and clarity.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+        <!-- Layer 1 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-mint animate-on-scroll delay-100 hover:-translate-y-1 hover:border-t-[#008680] transition-all group">
+          <div class="mb-4 text-mint group-hover:scale-110 transition-transform origin-left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-2">Parser Layer</h3>
+          <p class="text-secondary text-sm md:text-base mb-4">Converts Solidity code into an Abstract Syntax Tree (AST) for deep analysis.</p>
+          <div class="text-xs font-semibold uppercase text-primary tracking-wider bg-white/50 px-3 py-1 rounded-md inline-block">Tech: Solidity AST Parser</div>
+        </div>
+        <!-- Layer 2 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-mint animate-on-scroll delay-200 hover:-translate-y-1 hover:border-t-[#008680] transition-all group">
+          <div class="mb-4 text-mint group-hover:scale-110 transition-transform origin-left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-2">Analyzer Layer</h3>
+          <p class="text-secondary text-sm md:text-base mb-4">Applies rule-based vulnerability detection logic to identify security issues accurately.</p>
+          <div class="text-xs font-semibold uppercase text-primary tracking-wider bg-white/50 px-3 py-1 rounded-md inline-block">Tech: Custom Rule Engine</div>
+        </div>
+        <!-- Layer 3 -->
+        <div class="glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-mint animate-on-scroll delay-300 hover:-translate-y-1 hover:border-t-[#008680] transition-all group">
+          <div class="mb-4 text-mint group-hover:scale-110 transition-transform origin-left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-2">Presentation Layer</h3>
+          <p class="text-secondary text-sm md:text-base mb-4">Displays results with explanations, severity levels, and structured fix recommendations.</p>
+          <div class="text-xs font-semibold uppercase text-primary tracking-wider bg-white/50 px-3 py-1 rounded-md inline-block">Tech: React + Tailwind CSS</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 animate-on-scroll delay-400">
+        <div class="bg-white/60 px-5 py-3 rounded-full flex items-center gap-2 border border-mint-light/50 text-sm md:text-base font-semibold text-primary"><span class="w-2.5 h-2.5 rounded-full bg-[#06B6D4]"></span>Frontend: React + Tailwind</div>
+        <div class="bg-white/60 px-5 py-3 rounded-full flex items-center gap-2 border border-mint-light/50 text-sm md:text-base font-semibold text-primary"><span class="w-2.5 h-2.5 rounded-full bg-[#16A34A]"></span>Backend: Node.js</div>
+        <div class="bg-white/60 px-5 py-3 rounded-full flex items-center gap-2 border border-mint-light/50 text-sm md:text-base font-semibold text-primary"><span class="w-2.5 h-2.5 rounded-full bg-[#363636]"></span>Smart Contracts: Solidity</div>
+        <div class="bg-white/60 px-5 py-3 rounded-full flex items-center gap-2 border border-mint-light/50 text-sm md:text-base font-semibold text-primary"><span class="w-2.5 h-2.5 rounded-full bg-[#C2410C]"></span>Testing: Foundry</div>
+        <div class="bg-white/60 px-5 py-3 rounded-full flex items-center gap-2 border border-mint-light/50 text-sm md:text-base font-semibold text-primary"><span class="w-2.5 h-2.5 rounded-full bg-mint"></span>Parser: Solidity AST</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Key Definitions -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="mb-12 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold">Key Concepts</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <!-- Def 1 -->
+        <div class="bg-white/80 rounded-xl p-6 md:p-8 border border-mint-light/50 shadow-sm animate-on-scroll delay-100 hover:shadow-md hover:-translate-y-1 transition-all">
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-4 inline-block text-mint">Vulnerability</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">A weakness or flaw in smart contract code that can be exploited to cause unintended behavior, leading to loss of funds, unauthorized access, or system failure.</p>
+        </div>
+        <!-- Def 2 -->
+        <div class="bg-white/80 rounded-xl p-6 md:p-8 border border-mint-light/50 shadow-sm animate-on-scroll delay-200 hover:shadow-md hover:-translate-y-1 transition-all">
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-4 inline-block text-mint">Static Analysis</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">Automated examination of Solidity code without executing it, identifying potential vulnerabilities by analyzing patterns, logic flows, and security best practices.</p>
+        </div>
+        <!-- Def 3 -->
+        <div class="bg-white/80 rounded-xl p-6 md:p-8 border border-mint-light/50 shadow-sm animate-on-scroll delay-300 hover:shadow-md hover:-translate-y-1 transition-all">
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-4 inline-block text-mint">Attack Simulation</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">Step-by-step walkthrough of how a vulnerability can be exploited, demonstrating the attack flow and impact on the contract directly to developers.</p>
+        </div>
+        <!-- Def 4 -->
+        <div class="bg-white/80 rounded-xl p-6 md:p-8 border border-mint-light/50 shadow-sm animate-on-scroll delay-400 hover:shadow-md hover:-translate-y-1 transition-all">
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-4 inline-block text-mint">Abstract Syntax Tree (AST)</h3>
+          <p class="text-secondary leading-relaxed text-sm md:text-base">A tree representation of the structure of code, used by the parser to understand code syntax and semantics for precise and highly accurate analysis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Why Solvigil Matters -->
+  <section class="py-16 md:py-24 px-4 sm:px-6 md:px-8 bg-white/20">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="font-heading text-3xl md:text-[42px] font-bold inline-block relative pb-2 md:pb-4">
+          Why Solvigil?
+          <div class="absolute bottom-0 left-0 w-full h-1.5 bg-mint rounded-full"></div>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div class="glass-card rounded-xl p-6 md:p-8 text-center animate-on-scroll delay-100 hover:-translate-y-1 hover:shadow-lg transition-all group">
+          <div class="w-16 h-16 rounded-full bg-mint/10 flex items-center justify-center text-mint mx-auto mb-6 group-hover:bg-mint group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Demonstrates Security Understanding</h3>
+          <p class="text-secondary text-sm md:text-base">Shows deep knowledge of smart contract vulnerabilities and essential security best practices.</p>
+        </div>
+
+        <div class="glass-card rounded-xl p-6 md:p-8 text-center animate-on-scroll delay-200 hover:-translate-y-1 hover:shadow-lg transition-all group">
+          <div class="w-16 h-16 rounded-full bg-mint/10 flex items-center justify-center text-mint mx-auto mb-6 group-hover:bg-mint group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Developer Tool Excellence</h3>
+          <p class="text-secondary text-sm md:text-base">Builds a practical, lightweight tool that developers actually want to use for real security auditing workflows.</p>
+        </div>
+
+        <div class="glass-card rounded-xl p-6 md:p-8 text-center animate-on-scroll delay-300 hover:-translate-y-1 hover:shadow-lg transition-all group">
+          <div class="w-16 h-16 rounded-full bg-mint/10 flex items-center justify-center text-mint mx-auto mb-6 group-hover:bg-mint group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+          </div>
+          <h3 class="font-heading text-[20px] md:text-[24px] font-bold mb-3">Explains Vulnerabilities Clearly</h3>
+          <p class="text-secondary text-sm md:text-base">Makes complex security concepts completely understandable through clear explanations and real attack simulations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Call-to-Action -->
+  <section class="py-20 md:py-32 px-4 sm:px-6 md:px-8 relative overflow-hidden bg-wave-light">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px]"></div>
+    
+    <div class="max-w-[1200px] mx-auto text-center relative z-10 animate-on-scroll">
+      <h2 class="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-6">Start Securing Your Smart Contracts Today</h2>
+      <p class="text-lg md:text-xl text-secondary mb-10 max-w-2xl mx-auto">Scan your Solidity code in seconds. No setup. No fees. Just clear security insights.</p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/scanner.html" class="bg-mint text-white h-14 px-10 rounded-full font-semibold text-lg hover:bg-[#008680] hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-mint/20 w-full sm:w-auto flex items-center justify-center">
+          Start Scanning Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9: Footer -->
+  <footer class="bg-[#F2EFEA] py-12 md:py-16 px-4 sm:px-6 md:px-8 border-t border-mint-light/30">
+    <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-10">
+      
+      <!-- Branding -->
+      <div class="text-center md:text-left">
+        <div class="flex items-center gap-2 mb-3 justify-center md:justify-start">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          <span class="font-logo font-bold text-2xl tracking-tight text-primary lowercase" style="letter-spacing: -0.02em;">solvigil</span>
+        </div>
+        <p class="text-secondary font-medium text-sm md:text-base">Smart Contract Security Analyzer</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="flex flex-col items-center md:items-start gap-2">
+        <h4 class="font-heading font-semibold text-primary mb-2">Quick Links</h4>
+        <a href="https://github.com/0xAnandDev" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-mint hover:underline transition-colors text-sm md:text-base">GitHub</a>
+        <a href="#" class="text-secondary hover:text-mint hover:underline transition-colors text-sm md:text-base">Documentation</a>
+        <a href="#" class="text-secondary hover:text-mint hover:underline transition-colors text-sm md:text-base">Report Issues</a>
+      </div>
+
+      <!-- Social Links -->
+      <div class="flex flex-col items-center md:items-end">
+        <h4 class="font-heading font-semibold text-primary mb-4">Connect</h4>
+        <div class="flex gap-5">
+          <!-- GitHub -->
+          <a href="https://github.com/0xAnandDev" target="_blank" rel="noopener noreferrer" class="group relative w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary hover:text-mint hover:scale-[1.15] hover:shadow-md transition-all duration-300" aria-label="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            <span class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap">GitHub</span>
+          </a>
+          <!-- Twitter/X -->
+          <a href="https://twitter.com/AnandBlockchain" target="_blank" rel="noopener noreferrer" class="group relative w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary hover:text-mint hover:scale-[1.15] hover:shadow-md transition-all duration-300" aria-label="Twitter">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <span class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap">Twitter</span>
+          </a>
+          <!-- Email -->
+          <a href="mailto:anand.doddi.dev@gmail.com" class="group relative w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary hover:text-mint hover:scale-[1.15] hover:shadow-md transition-all duration-300" aria-label="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <span class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap">Email</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider & Copyright -->
+    <div class="max-w-[1200px] mx-auto mt-12 pt-8 border-t border-mint-light/40 text-center flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-tertiary text-sm">© 2026 Solvigil. All rights reserved.</p>
+      <p class="text-tertiary text-sm">Built with ❤️ for blockchain security</p>
+    </div>
+  </footer>
+
+</body>
+</html>

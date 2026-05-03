@@ -1,0 +1,32 @@
+[
+  {
+    "id": "v-1",
+    "severity": "CRITICAL",
+    "name": "Reentrancy Vulnerability",
+    "location": "Line 42-45",
+    "description": "External call is made before state update, allowing an attacker to re-enter the contract and drain funds.",
+    "vulnerableCode": "recipient.call{value: amount}(\"\");\nbalances[msg.sender] = 0;",
+    "fixRecommendation": "balances[msg.sender] = 0;\nrecipient.call{value: amount}(\"\");",
+    "confidence": "HIGH"
+  },
+  {
+    "id": "v-2",
+    "severity": "HIGH",
+    "name": "Access Control Flaw",
+    "location": "Line 22",
+    "description": "Missing 'onlyOwner' modifier on a critical state-changing function.",
+    "vulnerableCode": "function setAdmin(address newAdmin) public {\n    admin = newAdmin;\n}",
+    "fixRecommendation": "function setAdmin(address newAdmin) public onlyOwner {\n    admin = newAdmin;\n}",
+    "confidence": "HIGH"
+  },
+  {
+    "id": "v-3",
+    "severity": "MEDIUM",
+    "name": "Unchecked Return Value",
+    "location": "Line 55",
+    "description": "The return value of an external token transfer is not checked, meaning the transaction might fail silently.",
+    "vulnerableCode": "token.transfer(recipient, amount);",
+    "fixRecommendation": "require(token.transfer(recipient, amount), \"Transfer failed\");",
+    "confidence": "MEDIUM"
+  }
+]

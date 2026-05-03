@@ -1,0 +1,665 @@
+/* Results Section */
+.results-section {
+max-width: 1200px;
+margin: 40px auto;
+padding: 40px 20px;
+animation: slideInUp 0.6s ease-out;
+}
+@keyframes slideInUp {
+from {
+opacity: 0;
+transform: translateY(30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+/* Results Header */
+.results-header {
+background: linear-gradient(135deg, #00A19B 0%, #009B8A 100%);
+border-radius: 16px;
+padding: 40px;
+margin-bottom: 40px;
+box-shadow: 0 10px 40px rgba(0, 161, 155, 0.2);
+}
+.score-container {
+display: flex;
+align-items: center;
+gap: 40px;
+justify-content: center;
+flex-wrap: wrap;
+}
+/* Score Circle */
+.score-circle {
+position: relative;
+width: 180px;
+height: 180px;
+flex-shrink: 0;
+}
+.circle-svg {
+width: 100%;
+height: 100%;
+transform: rotate(-90deg);
+}
+.circle-bg {
+fill: none;
+stroke: rgba(255, 255, 255, 0.2);
+stroke-width: 8;
+}
+.circle-progress {
+fill: none;
+stroke: white;
+stroke-width: 8;
+stroke-dasharray: 339.29;
+stroke-dashoffset: 339.29;
+stroke-linecap: round;
+transition: stroke-dashoffset 0.5s ease;
+}
+.score-number {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+color: white;
+}
+.score-number span:first-child {
+font-size: 48px;
+font-weight: bold;
+display: block;
+}
+.score-label {
+font-size: 16px;
+opacity: 0.9;
+}
+/* Score Status */
+.score-status {
+color: white;
+text-align: center;
+}
+.score-status h2 {
+font-size: 32px;
+margin: 0 0 10px 0;
+font-weight: 700;
+}
+.score-status p {
+font-size: 16px;
+margin: 0 0 15px 0;
+opacity: 0.9;
+}
+.confidence-badge {
+display: inline-block;
+background: rgba(255, 255, 255, 0.2);
+padding: 8px 16px;
+border-radius: 20px;
+font-size: 14px;
+border: 1px solid rgba(255, 255, 255, 0.3);
+}
+/* Summary Stats */
+.summary-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 20px;
+margin-bottom: 40px;
+}
+.stat-card {
+background: white;
+padding: 20px;
+border-radius: 12px;
+text-align: center;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+border-left: 4px solid #ccc;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+.stat-card.critical {
+border-left-color: #EF4444;
+}
+.stat-card.high {
+border-left-color: #F59E0B;
+}
+.stat-card.medium {
+border-left-color: #FBBF24;
+}
+.stat-card.low {
+border-left-color: #3B82F6;
+}
+.stat-number {
+font-size: 36px;
+font-weight: bold;
+color: #1A1A1A;
+margin-bottom: 8px;
+}
+.stat-label {
+font-size: 14px;
+color: #666;
+font-weight: 500;
+text-transform: capitalize;
+}
+/* Vulnerability Cards */
+.vulnerabilities-container {
+display: flex;
+flex-direction: column;
+gap: 24px;
+margin-bottom: 40px;
+}
+.vulnerability-card {
+background: white;
+border-radius: 12px;
+padding: 28px;
+box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+border-left: 5px solid #ccc;
+animation: cardSlideIn 0.6s ease-out forwards;
+opacity: 0;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.vulnerability-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.vulnerability-card.severity-critical {
+border-left-color: #EF4444;
+background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+}
+.vulnerability-card.severity-high {
+border-left-color: #F59E0B;
+background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%);
+}
+.vulnerability-card.severity-medium {
+border-left-color: #FBBF24;
+background: linear-gradient(90deg, rgba(251, 191, 36, 0.05) 0%, transparent 100%);
+}
+.vulnerability-card.severity-low {
+border-left-color: #3B82F6;
+background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+}
+@keyframes cardSlideIn {
+from {
+opacity: 0;
+transform: translateX(-20px);
+}
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
+/* Card Header */
+.card-header {
+display: flex;
+align-items: center;
+gap: 16px;
+margin-bottom: 20px;
+padding-bottom: 16px;
+border-bottom: 1px solid #E5E7EB;
+}
+.severity-badge {
+padding: 6px 12px;
+border-radius: 6px;
+color: white;
+font-size: 12px;
+font-weight: 700;
+text-transform: uppercase;
+flex-shrink: 0;
+}
+.vuln-title {
+margin: 0;
+font-size: 20px;
+color: #1A1A1A;
+flex-grow: 1;
+font-weight: 600;
+}
+.confidence-tag {
+background: #F3F4F6;
+padding: 4px 12px;
+border-radius: 4px;
+font-size: 12px;
+color: #666;
+white-space: nowrap;
+}
+/* Card Location */
+.card-location {
+display: flex;
+gap: 16px;
+margin-bottom: 16px;
+padding: 12px;
+background: #F9FAFB;
+border-radius: 8px;
+font-size: 13px;
+color: #666;
+}
+.line-number {
+font-family: 'Monaco', 'Menlo', monospace;
+font-weight: 600;
+color: #EF4444;
+}
+.column-number {
+font-family: 'Monaco', 'Menlo', monospace;
+}
+/* Card Sections */
+.card-description,
+.card-vulnerable-code,
+.card-attack-simulation,
+.card-impact,
+.card-fix {
+margin-bottom: 24px;
+}
+.card-description h4,
+.card-vulnerable-code h4,
+.card-attack-simulation h4,
+.card-impact h4,
+.card-fix h4 {
+margin: 0 0 12px 0;
+font-size: 14px;
+font-weight: 700;
+color: #1A1A1A;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+.card-description p,
+.card-impact p {
+margin: 0;
+font-size: 14px;
+line-height: 1.6;
+color: #444;
+}
+/* Code Blocks */
+.code-block,
+.fix-code-block {
+background: #1F2937;
+padding: 16px;
+border-radius: 8px;
+overflow-x: auto;
+margin-top: 12px;
+border: 1px solid #374151;
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.code-block:hover,
+.fix-code-block:hover {
+border-color: rgba(0, 161, 155, 0.4);
+box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.1);
+}
+.code-block code,
+.fix-code-block code,
+.fix-code-block pre {
+font-family: 'Monaco', 'Menlo', monospace;
+font-size: 13px;
+line-height: 1.6;
+color: #E5E7EB;
+}
+.fix-code-block pre {
+margin: 0;
+}
+/* Vulnerable Code Highlight */
+.code-block {
+border-left: 3px solid #EF4444;
+}
+.code-block code {
+color: #FCA5A5;
+}
+/* Attack Simulation */
+.simulation-steps {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+.simulation-step {
+display: flex;
+gap: 12px;
+padding: 12px;
+background: #F3F4F6;
+border-radius: 8px;
+align-items: flex-start;
+}
+.step-number {
+background: #EF4444;
+color: white;
+width: 32px;
+height: 32px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+flex-shrink: 0;
+font-size: 14px;
+}
+.step-text {
+font-size: 14px;
+color: #444;
+line-height: 1.5;
+padding-top: 4px;
+}
+/* Impact Text */
+.impact-text {
+padding: 12px 16px;
+background: #FEE2E2;
+border-left: 3px solid #EF4444;
+border-radius: 4px;
+margin: 12px 0 0 0;
+font-size: 13px;
+line-height: 1.6;
+color: #991B1B;
+}
+/* Fix Description */
+.fix-description {
+margin: 0 0 12px 0;
+font-size: 14px;
+color: #444;
+line-height: 1.6;
+}
+/* Card Actions */
+.card-actions {
+display: flex;
+gap: 12px;
+padding-top: 12px;
+border-top: 1px solid #E5E7EB;
+}
+.btn-copy {
+flex: 1;
+padding: 10px 16px;
+background: #00A19B;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.btn-copy:hover {
+background: #009B8A;
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(0, 161, 155, 0.3);
+}
+.btn-copy:active {
+transform: scale(0.97);
+}
+/* Safe Contract Message */
+.safe-contract-message {
+text-align: center;
+padding: 60px 20px;
+background: linear-gradient(135deg, #10B98124 0%, transparent 100%);
+border-radius: 12px;
+border: 2px solid #10B981;
+}
+.safe-icon {
+width: 120px;
+height: 120px;
+margin: 0 auto 24px;
+}
+.safe-contract-message h2 {
+font-size: 32px;
+color: #10B981;
+margin: 0 0 12px 0;
+}
+.safe-contract-message p {
+font-size: 16px;
+color: #666;
+margin: 0;
+}
+.safe-note {
+margin-top: 16px !important;
+font-size: 13px;
+color: #999;
+font-style: italic;
+}
+/* Results Actions */
+.results-actions {
+display: flex;
+gap: 16px;
+justify-content: center;
+flex-wrap: wrap;
+margin-top: 40px;
+padding-top: 40px;
+border-top: 1px solid #E5E7EB;
+}
+.btn {
+padding: 12px 24px;
+font-size: 14px;
+font-weight: 600;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.btn:active {
+transform: scale(0.97);
+}
+.btn-download {
+background: #00A19B;
+color: white;
+}
+.btn-download:hover {
+background: #009B8A;
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(0, 161, 155, 0.3);
+}
+.btn-analyze-again {
+background: white;
+color: #00A19B;
+border: 2px solid #00A19B;
+}
+.btn-analyze-again:hover {
+background: #00A19B;
+color: white;
+transform: translateY(-2px);
+}
+/* Toast Notifications */
+.toast {
+position: fixed;
+bottom: 20px;
+right: 20px;
+padding: 16px 24px;
+background: #1F2937;
+color: white;
+border-radius: 8px;
+box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+font-size: 14px;
+z-index: 9999;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.toast.show {
+opacity: 1;
+}
+.toast-success {
+background: #10B981;
+}
+.toast-error {
+background: #EF4444;
+}
+.toast-info {
+background: #3B82F6;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+.results-header {
+padding: 30px 20px;
+}
+.score-container {
+gap: 20px;
+}
+.score-circle {
+width: 140px;
+height: 140px;
+}
+.score-number span:first-child {
+font-size: 36px;
+}
+.score-status h2 {
+font-size: 24px;
+}
+.summary-stats {
+grid-template-columns: repeat(2, 1fr);
+}
+.vulnerability-card {
+padding: 20px;
+}
+.card-header {
+flex-direction: column;
+align-items: flex-start;
+}
+.vuln-title {
+font-size: 18px;
+}
+.results-actions {
+flex-direction: column;
+}
+.btn {
+width: 100%;
+}
+}
+@media (max-width: 480px) {
+.results-section {
+padding: 20px 16px;
+margin: 20px auto;
+}
+.score-container {
+flex-direction: column;
+}
+.summary-stats {
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+.stat-card {
+padding: 16px 12px;
+}
+.stat-number {
+font-size: 28px;
+}
+.vulnerability-card {
+padding: 16px;
+}
+.card-location {
+flex-direction: column;
+gap: 8px;
+}
+.simulation-step {
+gap: 8px;
+}
+.step-number {
+width: 28px;
+height: 28px;
+font-size: 12px;
+}
+.step-text {
+font-size: 13px;
+}
+}
+
+/* Attack Simulation Tab / Section */
+.sim-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.sim-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 16px;
+}
+
+.sim-icon {
+  font-size: 28px;
+  width: 56px;
+  height: 56px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.sim-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+}
+
+.sim-flow-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.sim-pill {
+  background: #E6F6F5; /* Mint / Teal Light */
+  border: 1px solid rgba(0, 161, 155, 0.3);
+  color: #008B86;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  max-width: 90%;
+  box-shadow: 0 2px 8px rgba(0,161,155,0.05);
+  transition: all 0.3s ease;
+  cursor: default;
+  
+  opacity: 0;
+  transform: translateY(15px);
+  animation: slideUpFade 0.5s ease forwards;
+}
+
+.sim-pill.attacker {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #B91C1C;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);
+}
+
+.sim-pill:hover {
+  background: #D0F0EE;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 161, 155, 0.2);
+  border-color: rgba(0, 161, 155, 0.6);
+  color: #006662;
+}
+
+.sim-pill.attacker:hover {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  color: #991B1B;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+}
+
+.sim-arrow {
+  color: #00A19B;
+  font-size: 24px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: slideUpFade 0.5s ease forwards;
+}
+
+@keyframes slideUpFade {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .sim-pill {
+    font-size: 13px;
+    padding: 12px 20px;
+    width: 100%;
+  }
+}
