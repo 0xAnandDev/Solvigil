@@ -4,7 +4,7 @@ const parser = require('@solidity-parser/parser');
  * Detects Access Control vulnerabilities in the given AST.
  * 
  * VULNERABILITY SIGNATURE:
- * IF function_name matches critical functions: ['withdraw', 'transfer', 'mint', 'burn', 'setOwner', 'pause']
+ * IF function modifies global state OR transfers contract-wide funds
  * AND function is_public (not internal/private)
  * AND NO require() statement checking msg.sender == owner OR no onlyOwner modifier
  * THEN Vulnerability = Access Control (HIGH severity)
@@ -17,24 +17,113 @@ function detect(ast, code) {
   const vulnerabilities = [];
   const lines = code ? code.split(/\r?\n/) : [];
 
-  const CRITICAL_FUNCTIONS = ['withdraw', 'transfer', 'mint', 'burn', 'setowner', 'pause'];
+  function containsMsgSender(node) {
+    let found = false;
+    if (!node) return found;
+    parser.visit(node, {
+      MemberAccess(maNode) {
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'msg' && maNode.memberName === 'sender') {
+          found = true;
+        }
+      }
+    });
+    return found;
+  }
+
+  function analyzeCritical(funcNode) {
+    let isCritical = false;
+    const localVars = new Set();
+    
+    if (funcNode.parameters) {
+      for (const p of funcNode.parameters) {
+        if (p.name) localVars.add(p.name);
+      }
+    }
+    
+    if (!funcNode.body) return false;
+    
+    parser.visit(funcNode.body, {
+      VariableDeclaration(varNode) {
+        if (varNode.name) localVars.add(varNode.name);
+      }
+    });
+
+    parser.visit(funcNode.body, {
+      BinaryOperation(binNode) {
+        if (['=', '+=', '-=', '*=', '/='].includes(binNode.operator)) {
+          if (binNode.left.type === 'Identifier') {
+            if (!localVars.has(binNode.left.name)) {
+              isCritical = true;
+            }
+          } else if (binNode.left.type === 'MemberAccess') {
+            if (binNode.left.expression && binNode.left.expression.type === 'Identifier') {
+               if (!localVars.has(binNode.left.expression.name)) {
+                   isCritical = true;
+               }
+            } else {
+               if (!containsMsgSender(binNode.left)) {
+                   isCritical = true;
+               }
+            }
+          } else if (binNode.left.type === 'IndexAccess') {
+            if (!containsMsgSender(binNode.left.index)) {
+               let baseName = '';
+               if (binNode.left.base && binNode.left.base.type === 'Identifier') {
+                   baseName = binNode.left.base.name;
+               }
+               if (baseName && !localVars.has(baseName)) {
+                   isCritical = true;
+               } else if (!baseName) {
+                   isCritical = true;
+               }
+            }
+          }
+        }
+      },
+      FunctionCall(callNode) {
+        if (callNode.expression && callNode.expression.type === 'MemberAccess') {
+          const memberName = callNode.expression.memberName;
+          if (['transfer', 'send', 'call'].includes(memberName)) {
+             if (!containsMsgSender(callNode.expression.expression)) {
+                isCritical = true;
+             } else {
+                for (const arg of callNode.arguments) {
+                   let usesContractBalance = false;
+                   parser.visit(arg, {
+                     MemberAccess(maNode) {
+                       if (maNode.memberName === 'balance') usesContractBalance = true;
+                     }
+                   });
+                   if (usesContractBalance) {
+                      isCritical = true;
+                   }
+                }
+             }
+          }
+        }
+        if (callNode.expression && callNode.expression.type === 'Identifier' && callNode.expression.name === 'selfdestruct') {
+           isCritical = true;
+        }
+      }
+    });
+    return isCritical;
+  }
 
   parser.visit(ast, {
     FunctionDefinition(funcNode) {
       if (!funcNode.name || !funcNode.body) return; // Skip unnamed functions (fallback/receive) and interfaces
 
-      const funcName = funcNode.name.toLowerCase();
+      // 1. Check function visibility
+      // If visibility is omitted, older solidity defaults to public. Sol-parser assigns 'default'.
+      const isPublic = funcNode.visibility === 'public' || 
+                       funcNode.visibility === 'external' || 
+                       funcNode.visibility === 'default';
 
-      // 1. Match critical functions
-      if (CRITICAL_FUNCTIONS.includes(funcName)) {
+      if (isPublic) {
+        // 2. Analyze function body to see if it does critical operations
+        const isCritical = analyzeCritical(funcNode);
         
-        // 2. Check function visibility
-        // If visibility is omitted, older solidity defaults to public. Sol-parser assigns 'default'.
-        const isPublic = funcNode.visibility === 'public' || 
-                         funcNode.visibility === 'external' || 
-                         funcNode.visibility === 'default';
-
-        if (isPublic) {
+        if (isCritical) {
           // 3. Check for access control modifiers (like onlyOwner, auth, onlyRole)
           let hasAccessControlModifier = false;
           if (funcNode.modifiers && funcNode.modifiers.length > 0) {
@@ -104,11 +193,11 @@ function withdraw(uint amount) public {
     payable(msg.sender).transfer(amount);
 }`,
             simulation: [
-              '1️⃣ Attacker sees public withdraw function',
-              '2️⃣ No owner check found',
-              '3️⃣ Attacker calls withdraw()',
-              '4️⃣ Attacker drains all funds',
-              '5️⃣ Owner has no control'
+              '1️⃣ Attacker sees public critical function without access checks',
+              '2️⃣ Attacker calls the function to modify state or access funds',
+              '3️⃣ Contract executes the logic because it does not verify msg.sender',
+              '4️⃣ Attacker successfully manipulates contract or drains funds',
+              '5️⃣ True owner loses control of the contract'
             ],
             impact: 'HIGH: Any address can call critical functions. Complete loss of contract control.'
           });
@@ -123,3 +212,4 @@ function withdraw(uint amount) public {
 module.exports = {
   detect
 };
+
