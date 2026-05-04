@@ -20,6 +20,11 @@ class ScoreCalculator {
         };
 
         vulnerabilities.forEach(vuln => {
+            // Ignore vulnerabilities explicitly marked as false positive or dismissed
+            if (vuln.isFalsePositive || vuln.status === 'false_positive' || vuln.status === 'dismissed' || vuln.isIgnored) {
+                return;
+            }
+
             const severity = (vuln.severity || 'INFO').toUpperCase();
             
             if (weights[severity]) {
@@ -35,14 +40,16 @@ class ScoreCalculator {
         const finalScore = Math.max(0, baseScore - deductions);
 
         let status = 'Safe';
-        if (severityBreakdown.critical > 0) {
-            status = 'Critical Risk';
-        } else if (severityBreakdown.high > 0) {
-            status = 'Vulnerable';
-        } else if (severityBreakdown.medium > 0) {
-            status = 'Needs Review';
-        } else if (severityBreakdown.low > 0) {
+        if (finalScore >= 95) {
+            status = 'Safe';
+        } else if (finalScore >= 80) {
             status = 'Minor Issues';
+        } else if (finalScore >= 60) {
+            status = 'Needs Review';
+        } else if (finalScore >= 40) {
+            status = 'Vulnerable';
+        } else {
+            status = 'Critical Risk';
         }
 
         return {
@@ -52,7 +59,7 @@ class ScoreCalculator {
             details: {
                 baseScore,
                 deductions,
-                vulnerabilityCount: vulnerabilities.length,
+                vulnerabilityCount: vulnerabilities.filter(v => !v.isFalsePositive && v.status !== 'false_positive' && v.status !== 'dismissed' && !v.isIgnored).length,
                 severityBreakdown: {
                     critical: severityBreakdown.critical,
                     high: severityBreakdown.high,
