@@ -178,21 +178,18 @@ function detect(ast, code) {
         const isStateUpdate = !targetName || stateVariables.has(targetName);
         
         if (isStateUpdate) conditionsVerified++; // Condition 2: State update after call
-        if (canRecurse) conditionsVerified++; // Condition 3: Function can recurse
-        if (isTargetControlled) conditionsVerified++; // Condition 4: Target is user-controlled
+        if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
+        if (canRecurse) conditionsVerified++; // Condition 4: Function can recurse
         
-        // We only report if there is an actual state update (baseline for Reentrancy)
-        if (isStateUpdate) {
+        // Require ALL 4 conditions
+        if (conditionsVerified === 4) {
           const callLine = externalCallNode.loc ? externalCallNode.loc.start.line : 0;
           const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
           
           const isGlobal = !isUserSpecific(assignNode.left, paramNames);
           const severity = isGlobal ? 'CRITICAL' : 'LOW';
 
-          let confidence = 'LOW';
-          if (conditionsVerified === 4) confidence = 'HIGH';
-          else if (conditionsVerified === 3) confidence = 'MEDIUM';
-          else confidence = 'LOW';
+          let confidence = 'HIGH';
 
           console.log(`[REENTRANCY] Found vulnerability at line ${callLine} with ${confidence} confidence`);
           vulnerabilities.push({

@@ -78,24 +78,35 @@ function detect(ast, code) {
             }
           }
 
-          if (!isChecked) {
-            // Unchecked call detected
-            let conditionsVerified = 1; // Has external call that is not directly wrapped
-            // Since isChecked is false, we know it's not wrapped in require, if, or checked in block.
-            // Let's add conditions for confidence.
-            // Condition 1: External call
-            // Condition 2: Not in if statement
-            // Condition 3: Not in require/assert
-            // Condition 4: Not checked later in block
-            
-            conditionsVerified += (!inIfStatement ? 1 : 0);
-            conditionsVerified += (!inRequireAssert ? 1 : 0);
-            conditionsVerified += (!checkedInBlock ? 1 : 0);
-            
-            let confidence = 'LOW';
-            if (conditionsVerified === 4) confidence = 'HIGH';
-            else if (conditionsVerified === 3) confidence = 'MEDIUM';
-            else confidence = 'LOW';
+          // Check for try-catch block
+          let inTryCatch = false;
+          for (let i = parents.length - 1; i >= 0; i--) {
+            if (parents[i].type === 'TryStatement') {
+              inTryCatch = true;
+              break;
+            }
+          }
+
+          // Check if it affects state
+          let affectsState = false;
+          for (let i = parents.length - 1; i >= 0; i--) {
+            if (parents[i].type === 'FunctionDefinition') {
+              const funcStr = JSON.stringify(parents[i]);
+              if (funcStr.includes('"type":"Assignment"') || funcStr.includes('"type":"StateVariableDeclaration"')) {
+                affectsState = true;
+              }
+              break;
+            }
+          }
+
+          let conditionsVerified = 0;
+          if (isExternal) conditionsVerified++; // Condition 1: .call() or .send() found
+          if (!isChecked) conditionsVerified++; // Condition 2: Return value NOT checked in require()
+          if (!inTryCatch) conditionsVerified++; // Condition 3: Not in try-catch block
+          if (affectsState) conditionsVerified++; // Condition 4: Call result affects contract state
+
+          if (conditionsVerified === 4) {
+            let confidence = 'HIGH';
 
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;

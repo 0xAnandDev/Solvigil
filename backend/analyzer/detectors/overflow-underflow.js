@@ -98,44 +98,43 @@ function detect(ast, code) {
             conditionsVerified++; // Condition 4: The value is actually stored/assigned
           }
 
-          let confidence = 'LOW';
-          if (conditionsVerified === 4) confidence = 'HIGH';
-          else if (conditionsVerified === 3) confidence = 'MEDIUM';
-          else confidence = 'LOW';
+          if (conditionsVerified === 4) {
+            let confidence = 'HIGH';
 
-          const line = node.loc ? node.loc.start.line : 0;
-          const column = node.loc ? node.loc.start.column : 0;
-          const sourceCode = getSourceLine(line, code) || '';
-          
-          let severity = currentlyUnchecked ? 'MEDIUM' : 'HIGH';
-          if (isUserSpecificTarget(node, currentParamNames)) {
-            severity = 'LOW';
+            const line = node.loc ? node.loc.start.line : 0;
+            const column = node.loc ? node.loc.start.column : 0;
+            const sourceCode = getSourceLine(line, code) || '';
+            
+            let severity = currentlyUnchecked ? 'MEDIUM' : 'HIGH';
+            if (isUserSpecificTarget(node, currentParamNames)) {
+              severity = 'LOW';
+            }
+
+            let impact = currentlyUnchecked 
+              ? 'MEDIUM: Unchecked block disables overflow protection. Values wrap unexpectedly.'
+              : 'HIGH: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
+            if (severity === 'LOW') impact = 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.';
+
+            vulnerabilities.push({
+              type: 'Integer Overflow/Underflow',
+              severity: severity,
+              confidence: confidence,
+              line: line,
+              column: column,
+              description: 'Arithmetic operation without overflow protection. Vulnerable to overflow/underflow.',
+              code: sourceCode.trim(),
+              fix: 'Upgrade to Solidity >=0.8.0 or use OpenZeppelin SafeMath library.',
+              simulation: [
+                '1️⃣ Arithmetic operation encounters maximum value',
+                '2️⃣ No overflow protection in old Solidity',
+                '3️⃣ Value wraps around to 0 or negative',
+                '4️⃣ Contract state corrupted',
+                '5️⃣ Funds can be stolen or locked'
+              ],
+              fixExplanation: '❌ Vulnerable Code (pre-0.8.0):\n```solidity\npragma solidity ^0.7.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // No overflow check\n        balances[to] += amount;\n    }\n}\n```\n\n✅ Safe Code (0.8.0+):\n```solidity\npragma solidity ^0.8.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // Automatically checks for overflow/underflow\n        balances[to] += amount;\n    }\n}\n```',
+              impact: impact
+            });
           }
-
-          let impact = currentlyUnchecked 
-            ? 'MEDIUM: Unchecked block disables overflow protection. Values wrap unexpectedly.'
-            : 'HIGH: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
-          if (severity === 'LOW') impact = 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.';
-
-          vulnerabilities.push({
-            type: 'Integer Overflow/Underflow',
-            severity: severity,
-            confidence: confidence,
-            line: line,
-            column: column,
-            description: 'Arithmetic operation without overflow protection. Vulnerable to overflow/underflow.',
-            code: sourceCode.trim(),
-            fix: 'Upgrade to Solidity >=0.8.0 or use OpenZeppelin SafeMath library.',
-            simulation: [
-              '1️⃣ Arithmetic operation encounters maximum value',
-              '2️⃣ No overflow protection in old Solidity',
-              '3️⃣ Value wraps around to 0 or negative',
-              '4️⃣ Contract state corrupted',
-              '5️⃣ Funds can be stolen or locked'
-            ],
-            fixExplanation: '❌ Vulnerable Code (pre-0.8.0):\n```solidity\npragma solidity ^0.7.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // No overflow check\n        balances[to] += amount;\n    }\n}\n```\n\n✅ Safe Code (0.8.0+):\n```solidity\npragma solidity ^0.8.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // Automatically checks for overflow/underflow\n        balances[to] += amount;\n    }\n}\n```',
-            impact: impact
-          });
         }
       }
 

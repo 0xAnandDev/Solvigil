@@ -179,15 +179,10 @@ parser.visit(ast, {
 
     if (!hasMsgSenderCheck) conditionsVerified++;
 
-    // Assign confidence based on condition count
-    let confidence = 'LOW';
-    if (conditionsVerified === 4) {
-      confidence = 'HIGH';
-    } else if (conditionsVerified === 3) {
-      confidence = 'MEDIUM';
-    } else {
-      confidence = 'LOW';
-    }
+    // Require ALL 4 conditions to flag
+    if (conditionsVerified !== 4) return;
+    
+    let confidence = 'HIGH';
 
     const line = funcNode.loc ? funcNode.loc.start.line : 0;
     const col = funcNode.loc ? funcNode.loc.start.column : 0;

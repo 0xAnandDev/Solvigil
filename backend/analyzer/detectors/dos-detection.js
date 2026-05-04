@@ -15,15 +15,26 @@ function detect(ast, code) {
       node.forEach(traverse);
     } else if (node && typeof node === 'object') {
       
-      if (node.type === 'ForStatement') {
+      if (node.type === 'ForStatement' || node.type === 'WhileStatement') {
         const bodyStr = JSON.stringify(node.body || {});
+        const conditionStr = JSON.stringify(node.condition || node.test || {});
         
         const hasFunctionCall = bodyStr.includes('"type":"FunctionCall"');
         const hasExternalMethod = bodyStr.includes('"memberName":"call"') || 
                                   bodyStr.includes('"memberName":"transfer"') || 
                                   bodyStr.includes('"memberName":"send"');
 
-        if (hasFunctionCall && hasExternalMethod) {
+        let conditionsVerified = 0;
+        if (node.type === 'ForStatement' || node.type === 'WhileStatement') conditionsVerified++; // 1. Loop found
+        if (hasFunctionCall && hasExternalMethod) conditionsVerified++; // 2. External call/transfer inside loop
+        
+        const isUnbounded = conditionStr.includes('"memberName":"length"') || conditionStr.includes('"type":"Identifier"');
+        if (isUnbounded) conditionsVerified++; // 3. Loop can be long/unbounded
+        
+        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || bodyStr.includes('"name":"require"');
+        if (failureBreaks) conditionsVerified++; // 4. Failure breaks transaction
+
+        if (conditionsVerified === 4) {
           const line = node.loc ? node.loc.start.line : 0;
           const column = node.loc ? node.loc.start.column : 0;
           const sourceCode = getSourceLine(line, code) || '';
@@ -32,7 +43,7 @@ function detect(ast, code) {
             type: 'Denial of Service',
             severity: 'MEDIUM',
             category: 'Logic Error',
-            confidence: 'MEDIUM',
+            confidence: 'HIGH',
             line: line,
             column: column,
             description: 'Loop contains external calls. A single failure will revert entire transaction, causing DoS.',
