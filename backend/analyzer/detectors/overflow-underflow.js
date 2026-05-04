@@ -11,31 +11,18 @@ const parser = require('@solidity-parser/parser');
  * @param {string} code - The original Solidity source code.
  * @returns {Array} List of vulnerabilities found.
  */
-function detect(ast, code) {
+function detect(ast, code, version) {
   const vulnerabilities = [];
   let isOldSolidity = false;
 
-  // First pass: Check pragma directive to determine Solidity version
-  function checkPragma(node) {
-    if (Array.isArray(node)) {
-      node.forEach(checkPragma);
-    } else if (node && typeof node === 'object') {
-      if (node.type === 'PragmaDirective' && node.name === 'solidity') {
-        const val = node.value || '';
-        // Check for common pre-0.8.0 patterns
-        if (val.includes('0.4') || val.includes('0.5') || val.includes('0.6') || val.includes('0.7')) {
-          isOldSolidity = true;
-        }
-      }
-      for (const key in node) {
-        if (key !== 'loc' && typeof node[key] === 'object') {
-          checkPragma(node[key]);
-        }
-      }
+  // Check version passed from scanner
+  if (version) {
+    const parts = version.replace(/[^0-9.]/g, '').split('.');
+    if (parts.length >= 2) {
+      const minor = parseInt(parts[1], 10);
+      if (minor < 8) isOldSolidity = true;
     }
   }
-
-  checkPragma(ast);
 
   function isUserSpecificTarget(node, paramNames) {
     if (!node) return false;
