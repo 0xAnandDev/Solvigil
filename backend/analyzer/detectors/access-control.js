@@ -54,6 +54,8 @@ function getBaseIdentifier(node) {
 
 function analyzeCritical(funcNode) {
   let severity = null;
+  let criticalLine = null;
+  let criticalCol = null;
   const modifiedGlobalStates = new Set();
   const modifiedUserStates = new Set();
   let hasTransferToArbitrary = false;
@@ -68,6 +70,10 @@ function analyzeCritical(funcNode) {
         if (targetName && stateVariables.has(targetName)) {
           if (!isMsgSender(binNode.left)) {
             modifiedGlobalStates.add(targetName);
+            if (!criticalLine && binNode.loc) {
+              criticalLine = binNode.loc.start.line;
+              criticalCol = binNode.loc.start.column;
+            }
           } else {
             modifiedUserStates.add(targetName);
           }
@@ -80,6 +86,10 @@ function analyzeCritical(funcNode) {
         if (['transfer', 'send', 'call'].includes(memberName)) {
           if (!isMsgSender(callNode.expression.expression)) {
             hasTransferToArbitrary = true;
+            if (!criticalLine && callNode.loc) {
+              criticalLine = callNode.loc.start.line;
+              criticalCol = callNode.loc.start.column;
+            }
           }
 
           for (const arg of callNode.arguments) {
@@ -93,6 +103,10 @@ function analyzeCritical(funcNode) {
       }
       if (callNode.expression && callNode.expression.type === 'Identifier' && callNode.expression.name === 'selfdestruct') {
         severity = 'CRITICAL';
+        if (!criticalLine && callNode.loc) {
+          criticalLine = callNode.loc.start.line;
+          criticalCol = callNode.loc.start.column;
+        }
       }
     }
   });
@@ -114,7 +128,8 @@ function analyzeCritical(funcNode) {
     severity = 'CRITICAL';
   }
 
-  return severity;
+  if (!severity) return null;
+  return { severity, line: criticalLine, column: criticalCol };
 }
 
 parser.visit(ast, {
@@ -122,8 +137,9 @@ parser.visit(ast, {
     if (!funcNode.name || !funcNode.body) return; // Skip unnamed functions (fallback/receive) and interfaces
 
     // 1. Analyze function body to see if it does critical operations
-    const severity = analyzeCritical(funcNode);
-    if (!severity) return; // Not a critical function, ignore completely
+    const criticalInfo = analyzeCritical(funcNode);
+    if (!criticalInfo || !criticalInfo.severity) return; // Not a critical function, ignore completely
+    const severity = criticalInfo.severity;
 
     // --- EXPLOITABILITY CHECK ---
     let isExploitable = true;
@@ -194,8 +210,8 @@ parser.visit(ast, {
     
     let confidence = 'HIGH';
 
-    const line = funcNode.loc ? funcNode.loc.start.line : 0;
-    const col = funcNode.loc ? funcNode.loc.start.column : 0;
+    const line = criticalInfo.line || (funcNode.loc ? funcNode.loc.start.line : 0);
+    const col = criticalInfo.column || (funcNode.loc ? funcNode.loc.start.column : 0);
 
     vulnerabilities.push({
       type: 'Access Control Vulnerability',

@@ -35,6 +35,23 @@ function detect(ast, code) {
         const failureBreaks = bodyStr.includes('"memberName":"transfer"') || bodyStr.includes('"name":"require"');
         if (!failureBreaks) isExploitable = false;
 
+        let externalCallLine = 0;
+        let externalCallCol = 0;
+
+        parser.visit(node.body || node, {
+          FunctionCall(callNode) {
+            if (callNode.expression && callNode.expression.type === 'MemberAccess') {
+              const memberName = callNode.expression.memberName;
+              if (['call', 'transfer', 'send'].includes(memberName)) {
+                if (!externalCallLine && callNode.loc) {
+                  externalCallLine = callNode.loc.start.line;
+                  externalCallCol = callNode.loc.start.column;
+                }
+              }
+            }
+          }
+        });
+
         let conditionsVerified = 0;
         if (node.type === 'ForStatement' || node.type === 'WhileStatement') conditionsVerified++; // 1. Loop found
         if (hasFunctionCall && hasExternalMethod) conditionsVerified++; // 2. External call/transfer inside loop
@@ -46,8 +63,8 @@ function detect(ast, code) {
         if (!isExploitable) conditionsVerified = 0;
 
         if (conditionsVerified === 4) {
-          const line = node.loc ? node.loc.start.line : 0;
-          const column = node.loc ? node.loc.start.column : 0;
+          const line = externalCallLine || (node.loc ? node.loc.start.line : 0);
+          const column = externalCallCol || (node.loc ? node.loc.start.column : 0);
           const sourceCode = getSourceLine(line, code) || '';
 
           vulnerabilities.push({
