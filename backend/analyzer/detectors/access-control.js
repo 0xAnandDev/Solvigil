@@ -41,9 +41,6 @@ function detect(ast, code) {
     return found;
   }
 
-  return found;
-}
-
 function getBaseIdentifier(node) {
   if (!node) return null;
   if (node.type === 'Identifier') return node.name;
@@ -237,8 +234,8 @@ parser.visit(ast, {
   }
 });
 
-return vulnerabilities;
-
+  return vulnerabilities;
+}
 
 module.exports = {
   detect
