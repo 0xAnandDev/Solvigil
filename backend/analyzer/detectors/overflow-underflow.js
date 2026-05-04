@@ -1,4 +1,5 @@
 const { getSourceLine } = require('../ast-builder');
+const parser = require('@solidity-parser/parser');
 
 /**
  * Detects Integer Overflow and Underflow vulnerabilities.
@@ -36,11 +37,40 @@ function detect(ast, code) {
 
   checkPragma(ast);
 
+  function isUserSpecificTarget(node, paramNames) {
+    if (!node) return false;
+    let target = node;
+    if (node.type === 'Assignment') target = node.left;
+    else if (node.type === 'UnaryOperation') target = node.subExpression;
+
+    let isUser = false;
+    parser.visit(target, {
+      MemberAccess(maNode) {
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'msg' && maNode.memberName === 'sender') isUser = true;
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'tx' && maNode.memberName === 'origin') isUser = true;
+      },
+      Identifier(idNode) {
+        if (paramNames && paramNames.includes(idNode.name)) isUser = true;
+      }
+    });
+    return isUser;
+  }
+
   // Second pass: Find arithmetic operations
-  function traverse(node, inUnchecked) {
+  function traverse(node, inUnchecked, paramNames) {
     if (Array.isArray(node)) {
-      node.forEach(child => traverse(child, inUnchecked));
+      node.forEach(child => traverse(child, inUnchecked, paramNames));
     } else if (node && typeof node === 'object') {
+      
+      let currentParamNames = paramNames || [];
+      if (node.type === 'FunctionDefinition') {
+        currentParamNames = [];
+        if (node.parameters) {
+          node.parameters.forEach(p => {
+             if (p.name) currentParamNames.push(p.name);
+          });
+        }
+      }
       
       let currentlyUnchecked = inUnchecked;
       if (node.type === 'UncheckedStatement') {
@@ -60,10 +90,15 @@ function detect(ast, code) {
           const column = node.loc ? node.loc.start.column : 0;
           const sourceCode = getSourceLine(line, code) || '';
           
-          const severity = currentlyUnchecked ? 'MEDIUM' : 'CRITICAL';
-          const impact = currentlyUnchecked 
+          let severity = currentlyUnchecked ? 'MEDIUM' : 'CRITICAL';
+          if (isUserSpecificTarget(node, currentParamNames)) {
+            severity = 'LOW';
+          }
+
+          let impact = currentlyUnchecked 
             ? 'MEDIUM: Unchecked block disables overflow protection. Values wrap unexpectedly.'
             : 'CRITICAL: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
+          if (severity === 'LOW') impact = 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.';
 
           vulnerabilities.push({
             type: 'Integer Overflow/Underflow',
@@ -90,13 +125,13 @@ function detect(ast, code) {
       // Continue traversal
       for (const key in node) {
         if (key !== 'loc' && typeof node[key] === 'object') {
-          traverse(node[key], currentlyUnchecked);
+          traverse(node[key], currentlyUnchecked, currentParamNames);
         }
       }
     }
   }
 
-  traverse(ast, false);
+  traverse(ast, false, []);
 
   return vulnerabilities;
 }

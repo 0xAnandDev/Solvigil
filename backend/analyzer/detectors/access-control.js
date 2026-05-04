@@ -30,6 +30,21 @@ function detect(ast, code) {
     return found;
   }
 
+  function isUserSpecific(node, localVars) {
+    if (!node) return false;
+    let isUser = false;
+    parser.visit(node, {
+      MemberAccess(maNode) {
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'msg' && maNode.memberName === 'sender') isUser = true;
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'tx' && maNode.memberName === 'origin') isUser = true;
+      },
+      Identifier(idNode) {
+        if (localVars.has(idNode.name)) isUser = true;
+      }
+    });
+    return isUser;
+  }
+
   function analyzeCritical(funcNode) {
     let isCritical = false;
     const localVars = new Set();
@@ -51,32 +66,8 @@ function detect(ast, code) {
     parser.visit(funcNode.body, {
       BinaryOperation(binNode) {
         if (['=', '+=', '-=', '*=', '/='].includes(binNode.operator)) {
-          if (binNode.left.type === 'Identifier') {
-            if (!localVars.has(binNode.left.name)) {
-              isCritical = true;
-            }
-          } else if (binNode.left.type === 'MemberAccess') {
-            if (binNode.left.expression && binNode.left.expression.type === 'Identifier') {
-               if (!localVars.has(binNode.left.expression.name)) {
-                   isCritical = true;
-               }
-            } else {
-               if (!containsMsgSender(binNode.left)) {
-                   isCritical = true;
-               }
-            }
-          } else if (binNode.left.type === 'IndexAccess') {
-            if (!containsMsgSender(binNode.left.index)) {
-               let baseName = '';
-               if (binNode.left.base && binNode.left.base.type === 'Identifier') {
-                   baseName = binNode.left.base.name;
-               }
-               if (baseName && !localVars.has(baseName)) {
-                   isCritical = true;
-               } else if (!baseName) {
-                   isCritical = true;
-               }
-            }
+          if (!isUserSpecific(binNode.left, localVars)) {
+            isCritical = true;
           }
         }
       },
@@ -84,7 +75,7 @@ function detect(ast, code) {
         if (callNode.expression && callNode.expression.type === 'MemberAccess') {
           const memberName = callNode.expression.memberName;
           if (['transfer', 'send', 'call'].includes(memberName)) {
-             if (!containsMsgSender(callNode.expression.expression)) {
+             if (!isUserSpecific(callNode.expression.expression, localVars)) {
                 isCritical = true;
              } else {
                 for (const arg of callNode.arguments) {
@@ -175,7 +166,7 @@ function detect(ast, code) {
 
           vulnerabilities.push({
             type: 'Access Control Vulnerability',
-            severity: 'HIGH',
+            severity: 'CRITICAL',
             confidence: 'MEDIUM',
             line: line,
             column: col,
@@ -199,7 +190,7 @@ function withdraw(uint amount) public {
               '4️⃣ Attacker successfully manipulates contract or drains funds',
               '5️⃣ True owner loses control of the contract'
             ],
-            impact: 'HIGH: Any address can call critical functions. Complete loss of contract control.'
+            impact: 'CRITICAL: Any address can call critical functions. Complete loss of contract control.'
           });
         }
       }

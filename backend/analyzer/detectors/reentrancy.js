@@ -110,6 +110,21 @@ function detect(ast, code) {
     return false;
   }
 
+  function isUserSpecific(node, paramNames) {
+    if (!node) return false;
+    let isUser = false;
+    parser.visit(node, {
+      MemberAccess(maNode) {
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'msg' && maNode.memberName === 'sender') isUser = true;
+        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'tx' && maNode.memberName === 'origin') isUser = true;
+      },
+      Identifier(idNode) {
+        if (paramNames && paramNames.includes(idNode.name)) isUser = true;
+      }
+    });
+    return isUser;
+  }
+
   // 2. Find external calls followed by state updates in each function
   parser.visit(ast, {
     FunctionDefinition(funcNode) {
@@ -163,10 +178,13 @@ function detect(ast, code) {
               const callLine = externalCallNode.loc ? externalCallNode.loc.start.line : 0;
               const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
               
+              const isGlobal = !isUserSpecific(assignNode.left, paramNames);
+              const severity = isGlobal ? 'CRITICAL' : 'LOW';
+
               console.log(`[REENTRANCY] Found vulnerability at line ${callLine}`);
               vulnerabilities.push({
                 type: 'Reentrancy',
-                severity: 'CRITICAL',
+                severity: severity,
                 confidence: 'HIGH',
                 line: callLine,
                 column: callCol,
@@ -181,7 +199,7 @@ function detect(ast, code) {
                   '4️⃣ State not updated yet, function runs again',
                   '5️⃣ Funds transferred multiple times'
                 ],
-                impact: 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.'
+                impact: severity === 'CRITICAL' ? 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.' : 'LOW: User can trigger reentrancy, but it only affects their own user-specific state.'
               });
             }
 
