@@ -228,7 +228,10 @@ function detect(ast, code) {
             severity = 'MEDIUM';
         }
 
-        let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
+        // Deterministic Confidence Scoring
+        let confidence = 'LOW';
+        if (conditionsVerified === 4) confidence = 'HIGH';
+        else if (conditionsVerified >= 2) confidence = 'MEDIUM';
 
         // Sanity check confidence vs severity
         if (confidence === 'HIGH' && (severity === 'MEDIUM' || severity === 'LOW')) {
@@ -236,8 +239,7 @@ function detect(ast, code) {
         } else if (confidence === 'MEDIUM' && severity === 'LOW') {
             severity = 'MEDIUM';
         } else if (confidence === 'LOW') {
-            if (conditionsVerified < 2) return;
-            if (severity === 'LOW' || severity === 'CRITICAL') severity = 'MEDIUM';
+            return; // don't flag
         }
 
         const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;

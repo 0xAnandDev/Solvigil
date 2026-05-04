@@ -202,7 +202,10 @@ parser.visit(ast, {
     // Require ALL 4 conditions to flag
     if (conditionsVerified !== 4) return;
     
-    let confidence = 'HIGH';
+    // Deterministic Confidence Scoring
+    let confidence = 'LOW';
+    if (conditionsVerified === 4) confidence = 'HIGH';
+    else if (conditionsVerified >= 2) confidence = 'MEDIUM';
 
     // Sanity check confidence vs severity
     if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'MEDIUM')) {
@@ -210,7 +213,7 @@ parser.visit(ast, {
     } else if (confidence === 'MEDIUM' && (severity === 'LOW' || severity === 'CRITICAL')) {
         severity = 'MEDIUM';
     } else if (confidence === 'LOW') {
-        return; // reconsider flagging, maybe skip
+        return; // reconsider flagging, skip
     }
 
     const line = criticalInfo.line || (funcNode.loc ? funcNode.loc.start.line : 0);

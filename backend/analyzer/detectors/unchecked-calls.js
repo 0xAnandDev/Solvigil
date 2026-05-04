@@ -124,9 +124,18 @@ function detect(ast, code) {
             targetVarName = node.expression.expression.name;
           }
 
+          let conditionsVerified = 1; // 1. .call() found
+          if (!isChecked) conditionsVerified++; // 2. Return value NOT in require()
+          if (!inTryCatch) conditionsVerified++; // 3. NOT in try-catch
+          if (affectsState) conditionsVerified++; // 4. Affects state
+
           if (isExternal && !isChecked && !inTryCatch) {
             let severity = affectsState ? 'HIGH' : 'MEDIUM';
-            let confidence = severity === 'HIGH' ? 'HIGH' : 'MEDIUM';
+            
+            // Deterministic Confidence Scoring
+            let confidence = 'LOW';
+            if (conditionsVerified === 4) confidence = 'HIGH';
+            else if (conditionsVerified >= 2) confidence = 'MEDIUM';
 
             // Sanity check confidence vs severity
             if (confidence === 'HIGH' && (severity === 'LOW')) {

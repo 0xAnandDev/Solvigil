@@ -86,6 +86,11 @@ function detect(ast, code, version) {
           let isUserSpecific = isUserSpecificTarget(node, currentParamNames);
 
           if (isExploitable) {
+            let conditionsVerified = 1; // Arithmetic found
+            if (isOldSolidity || currentlyUnchecked) conditionsVerified++; // Pragma/unchecked
+            // Assume no SafeMath since no checks for library existence
+            conditionsVerified++; 
+
             let severity = 'LOW';
             if (isOldSolidity && !isUserSpecific) {
               severity = 'CRITICAL';
@@ -95,7 +100,10 @@ function detect(ast, code, version) {
               severity = 'LOW';
             }
 
-            let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
+            // Deterministic Confidence Scoring
+            let confidence = 'LOW';
+            if (conditionsVerified === 3) confidence = 'HIGH';
+            else if (conditionsVerified === 2) confidence = 'MEDIUM';
 
             // Sanity check confidence vs severity
             if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH')) {
@@ -103,7 +111,7 @@ function detect(ast, code, version) {
             } else if (confidence === 'MEDIUM' && (severity === 'HIGH' || severity === 'CRITICAL')) {
                 severity = 'MEDIUM';
             } else if (confidence === 'LOW') {
-                return; // don't flag modern Solidity
+                return; // don't flag
             }
 
             const line = node.loc ? node.loc.start.line : 0;

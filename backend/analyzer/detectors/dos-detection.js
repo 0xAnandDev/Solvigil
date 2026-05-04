@@ -57,8 +57,16 @@ function detect(ast, code) {
         });
 
         if (hasFunctionCall && hasExternalMethod) {
+          let conditionsVerified = 1; // Loop found
+          if (hasExternalMethod) conditionsVerified++; // External call found
+          if (isUnbounded) conditionsVerified++; // Unbounded loop
+
           let severity = (isUnbounded && failureBreaks) ? 'MEDIUM' : 'LOW';
-          let confidence = severity === 'MEDIUM' ? 'HIGH' : 'MEDIUM';
+          
+          // Deterministic Confidence Scoring
+          let confidence = 'LOW';
+          if (conditionsVerified === 3) confidence = 'HIGH';
+          else if (conditionsVerified === 2) confidence = 'MEDIUM';
 
           // Sanity check confidence vs severity
           if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH' || severity === 'CRITICAL')) {

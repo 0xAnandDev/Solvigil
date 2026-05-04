@@ -1,3 +1,19 @@
+const SEVERITY_TO_STATUS = {
+  CRITICAL: "Critical Risk",
+  HIGH: "High Risk",
+  MEDIUM: "Moderate Risk",
+  LOW: "Low Risk",
+  NONE: "Safe"
+};
+
+const STATUS_COLORS = {
+  "Critical Risk": "#EF4444",
+  "High Risk": "#F59E0B",
+  "Moderate Risk": "#FBBF24",
+  "Low Risk": "#3B82F6",
+  "Safe": "#10B981"
+};
+
 class ScoreCalculator {
     static calculate(vulnerabilities = []) {
         const baseScore = 100;
@@ -58,30 +74,25 @@ class ScoreCalculator {
 
         const finalScore = Math.max(0, baseScore - deductions);
 
-        let status = 'Safe';
-        let statusReasoning = 'No vulnerabilities detected.';
+        let highestSeverity = 'NONE';
+        if (severityBreakdown.critical > 0) highestSeverity = 'CRITICAL';
+        else if (severityBreakdown.high > 0) highestSeverity = 'HIGH';
+        else if (severityBreakdown.medium > 0) highestSeverity = 'MEDIUM';
+        else if (severityBreakdown.low > 0) highestSeverity = 'LOW';
+
+        const status = SEVERITY_TO_STATUS[highestSeverity];
         
-        if (severityBreakdown.critical > 0) {
-            status = 'Critical Risk';
-            statusReasoning = 'Critical vulnerabilities found. DO NOT DEPLOY.';
-        } else if (severityBreakdown.high > 0) {
-            status = 'High Risk';
-            statusReasoning = 'High severity vulnerabilities detected. Fix before deployment.';
-        } else if (severityBreakdown.medium > 0) {
-            status = 'Moderate Risk';
-            statusReasoning = 'Medium severity vulnerabilities present. Review required.';
-        } else if (severityBreakdown.low > 0) {
-            status = 'Low Risk';
-            statusReasoning = 'Some low-severity issues found that should be addressed.';
-        } else {
-            status = 'Safe';
-            statusReasoning = 'The contract is generally secure.';
-        }
+        let statusReasoning = 'No vulnerabilities detected.';
+        if (highestSeverity === 'CRITICAL') statusReasoning = 'Critical vulnerabilities found. DO NOT DEPLOY.';
+        else if (highestSeverity === 'HIGH') statusReasoning = 'High severity vulnerabilities detected. Fix before deployment.';
+        else if (highestSeverity === 'MEDIUM') statusReasoning = 'Medium severity vulnerabilities present. Review required.';
+        else if (highestSeverity === 'LOW') statusReasoning = 'Some low-severity issues found that should be addressed.';
 
         return {
             DECISION: {
                 securityScore: finalScore,
                 securityStatus: status,
+                statusColor: STATUS_COLORS[status],
                 statusReasoning: statusReasoning,
                 severityBreakdown: {
                     critical: severityBreakdown.critical,
@@ -92,6 +103,7 @@ class ScoreCalculator {
             },
             score: finalScore, // Backward compatibility
             status, // Backward compatibility
+            statusColor: STATUS_COLORS[status],
             confidence: 'HIGH',
             details: {
                 baseScore,
