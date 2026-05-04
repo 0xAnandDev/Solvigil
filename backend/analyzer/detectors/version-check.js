@@ -52,11 +52,15 @@ function detect(ast, code, versionStr) {
 
     const sourceCode = getSourceLine(pragmaLine, code) || '';
     
+    // Sanity check confidence vs severity
+    let confidence = 'HIGH';
+    let severity = 'LOW';
+    
     vulnerabilities.push({
       type: 'Solidity Version Risk',
-      severity: 'LOW',
+      severity: severity,
       category: 'Best Practice',
-      confidence: 'HIGH',
+      confidence: confidence,
       line: pragmaLine,
       column: pragmaCol,
       description: isVersionRisk 

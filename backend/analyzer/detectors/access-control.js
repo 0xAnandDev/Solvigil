@@ -204,6 +204,15 @@ parser.visit(ast, {
     
     let confidence = 'HIGH';
 
+    // Sanity check confidence vs severity
+    if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'MEDIUM')) {
+        severity = 'HIGH';
+    } else if (confidence === 'MEDIUM' && (severity === 'LOW' || severity === 'CRITICAL')) {
+        severity = 'MEDIUM';
+    } else if (confidence === 'LOW') {
+        return; // reconsider flagging, maybe skip
+    }
+
     const line = criticalInfo.line || (funcNode.loc ? funcNode.loc.start.line : 0);
     const col = criticalInfo.column || (funcNode.loc ? funcNode.loc.start.column : 0);
 

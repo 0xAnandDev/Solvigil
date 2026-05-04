@@ -230,6 +230,16 @@ function detect(ast, code) {
 
         let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
 
+        // Sanity check confidence vs severity
+        if (confidence === 'HIGH' && (severity === 'MEDIUM' || severity === 'LOW')) {
+            severity = 'HIGH';
+        } else if (confidence === 'MEDIUM' && severity === 'LOW') {
+            severity = 'MEDIUM';
+        } else if (confidence === 'LOW') {
+            if (conditionsVerified < 2) return;
+            if (severity === 'LOW' || severity === 'CRITICAL') severity = 'MEDIUM';
+        }
+
         const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
 
         console.log(`[REENTRANCY] Found vulnerability at line ${callLine} with ${confidence} confidence, severity ${severity}`);

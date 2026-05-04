@@ -128,6 +128,15 @@ function detect(ast, code) {
             let severity = affectsState ? 'HIGH' : 'MEDIUM';
             let confidence = severity === 'HIGH' ? 'HIGH' : 'MEDIUM';
 
+            // Sanity check confidence vs severity
+            if (confidence === 'HIGH' && (severity === 'LOW')) {
+                severity = 'MEDIUM';
+            } else if (confidence === 'MEDIUM' && (severity === 'LOW' || severity === 'HIGH' || severity === 'CRITICAL')) {
+                severity = 'MEDIUM';
+            } else if (confidence === 'LOW') {
+                return; // don't flag
+            }
+
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;
             const sourceCode = getSourceLine(line, code) || '';

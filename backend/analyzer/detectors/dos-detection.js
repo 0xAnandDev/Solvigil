@@ -60,6 +60,15 @@ function detect(ast, code) {
           let severity = (isUnbounded && failureBreaks) ? 'MEDIUM' : 'LOW';
           let confidence = severity === 'MEDIUM' ? 'HIGH' : 'MEDIUM';
 
+          // Sanity check confidence vs severity
+          if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH' || severity === 'CRITICAL')) {
+              severity = 'MEDIUM'; // DoS max
+          } else if (confidence === 'MEDIUM' && (severity === 'HIGH' || severity === 'CRITICAL')) {
+              severity = 'MEDIUM';
+          } else if (confidence === 'LOW') {
+              return; // don't flag
+          }
+
           const line = externalCallLine || (node.loc ? node.loc.start.line : 0);
           const column = externalCallCol || (node.loc ? node.loc.start.column : 0);
           const sourceCode = getSourceLine(line, code) || '';

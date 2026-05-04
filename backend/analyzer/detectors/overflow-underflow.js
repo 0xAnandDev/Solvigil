@@ -97,6 +97,15 @@ function detect(ast, code, version) {
 
             let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
 
+            // Sanity check confidence vs severity
+            if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH')) {
+                severity = isOldSolidity ? 'CRITICAL' : 'MEDIUM';
+            } else if (confidence === 'MEDIUM' && (severity === 'HIGH' || severity === 'CRITICAL')) {
+                severity = 'MEDIUM';
+            } else if (confidence === 'LOW') {
+                return; // don't flag modern Solidity
+            }
+
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;
             const sourceCode = getSourceLine(line, code) || '';
