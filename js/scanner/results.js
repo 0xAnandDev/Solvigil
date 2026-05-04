@@ -17,31 +17,7 @@ export async function renderResults(detectorResults = null) {
         }
       };
     } else {
-      // Fetch mock vulnerability data fallback
-      const response = await fetch('/data/sample-vulnerabilities.json');
-      const vulnerabilities = await response.json();
-      
-      let critical = 0, high = 0, medium = 0, low = 0;
-      
-      vulnerabilities.forEach(v => {
-        if (v.severity === 'CRITICAL') critical++;
-        else if (v.severity === 'HIGH') high++;
-        else if (v.severity === 'MEDIUM') medium++;
-        else if (v.severity === 'LOW' || v.severity === 'INFO') low++;
-      });
-      
-      analysis = {
-        securityScore: 78,
-        securityStatus: 'Vulnerable',
-        statusReasoning: 'High severity vulnerabilities detected. Fix before deployment.',
-        vulnerabilities: vulnerabilities,
-        details: {
-          confidence: 'Medium (Mock Data)',
-          severityBreakdown: {
-            critical, high, medium, low
-          }
-        }
-      };
+      throw new Error('No analysis data provided from backend');
     }
     
     // Call the main rendering function

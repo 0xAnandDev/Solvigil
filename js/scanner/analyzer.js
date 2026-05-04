@@ -1,6 +1,4 @@
 import { renderResults } from './results.js';
-import VulnerabilityDetector from './analyzer/vulnerabilityDetector.js';
-
 export function initAnalyzer() {
   const btnAnalyze = document.getElementById('btn-analyze');
   const uploadSection = document.getElementById('upload-section');
@@ -63,12 +61,8 @@ export function initAnalyzer() {
         const analysisData = responseJson.analysis ? responseJson.analysis : responseJson;
         result = { success: true, data: analysisData };
       } catch (err) {
-        console.warn('Backend failed, falling back to local simulation:', err);
-        const code = window.currentUploadedFileContent || '';
-        const detector = new VulnerabilityDetector(code);
-        const analysisData = await detector.analyze();
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        result = { success: true, data: analysisData };
+        console.error('Backend failed:', err);
+        result = { success: false, error: err.message || 'Server error' };
       }
 
       if (!result.success) {
