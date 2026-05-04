@@ -86,6 +86,23 @@ function detect(ast, code) {
 
       if (isArithmetic) {
         if (isOldSolidity || currentlyUnchecked) {
+          let conditionsVerified = 1; // Condition 1: Arithmetic operation
+          conditionsVerified++; // Condition 2: No built-in protection (isOldSolidity || currentlyUnchecked)
+          
+          if (!isUserSpecificTarget(node, currentParamNames)) {
+            conditionsVerified++; // Condition 3: Affects global state / not user specific
+          }
+          
+          const isAssignment = node.type === 'Assignment' || (node.operator && node.operator.includes('=')) || ['++', '--'].includes(node.operator);
+          if (isAssignment) {
+            conditionsVerified++; // Condition 4: The value is actually stored/assigned
+          }
+
+          let confidence = 'LOW';
+          if (conditionsVerified === 4) confidence = 'HIGH';
+          else if (conditionsVerified === 3) confidence = 'MEDIUM';
+          else confidence = 'LOW';
+
           const line = node.loc ? node.loc.start.line : 0;
           const column = node.loc ? node.loc.start.column : 0;
           const sourceCode = getSourceLine(line, code) || '';
@@ -103,7 +120,7 @@ function detect(ast, code) {
           vulnerabilities.push({
             type: 'Integer Overflow/Underflow',
             severity: severity,
-            confidence: 'MEDIUM',
+            confidence: confidence,
             line: line,
             column: column,
             description: 'Arithmetic operation without overflow protection. Vulnerable to overflow/underflow.',

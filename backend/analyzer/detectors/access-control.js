@@ -121,98 +121,98 @@ parser.visit(ast, {
   FunctionDefinition(funcNode) {
     if (!funcNode.name || !funcNode.body) return; // Skip unnamed functions (fallback/receive) and interfaces
 
-    // 1. Check function visibility
-    // If visibility is omitted, older solidity defaults to public. Sol-parser assigns 'default'.
+    // 1. Analyze function body to see if it does critical operations
+    const severity = analyzeCritical(funcNode);
+    if (!severity) return; // Not a critical function, ignore completely
+
+    let conditionsVerified = 1; // Condition 1: Modifies state or transfers funds
+
+    // Condition 2: Is it public/external?
     const isPublic = funcNode.visibility === 'public' ||
       funcNode.visibility === 'external' ||
       funcNode.visibility === 'default';
+      
+    if (isPublic) conditionsVerified++;
 
-    if (isPublic) {
-      // 2. Analyze function body to see if it does critical operations
-      const severity = analyzeCritical(funcNode);
-
-      if (severity) {
-        // 3. Check for access control modifiers (like onlyOwner, auth, onlyRole)
-        let hasAccessControlModifier = false;
-        if (funcNode.modifiers && funcNode.modifiers.length > 0) {
-          for (const mod of funcNode.modifiers) {
-            const modName = mod.name ? mod.name.toLowerCase() : '';
-            if (modName.includes('only') || modName.includes('auth') || modName.includes('role')) {
-              hasAccessControlModifier = true;
-              break;
-            }
-          }
+    // Condition 3: Lacks access control modifiers
+    let hasAccessControlModifier = false;
+    if (funcNode.modifiers && funcNode.modifiers.length > 0) {
+      for (const mod of funcNode.modifiers) {
+        const modName = mod.name ? mod.name.toLowerCase() : '';
+        if (modName.includes('only') || modName.includes('auth') || modName.includes('role')) {
+          hasAccessControlModifier = true;
+          break;
         }
-
-        if (hasAccessControlModifier) return; // Protected by a modifier
-
-        // 4. Check function body for require() or if() containing msg.sender
-        let hasMsgSenderCheck = false;
-        parser.visit(funcNode.body, {
-          FunctionCall(callNode) {
-            if (callNode.expression && callNode.expression.name === 'require') {
-              for (const arg of callNode.arguments) {
-                parser.visit(arg, {
-                  MemberAccess(maNode) {
-                    if (maNode.expression && maNode.expression.name === 'msg' && maNode.memberName === 'sender') {
-                      hasMsgSenderCheck = true;
-                    }
-                  }
-                });
-              }
-            }
-          },
-          IfStatement(ifNode) {
-            if (ifNode.condition) {
-              parser.visit(ifNode.condition, {
-                MemberAccess(maNode) {
-                  if (maNode.expression && maNode.expression.name === 'msg' && maNode.memberName === 'sender') {
-                    hasMsgSenderCheck = true;
-                  }
-                }
-              });
-            }
-          }
-        });
-
-        if (hasMsgSenderCheck) return; // Protected by manual msg.sender check
-
-        // 5. If we reach here, no access control was found
-        const line = funcNode.loc ? funcNode.loc.start.line : 0;
-        const col = funcNode.loc ? funcNode.loc.start.column : 0;
-
-        vulnerabilities.push({
-          type: 'Access Control Vulnerability',
-          severity: severity,
-          confidence: 'MEDIUM',
-          line: line,
-          column: col,
-          description: 'Critical function lacks access control. Anyone can call it.',
-          code: line > 0 ? (lines[line - 1] || '').trim() : '',
-          fix: 'Add onlyOwner modifier or require(msg.sender == owner) check.',
-          fixExplanation: `// ❌ Vulnerable (public function)
-function withdraw(uint amount) public {
-    payable(msg.sender).transfer(amount);
-}
-
-// ✅ Fixed (with require)
-function withdraw(uint amount) public {
-    require(msg.sender == owner, "Not owner");
-    payable(msg.sender).transfer(amount);
-}`,
-          simulation: [
-            '1️⃣ Attacker sees public critical function without access checks',
-            '2️⃣ Attacker calls the function to modify state or access funds',
-            '3️⃣ Contract executes the logic because it does not verify msg.sender',
-            '4️⃣ Attacker successfully manipulates contract or drains funds',
-            '5️⃣ True owner loses control of the contract'
-          ],
-          impact: severity === 'CRITICAL' 
-            ? 'CRITICAL: Anyone can drain the contract or destroy it.'
-            : 'HIGH: Any address can call critical functions. Unauthorized state manipulation possible.'
-        });
       }
     }
+    
+    if (!hasAccessControlModifier) conditionsVerified++;
+
+    // Condition 4: Lacks msg.sender check
+    let hasMsgSenderCheck = false;
+    parser.visit(funcNode.body, {
+      FunctionCall(callNode) {
+        if (callNode.expression && callNode.expression.name === 'require') {
+          for (const arg of callNode.arguments) {
+            parser.visit(arg, {
+              MemberAccess(maNode) {
+                if (maNode.expression && maNode.expression.name === 'msg' && maNode.memberName === 'sender') {
+                  hasMsgSenderCheck = true;
+                }
+              }
+            });
+          }
+        }
+      },
+      IfStatement(ifNode) {
+        if (ifNode.condition) {
+          parser.visit(ifNode.condition, {
+            MemberAccess(maNode) {
+              if (maNode.expression && maNode.expression.name === 'msg' && maNode.memberName === 'sender') {
+                hasMsgSenderCheck = true;
+              }
+            }
+          });
+        }
+      }
+    });
+
+    if (!hasMsgSenderCheck) conditionsVerified++;
+
+    // Assign confidence based on condition count
+    let confidence = 'LOW';
+    if (conditionsVerified === 4) {
+      confidence = 'HIGH';
+    } else if (conditionsVerified === 3) {
+      confidence = 'MEDIUM';
+    } else {
+      confidence = 'LOW';
+    }
+
+    const line = funcNode.loc ? funcNode.loc.start.line : 0;
+    const col = funcNode.loc ? funcNode.loc.start.column : 0;
+
+    vulnerabilities.push({
+      type: 'Access Control Vulnerability',
+      severity: severity,
+      confidence: confidence,
+      line: line,
+      column: col,
+      description: 'Critical function may lack access control. Ensure unauthorized users cannot call it.',
+      code: line > 0 ? (lines[line - 1] || '').trim() : '',
+      fix: 'Add onlyOwner modifier or require(msg.sender == owner) check.',
+      fixExplanation: `// ❌ Vulnerable (public function)\nfunction withdraw(uint amount) public {\n    payable(msg.sender).transfer(amount);\n}\n\n// ✅ Fixed (with require)\nfunction withdraw(uint amount) public {\n    require(msg.sender == owner, "Not owner");\n    payable(msg.sender).transfer(amount);\n}`,
+      simulation: [
+        '1️⃣ Attacker sees public critical function without access checks',
+        '2️⃣ Attacker calls the function to modify state or access funds',
+        '3️⃣ Contract executes the logic because it does not verify msg.sender',
+        '4️⃣ Attacker successfully manipulates contract or drains funds',
+        '5️⃣ True owner loses control of the contract'
+      ],
+      impact: severity === 'CRITICAL' 
+        ? 'CRITICAL: Anyone can drain the contract or destroy it.'
+        : 'HIGH: Any address can call critical functions. Unauthorized state manipulation possible.'
+    });
   }
 });
 

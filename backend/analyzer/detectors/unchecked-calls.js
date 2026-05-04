@@ -37,6 +37,9 @@ function detect(ast, code) {
         if (isExternal) {
           
           let isChecked = false;
+          let inIfStatement = false;
+          let inRequireAssert = false;
+          let checkedInBlock = false;
           
           // Check parent nodes to see if return value is used
           for (let i = parents.length - 1; i >= 0; i--) {
@@ -45,6 +48,7 @@ function detect(ast, code) {
             // Is it inside an if() statement?
             if (parent.type === 'IfStatement') {
               isChecked = true;
+              inIfStatement = true;
               break;
             }
             
@@ -52,6 +56,7 @@ function detect(ast, code) {
             if (parent.type === 'FunctionCall' && parent.expression) {
               if (parent.expression.name === 'require' || parent.expression.name === 'assert') {
                 isChecked = true;
+                inRequireAssert = true;
                 break;
               }
             }
@@ -60,7 +65,9 @@ function detect(ast, code) {
             if (parent.type === 'Block') {
               const blockStr = JSON.stringify(parent);
               if (blockStr.includes('"name":"require"') || blockStr.includes('"name":"assert"') || blockStr.includes('"type":"IfStatement"')) {
+                // Heuristic: It might be checked later in the block
                 isChecked = true;
+                checkedInBlock = true;
                 break;
               }
             }
@@ -72,6 +79,24 @@ function detect(ast, code) {
           }
 
           if (!isChecked) {
+            // Unchecked call detected
+            let conditionsVerified = 1; // Has external call that is not directly wrapped
+            // Since isChecked is false, we know it's not wrapped in require, if, or checked in block.
+            // Let's add conditions for confidence.
+            // Condition 1: External call
+            // Condition 2: Not in if statement
+            // Condition 3: Not in require/assert
+            // Condition 4: Not checked later in block
+            
+            conditionsVerified += (!inIfStatement ? 1 : 0);
+            conditionsVerified += (!inRequireAssert ? 1 : 0);
+            conditionsVerified += (!checkedInBlock ? 1 : 0);
+            
+            let confidence = 'LOW';
+            if (conditionsVerified === 4) confidence = 'HIGH';
+            else if (conditionsVerified === 3) confidence = 'MEDIUM';
+            else confidence = 'LOW';
+
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;
             const sourceCode = getSourceLine(line, code) || '';
@@ -79,7 +104,7 @@ function detect(ast, code) {
             vulnerabilities.push({
               type: 'Unchecked External Call',
               severity: 'HIGH',
-              confidence: 'HIGH',
+              confidence: confidence,
               line: line,
               column: column,
               description: 'External call return value not checked. Call failure is ignored.',
