@@ -11,6 +11,22 @@ const { getSourceLine } = require('../ast-builder');
 function detect(ast, code) {
   const vulnerabilities = [];
 
+  function validateExploitability(details) {
+    // Question 1: Can this actually be exploited?
+    if (details.inTryCatch) return "Not exploitable";
+
+    // Question 2: Does this require unrealistic conditions?
+    if (!details.affectsState) return "Not exploitable";
+
+    // Question 3: Are there safeguards already in place?
+    if (details.isChecked) return "Not exploitable";
+
+    // Question 4: Does the pattern actually cause harm?
+    if (!details.affectsState) return "Not exploitable";
+
+    return "Exploitable";
+  }
+
   function traverse(node, parents) {
     if (Array.isArray(node)) {
       node.forEach(child => traverse(child, parents));
@@ -129,7 +145,13 @@ function detect(ast, code) {
           if (!inTryCatch) conditionsVerified++; // 3. NOT in try-catch
           if (affectsState) conditionsVerified++; // 4. Affects state
 
-          if (isExternal && !isChecked && !inTryCatch) {
+          const validation = validateExploitability({
+            isChecked,
+            inTryCatch,
+            affectsState
+          });
+
+          if (isExternal && validation === "Exploitable") {
             let severity = affectsState ? 'HIGH' : 'MEDIUM';
             
             // Deterministic Confidence Scoring

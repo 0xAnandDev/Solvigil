@@ -10,6 +10,22 @@ const { getSourceLine } = require('../ast-builder');
 function detect(ast, code) {
   const vulnerabilities = [];
 
+  function validateExploitability(details) {
+    // Question 1: Can this actually be exploited?
+    if (!details.isUnbounded) return "Not exploitable";
+
+    // Question 2: Does this require unrealistic conditions?
+    if (!details.failureBreaks) return "Not exploitable";
+
+    // Question 3: Are there safeguards already in place?
+    if (!details.failureBreaks) return "Not exploitable";
+
+    // Question 4: Does the pattern actually cause harm?
+    if (!details.isUnbounded || !details.failureBreaks) return "Not exploitable";
+
+    return "Exploitable";
+  }
+
   function traverse(node, funcName) {
     if (Array.isArray(node)) {
       node.forEach(child => traverse(child, funcName));
@@ -56,7 +72,12 @@ function detect(ast, code) {
           }
         });
 
-        if (hasFunctionCall && hasExternalMethod) {
+        const validation = validateExploitability({
+          isUnbounded,
+          failureBreaks
+        });
+
+        if (hasFunctionCall && hasExternalMethod && validation === "Exploitable") {
           let conditionsVerified = 1; // Loop found
           if (hasExternalMethod) conditionsVerified++; // External call found
           if (isUnbounded) conditionsVerified++; // Unbounded loop

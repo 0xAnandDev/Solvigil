@@ -15,6 +15,22 @@ function detect(ast, code, version) {
   const vulnerabilities = [];
   let isOldSolidity = false;
 
+  function validateExploitability(details) {
+    // Question 1: Can this actually be exploited?
+    if (!details.isOldSolidity && !details.currentlyUnchecked) return "Not exploitable";
+
+    // Question 2: Does this require unrealistic conditions?
+    if (!details.isAssignment) return "Not exploitable";
+
+    // Question 3: Are there safeguards already in place?
+    if (!details.isOldSolidity && !details.currentlyUnchecked) return "Not exploitable";
+
+    // Question 4: Does the pattern actually cause harm?
+    if (!details.isAssignment) return "Not exploitable";
+
+    return "Exploitable";
+  }
+
   // Check version passed from scanner
   if (version) {
     const parts = version.replace(/[^0-9.]/g, '').split('.');
@@ -85,7 +101,14 @@ function detect(ast, code, version) {
           // 2. Check if the operation affects only the user (mitigation reduces severity)
           let isUserSpecific = isUserSpecificTarget(node, currentParamNames);
 
-          if (isExploitable) {
+          const validation = validateExploitability({
+            isOldSolidity,
+            currentlyUnchecked,
+            isAssignment,
+            isUserSpecific
+          });
+
+          if (validation === "Exploitable") {
             let conditionsVerified = 1; // Arithmetic found
             if (isOldSolidity || currentlyUnchecked) conditionsVerified++; // Pragma/unchecked
             // Assume no SafeMath since no checks for library existence

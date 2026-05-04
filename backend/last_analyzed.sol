@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract ReentrancyVuln {
-    mapping(address => uint256) public balances;
+contract DoSVulnerable {
+    address[] public users;
 
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
+    function addUser(address user) public {
+        users.push(user);
     }
 
-    function withdraw() public {
-        uint256 amount = balances[msg.sender];
-        require(amount > 0);
-
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success);
-
-        balances[msg.sender] = 0; // ❌ wrong order
+    function payAll() public payable {
+        for (uint i = 0; i < users.length; i++) {
+            // ❌ If one transfer fails, entire loop fails
+            payable(users[i]).transfer(1 ether);
+        }
     }
 }

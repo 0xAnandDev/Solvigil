@@ -17,6 +17,25 @@ function detect(ast, code) {
   const vulnerabilities = [];
   const lines = code ? code.split(/\r?\n/) : [];
 
+  function validateExploitability(details) {
+    // Question 1: Can this actually be exploited?
+    // Is reentrancy actually possible?
+    if (!details.canRecurse) return "Not exploitable";
+
+    // Question 2: Does this require unrealistic conditions?
+    // Is the called address actually controllable?
+    if (!details.isTargetControlled) return "Not exploitable";
+
+    // Question 3: Are there safeguards already in place?
+    if (details.hasSafetyCheck) return "Not exploitable";
+
+    // Question 4: Does the pattern actually cause harm?
+    // Does this actually affect user funds or important state?
+    if (!details.isStateUpdate) return "Not exploitable";
+
+    return "Exploitable";
+  }
+
   // 1. Collect state variables to distinguish them from local variables
   const stateVariables = new Set();
   parser.visit(ast, {
@@ -212,11 +231,20 @@ function detect(ast, code) {
         const targetName = getTargetName(assignNode.left);
         const isStateUpdate = !targetName || stateVariables.has(targetName);
         
+        const validation = validateExploitability({
+          canRecurse,
+          isTargetControlled,
+          hasSafetyCheck,
+          isStateUpdate
+        });
+
+        if (validation === "Not exploitable") {
+          return; // skip the issue
+        }
+
         if (isStateUpdate) conditionsVerified++; // Condition 2: State update after call
         if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
         if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
-        
-        if (!isStateUpdate) return; // Must be a state update
 
         let severity = 'MEDIUM'; // default pattern, unlikely to be exploited
 

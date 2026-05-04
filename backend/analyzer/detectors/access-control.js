@@ -17,6 +17,22 @@ function detect(ast, code) {
   const vulnerabilities = [];
   const lines = code ? code.split(/\r?\n/) : [];
 
+  function validateExploitability(details) {
+    // Question 1: Can this actually be exploited?
+    if (!details.isPublic) return "Not exploitable";
+
+    // Question 2: Does this require unrealistic conditions?
+    if (details.severity === 'LOW') return "Not exploitable";
+
+    // Question 3: Are there safeguards already in place?
+    if (details.hasAccessControlModifier || details.hasMsgSenderCheck) return "Not exploitable";
+
+    // Question 4: Does the pattern actually cause harm?
+    if (details.severity === 'MEDIUM') return "Not exploitable";
+
+    return "Exploitable";
+  }
+
   const stateVariables = new Set();
   parser.visit(ast, {
     StateVariableDeclaration(node) {
@@ -190,6 +206,17 @@ parser.visit(ast, {
     const isPublic = funcNode.visibility === 'public' ||
       funcNode.visibility === 'external' ||
       funcNode.visibility === 'default';
+
+    const validation = validateExploitability({
+      isPublic,
+      severity,
+      hasAccessControlModifier,
+      hasMsgSenderCheck
+    });
+
+    if (validation === "Not exploitable") {
+      return; // skip the issue
+    }
       
     if (isPublic) conditionsVerified++;
 
