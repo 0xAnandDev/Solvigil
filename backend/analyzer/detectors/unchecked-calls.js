@@ -78,7 +78,7 @@ function detect(ast, code) {
 
             vulnerabilities.push({
               type: 'Unchecked External Call',
-              severity: 'MEDIUM',
+              severity: 'HIGH',
               confidence: 'HIGH',
               line: line,
               column: column,
@@ -93,7 +93,7 @@ function detect(ast, code) {
                 '5️⃣ Logic continues as if call succeeded'
               ],
               fixExplanation: '❌ Unchecked Call:\n```solidity\ncontractAddress.call{value: 1 ether}("");\n```\n\n✅ Checked Call:\n```solidity\n(bool success, ) = contractAddress.call{value: 1 ether}("");\nrequire(success, "Call failed");\n```',
-              impact: 'MEDIUM: Failed external calls are silently ignored. Contract state may be inconsistent.'
+              impact: 'HIGH: Failed external calls are silently ignored. Contract state may be inconsistent causing significant fund loss.'
             });
           }
         }

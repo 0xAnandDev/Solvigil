@@ -90,14 +90,14 @@ function detect(ast, code) {
           const column = node.loc ? node.loc.start.column : 0;
           const sourceCode = getSourceLine(line, code) || '';
           
-          let severity = currentlyUnchecked ? 'MEDIUM' : 'CRITICAL';
+          let severity = currentlyUnchecked ? 'MEDIUM' : 'HIGH';
           if (isUserSpecificTarget(node, currentParamNames)) {
             severity = 'LOW';
           }
 
           let impact = currentlyUnchecked 
             ? 'MEDIUM: Unchecked block disables overflow protection. Values wrap unexpectedly.'
-            : 'CRITICAL: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
+            : 'HIGH: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
           if (severity === 'LOW') impact = 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.';
 
           vulnerabilities.push({

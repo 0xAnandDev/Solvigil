@@ -53,13 +53,13 @@ function getBaseIdentifier(node) {
 }
 
 function analyzeCritical(funcNode) {
-  let isCritical = false;
+  let severity = null;
   const modifiedGlobalStates = new Set();
   const modifiedUserStates = new Set();
   let hasTransferToArbitrary = false;
   let usesContractBalance = false;
 
-  if (!funcNode.body) return false;
+  if (!funcNode.body) return null;
 
   parser.visit(funcNode.body, {
     BinaryOperation(binNode) {
@@ -92,7 +92,7 @@ function analyzeCritical(funcNode) {
         }
       }
       if (callNode.expression && callNode.expression.type === 'Identifier' && callNode.expression.name === 'selfdestruct') {
-        isCritical = true;
+        severity = 'CRITICAL';
       }
     }
   });
@@ -100,21 +100,21 @@ function analyzeCritical(funcNode) {
   // 1. Modifies global state that is NOT part of a standard peer-to-peer transfer
   for (const state of modifiedGlobalStates) {
     if (!modifiedUserStates.has(state)) {
-      isCritical = true;
+      if (!severity) severity = 'HIGH';
     }
   }
 
   // 2. Transfers contract's total balance
   if (usesContractBalance) {
-    isCritical = true;
+    severity = 'CRITICAL';
   }
 
   // 3. Anyone can use to drain contract (arbitrary transfer without user state deduction)
   if (hasTransferToArbitrary && modifiedUserStates.size === 0) {
-    isCritical = true;
+    severity = 'CRITICAL';
   }
 
-  return isCritical;
+  return severity;
 }
 
 parser.visit(ast, {
@@ -129,9 +129,9 @@ parser.visit(ast, {
 
     if (isPublic) {
       // 2. Analyze function body to see if it does critical operations
-      const isCritical = analyzeCritical(funcNode);
+      const severity = analyzeCritical(funcNode);
 
-      if (isCritical) {
+      if (severity) {
         // 3. Check for access control modifiers (like onlyOwner, auth, onlyRole)
         let hasAccessControlModifier = false;
         if (funcNode.modifiers && funcNode.modifiers.length > 0) {
@@ -183,7 +183,7 @@ parser.visit(ast, {
 
         vulnerabilities.push({
           type: 'Access Control Vulnerability',
-          severity: 'CRITICAL',
+          severity: severity,
           confidence: 'MEDIUM',
           line: line,
           column: col,
@@ -207,7 +207,9 @@ function withdraw(uint amount) public {
             '4️⃣ Attacker successfully manipulates contract or drains funds',
             '5️⃣ True owner loses control of the contract'
           ],
-          impact: 'CRITICAL: Any address can call critical functions. Complete loss of contract control.'
+          impact: severity === 'CRITICAL' 
+            ? 'CRITICAL: Anyone can drain the contract or destroy it.'
+            : 'HIGH: Any address can call critical functions. Unauthorized state manipulation possible.'
         });
       }
     }
