@@ -133,9 +133,11 @@ function detect(ast, code) {
       // Check if function can recurse
       let canRecurse = true;
       if (funcNode.modifiers) {
-        const hasNonReentrant = funcNode.modifiers.some(m => 
-          m.name && (m.name === 'nonReentrant' || m.name === 'lock')
-        );
+        const hasNonReentrant = funcNode.modifiers.some(m => {
+          if (!m.name) return false;
+          const nameLower = m.name.toLowerCase();
+          return nameLower === 'nonreentrant' || nameLower === 'lock' || nameLower.includes('entrancy') || nameLower.includes('guard');
+        });
         if (hasNonReentrant) canRecurse = false;
       }
       if (funcNode.visibility === 'internal' || funcNode.visibility === 'private') {
@@ -171,6 +173,14 @@ function detect(ast, code) {
 
       function handleAssignment(assignNode) {
         if (!hasExternalCall) return;
+
+        const callLine = externalCallNode.loc ? externalCallNode.loc.start.line : 0;
+        const assignLine = assignNode.loc ? assignNode.loc.start.line : 0;
+
+        // Verify execution order: State update MUST be AFTER the external call
+        if (callLine > 0 && assignLine > 0 && assignLine <= callLine) {
+           return; // State update is BEFORE external call -> safe, don't flag
+        }
 
         let conditionsVerified = 1; // Condition 1: hasExternalCall
         
