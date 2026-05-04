@@ -182,6 +182,31 @@ function detect(ast, code) {
            return; // State update is BEFORE external call -> safe, don't flag
         }
 
+        // --- EXPLOITABILITY CHECK ---
+        let isExploitable = true;
+        let hasSafetyCheck = false;
+
+        // 1. Check for guard modifiers (nonReentrant)
+        if (!canRecurse) {
+          isExploitable = false;
+        }
+
+        // 2. Check for require statements or if checks on balance
+        parser.visit(funcNode.body, {
+          FunctionCall(reqNode) {
+            if (reqNode.expression && reqNode.expression.name === 'require') {
+               if (reqNode.loc && reqNode.loc.start.line <= callLine) {
+                 hasSafetyCheck = true;
+               }
+            }
+          },
+          IfStatement(ifNode) {
+            if (ifNode.loc && ifNode.loc.start.line <= callLine) {
+              hasSafetyCheck = true;
+            }
+          }
+        });
+
         let conditionsVerified = 1; // Condition 1: hasExternalCall
         
         const targetName = getTargetName(assignNode.left);
@@ -189,7 +214,7 @@ function detect(ast, code) {
         
         if (isStateUpdate) conditionsVerified++; // Condition 2: State update after call
         if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
-        if (canRecurse) conditionsVerified++; // Condition 4: Function can recurse
+        if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
         
         // Require ALL 4 conditions
         if (conditionsVerified === 4) {
@@ -197,7 +222,12 @@ function detect(ast, code) {
           const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
           
           const isGlobal = !isUserSpecific(assignNode.left, paramNames);
-          const severity = isGlobal ? 'CRITICAL' : 'LOW';
+          let severity = isGlobal ? 'CRITICAL' : 'LOW';
+
+          // 3. If mitigations exist, reduce severity
+          if (hasSafetyCheck && severity === 'CRITICAL') {
+            severity = 'HIGH'; // Safety checks exist, harder to exploit
+          }
 
           let confidence = 'HIGH';
 

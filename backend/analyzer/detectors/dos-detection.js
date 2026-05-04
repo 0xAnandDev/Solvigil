@@ -24,15 +24,26 @@ function detect(ast, code) {
                                   bodyStr.includes('"memberName":"transfer"') || 
                                   bodyStr.includes('"memberName":"send"');
 
+        // --- EXPLOITABILITY CHECK ---
+        let isExploitable = true;
+
+        // 1. Is the loop unbounded? (Check for reachable exploit)
+        const isUnbounded = conditionStr.includes('"memberName":"length"') || conditionStr.includes('"type":"Identifier"');
+        if (!isUnbounded) isExploitable = false;
+
+        // 2. Are there guards/mitigations? (e.g. failure breaks transaction)
+        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || bodyStr.includes('"name":"require"');
+        if (!failureBreaks) isExploitable = false;
+
         let conditionsVerified = 0;
         if (node.type === 'ForStatement' || node.type === 'WhileStatement') conditionsVerified++; // 1. Loop found
         if (hasFunctionCall && hasExternalMethod) conditionsVerified++; // 2. External call/transfer inside loop
         
-        const isUnbounded = conditionStr.includes('"memberName":"length"') || conditionStr.includes('"type":"Identifier"');
         if (isUnbounded) conditionsVerified++; // 3. Loop can be long/unbounded
-        
-        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || bodyStr.includes('"name":"require"');
         if (failureBreaks) conditionsVerified++; // 4. Failure breaks transaction
+
+        // Only flag if ACTUALLY exploitable
+        if (!isExploitable) conditionsVerified = 0;
 
         if (conditionsVerified === 4) {
           const line = node.loc ? node.loc.start.line : 0;

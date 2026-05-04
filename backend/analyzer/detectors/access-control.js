@@ -125,16 +125,10 @@ parser.visit(ast, {
     const severity = analyzeCritical(funcNode);
     if (!severity) return; // Not a critical function, ignore completely
 
-    let conditionsVerified = 1; // Condition 1: Modifies state or transfers funds
+    // --- EXPLOITABILITY CHECK ---
+    let isExploitable = true;
 
-    // Condition 2: Is it public/external?
-    const isPublic = funcNode.visibility === 'public' ||
-      funcNode.visibility === 'external' ||
-      funcNode.visibility === 'default';
-      
-    if (isPublic) conditionsVerified++;
-
-    // Condition 3: Lacks access control modifiers
+    // Check 1: Are there guards or restrictions? (Access control modifiers)
     let hasAccessControlModifier = false;
     if (funcNode.modifiers && funcNode.modifiers.length > 0) {
       for (const mod of funcNode.modifiers) {
@@ -145,10 +139,8 @@ parser.visit(ast, {
         }
       }
     }
-    
-    if (!hasAccessControlModifier) conditionsVerified++;
 
-    // Condition 4: Lacks msg.sender check
+    // Check 2: Are there safety checks? (require, if statements for msg.sender)
     let hasMsgSenderCheck = false;
     parser.visit(funcNode.body, {
       FunctionCall(callNode) {
@@ -177,7 +169,25 @@ parser.visit(ast, {
       }
     });
 
-    if (!hasMsgSenderCheck) conditionsVerified++;
+    // Check 3: Only flag if truly exploitable
+    if (hasAccessControlModifier || hasMsgSenderCheck) {
+      isExploitable = false; // Mitigated
+    }
+
+    let conditionsVerified = 1; // Condition 1: Modifies state or transfers funds
+
+    // Condition 2: Is it public/external?
+    const isPublic = funcNode.visibility === 'public' ||
+      funcNode.visibility === 'external' ||
+      funcNode.visibility === 'default';
+      
+    if (isPublic) conditionsVerified++;
+
+    if (!hasAccessControlModifier) conditionsVerified++; // Condition 3: Lacks access control modifiers
+    if (!hasMsgSenderCheck) conditionsVerified++; // Condition 4: Lacks msg.sender check
+
+    // Ensure it is actually exploitable
+    if (!isExploitable) return;
 
     // Require ALL 4 conditions to flag
     if (conditionsVerified !== 4) return;

@@ -86,17 +86,27 @@ function detect(ast, code) {
 
       if (isArithmetic) {
         if (isOldSolidity || currentlyUnchecked) {
+          // --- EXPLOITABILITY CHECK ---
+          let isExploitable = true;
+          
+          // 1. Check if the arithmetic operation is actually saved to state
+          const isAssignment = node.type === 'Assignment' || (node.operator && node.operator.includes('=')) || ['++', '--'].includes(node.operator);
+          if (!isAssignment) isExploitable = false;
+
+          // 2. Check if the operation affects only the user (mitigation reduces severity)
+          let isUserSpecific = isUserSpecificTarget(node, currentParamNames);
+
           let conditionsVerified = 1; // Condition 1: Arithmetic operation
           conditionsVerified++; // Condition 2: No built-in protection (isOldSolidity || currentlyUnchecked)
           
-          if (!isUserSpecificTarget(node, currentParamNames)) {
-            conditionsVerified++; // Condition 3: Affects global state / not user specific
-          }
+          conditionsVerified++; // Condition 3: Evaluated impact successfully
           
-          const isAssignment = node.type === 'Assignment' || (node.operator && node.operator.includes('=')) || ['++', '--'].includes(node.operator);
           if (isAssignment) {
             conditionsVerified++; // Condition 4: The value is actually stored/assigned
           }
+
+          // If mitigations exist to make it not exploitable, skip
+          if (!isExploitable) conditionsVerified = 0;
 
           if (conditionsVerified === 4) {
             let confidence = 'HIGH';
@@ -106,8 +116,8 @@ function detect(ast, code) {
             const sourceCode = getSourceLine(line, code) || '';
             
             let severity = currentlyUnchecked ? 'MEDIUM' : 'HIGH';
-            if (isUserSpecificTarget(node, currentParamNames)) {
-              severity = 'LOW';
+            if (isUserSpecific) {
+              severity = 'LOW'; // Mitigated impact reduces severity
             }
 
             let impact = currentlyUnchecked 

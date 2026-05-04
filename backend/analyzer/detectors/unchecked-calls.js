@@ -99,11 +99,26 @@ function detect(ast, code) {
             }
           }
 
+          // --- EXPLOITABILITY CHECK ---
+          let isExploitable = true;
+
+          // 1. Are there safety checks? (require, if statements)
+          if (isChecked) isExploitable = false;
+
+          // 2. Are there guards or restrictions? (try-catch)
+          if (inTryCatch) isExploitable = false;
+
+          // 3. Is the dangerous part actually reachable/exploitable?
+          if (!affectsState) isExploitable = false;
+
           let conditionsVerified = 0;
           if (isExternal) conditionsVerified++; // Condition 1: .call() or .send() found
           if (!isChecked) conditionsVerified++; // Condition 2: Return value NOT checked in require()
           if (!inTryCatch) conditionsVerified++; // Condition 3: Not in try-catch block
           if (affectsState) conditionsVerified++; // Condition 4: Call result affects contract state
+
+          // Skip if mitigated or not exploitable
+          if (!isExploitable) conditionsVerified = 0;
 
           if (conditionsVerified === 4) {
             let confidence = 'HIGH';
