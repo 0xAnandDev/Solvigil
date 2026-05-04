@@ -111,15 +111,6 @@ function detect(ast, code) {
           // 3. Is the dangerous part actually reachable/exploitable?
           if (!affectsState) isExploitable = false;
 
-          let conditionsVerified = 0;
-          if (isExternal) conditionsVerified++; // Condition 1: .call() or .send() found
-          if (!isChecked) conditionsVerified++; // Condition 2: Return value NOT checked in require()
-          if (!inTryCatch) conditionsVerified++; // Condition 3: Not in try-catch block
-          if (affectsState) conditionsVerified++; // Condition 4: Call result affects contract state
-
-          // Skip if mitigated or not exploitable
-          if (!isExploitable) conditionsVerified = 0;
-
           let funcName = 'function';
           for (let i = parents.length - 1; i >= 0; i--) {
             if (parents[i].type === 'FunctionDefinition') {
@@ -133,8 +124,9 @@ function detect(ast, code) {
             targetVarName = node.expression.expression.name;
           }
 
-          if (conditionsVerified === 4) {
-            let confidence = 'HIGH';
+          if (isExternal && !isChecked && !inTryCatch) {
+            let severity = affectsState ? 'HIGH' : 'MEDIUM';
+            let confidence = severity === 'HIGH' ? 'HIGH' : 'MEDIUM';
 
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;
@@ -142,7 +134,7 @@ function detect(ast, code) {
 
             vulnerabilities.push({
               type: 'Unchecked External Call',
-              severity: 'HIGH',
+              severity: severity,
               confidence: confidence,
               line: line,
               column: column,
@@ -157,7 +149,7 @@ function detect(ast, code) {
                 `5️⃣ Logic continues as if call succeeded, leaving state inconsistent`
               ],
               fixExplanation: '❌ Unchecked Call:\n```solidity\ncontractAddress.call{value: 1 ether}("");\n```\n\n✅ Checked Call:\n```solidity\n(bool success, ) = contractAddress.call{value: 1 ether}("");\nrequire(success, "Call failed");\n```',
-              impact: 'HIGH: Failed external calls are silently ignored. Contract state may be inconsistent causing significant fund loss.'
+              impact: severity === 'HIGH' ? 'HIGH: Failed external calls are silently ignored. Contract state may be inconsistent causing significant fund loss.' : 'MEDIUM: Call failure is ignored, but it does not immediately break contract state.'
             });
           }
         }

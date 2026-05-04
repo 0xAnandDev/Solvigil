@@ -40,21 +40,38 @@ class ScoreCalculator {
         const finalScore = Math.max(0, baseScore - deductions);
 
         let status = 'Safe';
+        let statusReasoning = 'No vulnerabilities detected.';
         if (finalScore >= 95) {
             status = 'Safe';
+            statusReasoning = 'The contract is generally secure.';
         } else if (finalScore >= 80) {
             status = 'Minor Issues';
+            statusReasoning = 'Some low-severity issues found that should be addressed.';
         } else if (finalScore >= 60) {
             status = 'Needs Review';
+            statusReasoning = 'Medium severity vulnerabilities present. Review required.';
         } else if (finalScore >= 40) {
             status = 'Vulnerable';
+            statusReasoning = 'High severity vulnerabilities detected. Fix before deployment.';
         } else {
             status = 'Critical Risk';
+            statusReasoning = 'Critical vulnerabilities found. DO NOT DEPLOY.';
         }
 
         return {
-            score: finalScore,
-            status,
+            DECISION: {
+                securityScore: finalScore,
+                securityStatus: status,
+                statusReasoning: statusReasoning,
+                severityBreakdown: {
+                    critical: severityBreakdown.critical,
+                    high: severityBreakdown.high,
+                    medium: severityBreakdown.medium,
+                    low: severityBreakdown.low
+                }
+            },
+            score: finalScore, // Backward compatibility
+            status, // Backward compatibility
             confidence: 'HIGH',
             details: {
                 baseScore,

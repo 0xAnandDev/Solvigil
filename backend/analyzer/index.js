@@ -29,6 +29,7 @@ async function analyzeContract(code) {
 
     const finalReport = {
       contractInfo,
+      DECISION: scoreResult.DECISION,
       securityScore: scoreResult.score,
       securityStatus: scoreResult.status,
       vulnerabilities,

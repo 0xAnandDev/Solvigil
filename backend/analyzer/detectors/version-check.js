@@ -54,7 +54,7 @@ function detect(ast, code, versionStr) {
     
     vulnerabilities.push({
       type: 'Solidity Version Risk',
-      severity: isVersionRisk ? 'HIGH' : 'LOW',
+      severity: 'LOW',
       category: 'Best Practice',
       confidence: 'HIGH',
       line: pragmaLine,
@@ -72,7 +72,7 @@ function detect(ast, code, versionStr) {
         '5️⃣ Community support is limited'
       ],
       fixExplanation: '❌ Vulnerable Code (Old Version):\n```solidity\npragma solidity ^0.6.0;\n```\n\n✅ Safe Code (Modern Version):\n```solidity\npragma solidity ^0.8.19;\n```',
-      impact: isVersionRisk ? 'HIGH: Old versions lack modern safety features. Contains known bugs.' : 'LOW: Missing latest compiler optimizations and features.'
+      impact: isVersionRisk ? 'LOW: Old versions lack modern safety features. Contains known bugs.' : 'LOW: Missing latest compiler optimizations and features.'
     });
   }
 

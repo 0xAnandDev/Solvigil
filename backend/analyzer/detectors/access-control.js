@@ -108,24 +108,21 @@ function analyzeCritical(funcNode) {
     }
   });
 
-  // 1. Modifies global state that is NOT part of a standard peer-to-peer transfer
-  for (const state of modifiedGlobalStates) {
-    if (!modifiedUserStates.has(state)) {
-      if (!severity) severity = 'HIGH';
-    }
+  let isUserSpecific = modifiedUserStates.size > 0 && modifiedGlobalStates.size === 0 && !hasTransferToArbitrary;
+  let isReadOnly = modifiedGlobalStates.size === 0 && modifiedUserStates.size === 0 && !hasTransferToArbitrary && !usesContractBalance && severity !== 'CRITICAL';
+
+  if (severity === 'CRITICAL') {
+    // Keep CRITICAL if it's selfdestruct
+  } else if (usesContractBalance || (hasTransferToArbitrary && modifiedUserStates.size === 0) || (modifiedGlobalStates.size > 0 && !isUserSpecific)) {
+    severity = 'HIGH'; // actually transfers funds or changes global state
+  } else if (isUserSpecific && !hasTransferToArbitrary) {
+    severity = 'MEDIUM'; // public but user-specific operation
+  } else if (isReadOnly || (isUserSpecific && hasTransferToArbitrary)) {
+    severity = 'LOW'; // just reads data or user-specific withdrawal
   }
 
-  // 2. Transfers contract's total balance
-  if (usesContractBalance) {
-    severity = 'CRITICAL';
-  }
+  if (!severity) severity = 'LOW';
 
-  // 3. Anyone can use to drain contract (arbitrary transfer without user state deduction)
-  if (hasTransferToArbitrary && modifiedUserStates.size === 0) {
-    severity = 'CRITICAL';
-  }
-
-  if (!severity) return null;
   return { severity, line: criticalLine, column: criticalCol };
 }
 

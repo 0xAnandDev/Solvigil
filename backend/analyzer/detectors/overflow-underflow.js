@@ -85,34 +85,25 @@ function detect(ast, code, version) {
           // 2. Check if the operation affects only the user (mitigation reduces severity)
           let isUserSpecific = isUserSpecificTarget(node, currentParamNames);
 
-          let conditionsVerified = 1; // Condition 1: Arithmetic operation
-          conditionsVerified++; // Condition 2: No built-in protection (isOldSolidity || currentlyUnchecked)
-          
-          conditionsVerified++; // Condition 3: Evaluated impact successfully
-          
-          if (isAssignment) {
-            conditionsVerified++; // Condition 4: The value is actually stored/assigned
-          }
+          if (isExploitable) {
+            let severity = 'LOW';
+            if (isOldSolidity && !isUserSpecific) {
+              severity = 'CRITICAL';
+            } else if (currentlyUnchecked) {
+              severity = 'MEDIUM';
+            } else if (isOldSolidity && isUserSpecific) {
+              severity = 'LOW';
+            }
 
-          // If mitigations exist to make it not exploitable, skip
-          if (!isExploitable) conditionsVerified = 0;
-
-          if (conditionsVerified === 4) {
-            let confidence = 'HIGH';
+            let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
 
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;
             const sourceCode = getSourceLine(line, code) || '';
-            
-            let severity = currentlyUnchecked ? 'MEDIUM' : 'HIGH';
-            if (isUserSpecific) {
-              severity = 'LOW'; // Mitigated impact reduces severity
-            }
 
-            let impact = currentlyUnchecked 
-              ? 'MEDIUM: Unchecked block disables overflow protection. Values wrap unexpectedly.'
-              : 'HIGH: Old Solidity versions lack overflow protection. Values wrap unexpectedly.';
-            if (severity === 'LOW') impact = 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.';
+            let impact = severity === 'CRITICAL' 
+              ? 'CRITICAL: Old Solidity versions lack overflow protection. Critical contract state can be corrupted.'
+              : (severity === 'MEDIUM' ? 'MEDIUM: Unchecked block disables overflow protection in non-critical function.' : 'LOW: Arithmetic operation lacks overflow protection, but only affects user-specific state.');
 
             vulnerabilities.push({
               type: 'Integer Overflow/Underflow',

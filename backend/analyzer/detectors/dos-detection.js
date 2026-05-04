@@ -56,26 +56,19 @@ function detect(ast, code) {
           }
         });
 
-        let conditionsVerified = 0;
-        if (node.type === 'ForStatement' || node.type === 'WhileStatement') conditionsVerified++; // 1. Loop found
-        if (hasFunctionCall && hasExternalMethod) conditionsVerified++; // 2. External call/transfer inside loop
-        
-        if (isUnbounded) conditionsVerified++; // 3. Loop can be long/unbounded
-        if (failureBreaks) conditionsVerified++; // 4. Failure breaks transaction
+        if (hasFunctionCall && hasExternalMethod) {
+          let severity = (isUnbounded && failureBreaks) ? 'MEDIUM' : 'LOW';
+          let confidence = severity === 'MEDIUM' ? 'HIGH' : 'MEDIUM';
 
-        // Only flag if ACTUALLY exploitable
-        if (!isExploitable) conditionsVerified = 0;
-
-        if (conditionsVerified === 4) {
           const line = externalCallLine || (node.loc ? node.loc.start.line : 0);
           const column = externalCallCol || (node.loc ? node.loc.start.column : 0);
           const sourceCode = getSourceLine(line, code) || '';
 
           vulnerabilities.push({
             type: 'Denial of Service',
-            severity: 'MEDIUM',
+            severity: severity,
             category: 'Logic Error',
-            confidence: 'HIGH',
+            confidence: confidence,
             line: line,
             column: column,
             description: 'Loop contains external calls. A single failure will revert entire transaction, causing DoS.',
@@ -89,7 +82,7 @@ function detect(ast, code) {
               `5️⃣ No one receives funds (DoS)`
             ],
             fixExplanation: '❌ Vulnerable Code (Push Pattern):\n```solidity\nfunction distributeFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        // If one transfer fails, the entire loop reverts\n        payable(recipients[i]).transfer(amounts[i]);\n    }\n}\n```\n\n✅ Safe Code (Pull Pattern):\n```solidity\nmapping(address => uint256) public balances;\n\nfunction allocateFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        balances[recipients[i]] += amounts[i];\n    }\n}\n\nfunction withdraw() public {\n    uint256 amount = balances[msg.sender];\n    require(amount > 0, "No funds to withdraw");\n    balances[msg.sender] = 0;\n    payable(msg.sender).transfer(amount);\n}\n```',
-            impact: 'Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.'
+            impact: severity === 'MEDIUM' ? 'MEDIUM: Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.' : 'LOW: External call in loop, but loop is bounded or has failure fallbacks.'
           });
         }
       }

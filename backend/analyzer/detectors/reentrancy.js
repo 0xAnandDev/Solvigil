@@ -216,45 +216,45 @@ function detect(ast, code) {
         if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
         if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
         
-        // Require ALL 4 conditions
-        if (conditionsVerified === 4) {
-          const callLine = externalCallNode.loc ? externalCallNode.loc.start.line : 0;
-          const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
-          
-          const isGlobal = !isUserSpecific(assignNode.left, paramNames);
-          let severity = isGlobal ? 'CRITICAL' : 'LOW';
+        if (!isStateUpdate) return; // Must be a state update
 
-          // 3. If mitigations exist, reduce severity
-          if (hasSafetyCheck && severity === 'CRITICAL') {
-            severity = 'HIGH'; // Safety checks exist, harder to exploit
-          }
+        let severity = 'MEDIUM'; // default pattern, unlikely to be exploited
 
-          let confidence = 'HIGH';
-
-          console.log(`[REENTRANCY] Found vulnerability at line ${callLine} with ${confidence} confidence`);
-          vulnerabilities.push({
-            type: 'Reentrancy',
-            severity: severity,
-            confidence: confidence,
-            line: callLine,
-            column: callCol,
-            description: 'External call made before state variables are updated. An attacker could exploit this via callback.',
-            code: callLine > 0 ? (lines[callLine - 1] || '').trim() : '',
-            fix: 'Update state variables before making external calls. Use Checks-Effects-Interactions pattern.',
-            fixExplanation: `// ❌ Vulnerable Pattern\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);\nbalances[msg.sender] = 0;\n\n// ✅ Fixed Pattern (Checks-Effects-Interactions)\nbalances[msg.sender] = 0;\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);`,
-            simulation: [
-              `1️⃣ Attacker calls vulnerable \`${funcNode.name || 'fallback/receive'}\` function`,
-              `2️⃣ Contract makes external call to attacker contract`,
-              `3️⃣ Attacker contract calls back into \`${funcNode.name || 'fallback/receive'}\` (reenters)`,
-              `4️⃣ \`${targetName || 'state variable'}\` not updated yet, function runs again`,
-              `5️⃣ Funds transferred multiple times before \`${targetName || 'state variable'}\` is finally updated`
-            ],
-            impact: severity === 'CRITICAL' ? 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.' : 'LOW: User can trigger reentrancy, but it only affects their own user-specific state.'
-          });
-
-          // Reset the flag since we found one issue for this external call
-          hasExternalCall = false;
+        if (isTargetControlled && isExploitable && !hasSafetyCheck) {
+            severity = 'CRITICAL';
+        } else if (isTargetControlled && (hasSafetyCheck || !isExploitable)) {
+            severity = 'HIGH';
+        } else {
+            severity = 'MEDIUM';
         }
+
+        let confidence = severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
+
+        const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
+
+        console.log(`[REENTRANCY] Found vulnerability at line ${callLine} with ${confidence} confidence, severity ${severity}`);
+        vulnerabilities.push({
+          type: 'Reentrancy',
+          severity: severity,
+          confidence: confidence,
+          line: callLine,
+          column: callCol,
+          description: 'External call made before state variables are updated. An attacker could exploit this via callback.',
+          code: callLine > 0 ? (lines[callLine - 1] || '').trim() : '',
+          fix: 'Update state variables before making external calls. Use Checks-Effects-Interactions pattern.',
+          fixExplanation: `// ❌ Vulnerable Pattern\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);\nbalances[msg.sender] = 0;\n\n// ✅ Fixed Pattern (Checks-Effects-Interactions)\nbalances[msg.sender] = 0;\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);`,
+          simulation: [
+            `1️⃣ Attacker calls vulnerable \`${funcNode.name || 'fallback/receive'}\` function`,
+            `2️⃣ Contract makes external call to attacker contract`,
+            `3️⃣ Attacker contract calls back into \`${funcNode.name || 'fallback/receive'}\` (reenters)`,
+            `4️⃣ \`${targetName || 'state variable'}\` not updated yet, function runs again`,
+            `5️⃣ Funds transferred multiple times before \`${targetName || 'state variable'}\` is finally updated`
+          ],
+          impact: severity === 'CRITICAL' ? 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.' : 'MEDIUM: User can trigger reentrancy, but exploitability is limited by mitigations or hardcoded addresses.'
+        });
+
+        // Reset the flag since we found one issue for this external call
+        hasExternalCall = false;
       }
     }
   });

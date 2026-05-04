@@ -1,58 +1,48 @@
 export async function renderResults(detectorResults = null) {
   try {
-    let vulnerabilities = [];
-    let summary = {};
-    let score = 100;
+    let analysis;
 
     if (detectorResults) {
-      vulnerabilities = detectorResults.vulnerabilities;
-      summary = detectorResults.summary;
-      score = detectorResults.securityScore;
+      // Display backend decision, do not modify
+      analysis = {
+        securityScore: detectorResults.DECISION ? detectorResults.DECISION.securityScore : detectorResults.securityScore,
+        securityStatus: detectorResults.DECISION ? detectorResults.DECISION.securityStatus : detectorResults.securityStatus,
+        statusReasoning: detectorResults.DECISION ? detectorResults.DECISION.statusReasoning : 'Analysis complete',
+        vulnerabilities: detectorResults.vulnerabilities || [],
+        details: {
+          confidence: detectorResults.DECISION ? 'High' : 'Medium',
+          severityBreakdown: detectorResults.DECISION ? detectorResults.DECISION.severityBreakdown : (detectorResults.summary || {
+            critical: 0, high: 0, medium: 0, low: 0
+          })
+        }
+      };
     } else {
       // Fetch mock vulnerability data fallback
       const response = await fetch('/data/sample-vulnerabilities.json');
-      vulnerabilities = await response.json();
+      const vulnerabilities = await response.json();
       
-      summary.critical = 0;
-      summary.high = 0;
-      summary.medium = 0;
-      summary.low = 0;
+      let critical = 0, high = 0, medium = 0, low = 0;
       
       vulnerabilities.forEach(v => {
-        if (v.severity === 'CRITICAL') summary.critical++;
-        else if (v.severity === 'HIGH') summary.high++;
-        else if (v.severity === 'MEDIUM') summary.medium++;
-        else if (v.severity === 'LOW' || v.severity === 'INFO') summary.low++;
+        if (v.severity === 'CRITICAL') critical++;
+        else if (v.severity === 'HIGH') high++;
+        else if (v.severity === 'MEDIUM') medium++;
+        else if (v.severity === 'LOW' || v.severity === 'INFO') low++;
       });
-      score = 78;
-    }
-    
-    // Construct analysis object for status display
-    let securityStatus = 'Safe';
-    if (score < 50) {
-      securityStatus = 'Critical Risk';
-    } else if (score < 70) {
-      securityStatus = 'Vulnerable';
-    } else if (score < 90) {
-      securityStatus = 'Needs Review';
-    } else if (score < 100) {
-      securityStatus = 'Minor Issues';
-    }
-
-    const analysis = {
-      securityScore: score,
-      securityStatus: securityStatus,
-      vulnerabilities: vulnerabilities,
-      details: {
-        confidence: detectorResults ? 'High' : 'Medium (Mock Data)',
-        severityBreakdown: {
-          critical: summary.critical || 0,
-          high: summary.high || 0,
-          medium: summary.medium || 0,
-          low: summary.low || 0
+      
+      analysis = {
+        securityScore: 78,
+        securityStatus: 'Vulnerable',
+        statusReasoning: 'High severity vulnerabilities detected. Fix before deployment.',
+        vulnerabilities: vulnerabilities,
+        details: {
+          confidence: 'Medium (Mock Data)',
+          severityBreakdown: {
+            critical, high, medium, low
+          }
         }
-      }
-    };
+      };
+    }
     
     // Call the main rendering function
     displayResults(analysis);
@@ -396,16 +386,9 @@ function displaySecurityStatus(analysis) {
   }
   
   // Set description
-  const descriptions = {
-    'Safe': 'No vulnerabilities detected',
-    'Minor Issues': 'Some low-severity issues found',
-    'Needs Review': 'Medium severity vulnerabilities present',
-    'Vulnerable': 'High severity vulnerabilities detected',
-    'Critical Risk': 'Critical vulnerabilities found - DO NOT DEPLOY'
-  };
-  
+  // Display backend decision, do not modify
   if (statusDescription && securityStatus) {
-    statusDescription.textContent = descriptions[securityStatus] || 'Analysis complete';
+    statusDescription.textContent = analysis.statusReasoning || 'Analysis complete';
   }
   
   // Update summary stats
