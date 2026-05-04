@@ -224,11 +224,11 @@ parser.visit(ast, {
       fix: 'Add onlyOwner modifier or require(msg.sender == owner) check.',
       fixExplanation: `// ❌ Vulnerable (public function)\nfunction withdraw(uint amount) public {\n    payable(msg.sender).transfer(amount);\n}\n\n// ✅ Fixed (with require)\nfunction withdraw(uint amount) public {\n    require(msg.sender == owner, "Not owner");\n    payable(msg.sender).transfer(amount);\n}`,
       simulation: [
-        '1️⃣ Attacker sees public critical function without access checks',
-        '2️⃣ Attacker calls the function to modify state or access funds',
-        '3️⃣ Contract executes the logic because it does not verify msg.sender',
-        '4️⃣ Attacker successfully manipulates contract or drains funds',
-        '5️⃣ True owner loses control of the contract'
+        `1️⃣ Attacker sees public \`${funcNode.name || 'function'}\` without access checks`,
+        `2️⃣ Attacker calls \`${funcNode.name || 'function'}\` to ${severity === 'CRITICAL' ? 'drain contract funds' : 'modify critical state'}`,
+        `3️⃣ Contract executes the logic because it does not verify msg.sender`,
+        `4️⃣ Attacker successfully manipulates contract or drains funds`,
+        `5️⃣ True owner loses control of the contract`
       ],
       impact: severity === 'CRITICAL' 
         ? 'CRITICAL: Anyone can drain the contract or destroy it.'

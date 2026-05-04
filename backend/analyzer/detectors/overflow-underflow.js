@@ -44,13 +44,15 @@ function detect(ast, code, version) {
   }
 
   // Second pass: Find arithmetic operations
-  function traverse(node, inUnchecked, paramNames) {
+  function traverse(node, inUnchecked, paramNames, funcName) {
     if (Array.isArray(node)) {
-      node.forEach(child => traverse(child, inUnchecked, paramNames));
+      node.forEach(child => traverse(child, inUnchecked, paramNames, funcName));
     } else if (node && typeof node === 'object') {
       
       let currentParamNames = paramNames || [];
+      let currentFuncName = funcName || 'function';
       if (node.type === 'FunctionDefinition') {
+        currentFuncName = node.name || 'fallback/receive';
         currentParamNames = [];
         if (node.parameters) {
           node.parameters.forEach(p => {
@@ -122,11 +124,11 @@ function detect(ast, code, version) {
               code: sourceCode.trim(),
               fix: 'Upgrade to Solidity >=0.8.0 or use OpenZeppelin SafeMath library.',
               simulation: [
-                '1️⃣ Arithmetic operation encounters maximum value',
-                '2️⃣ No overflow protection in old Solidity',
-                '3️⃣ Value wraps around to 0 or negative',
-                '4️⃣ Contract state corrupted',
-                '5️⃣ Funds can be stolen or locked'
+                `1️⃣ Arithmetic operation in \`${currentFuncName}\` encounters maximum/minimum value`,
+                `2️⃣ No overflow protection present`,
+                `3️⃣ Value wraps around to 0 or negative`,
+                `4️⃣ Contract state corrupted`,
+                `5️⃣ Funds can be stolen or locked`
               ],
               fixExplanation: '❌ Vulnerable Code (pre-0.8.0):\n```solidity\npragma solidity ^0.7.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // No overflow check\n        balances[to] += amount;\n    }\n}\n```\n\n✅ Safe Code (0.8.0+):\n```solidity\npragma solidity ^0.8.0;\ncontract Token {\n    mapping(address => uint256) public balances;\n    function transfer(address to, uint256 amount) public {\n        balances[msg.sender] -= amount; // Automatically checks for overflow/underflow\n        balances[to] += amount;\n    }\n}\n```',
               impact: impact
@@ -138,13 +140,13 @@ function detect(ast, code, version) {
       // Continue traversal
       for (const key in node) {
         if (key !== 'loc' && typeof node[key] === 'object') {
-          traverse(node[key], currentlyUnchecked, currentParamNames);
+          traverse(node[key], currentlyUnchecked, currentParamNames, currentFuncName);
         }
       }
     }
   }
 
-  traverse(ast, false, []);
+  traverse(ast, false, [], 'contract');
 
   return vulnerabilities;
 }

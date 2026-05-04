@@ -10,10 +10,14 @@ const { getSourceLine } = require('../ast-builder');
 function detect(ast, code) {
   const vulnerabilities = [];
 
-  function traverse(node) {
+  function traverse(node, funcName) {
     if (Array.isArray(node)) {
-      node.forEach(traverse);
+      node.forEach(child => traverse(child, funcName));
     } else if (node && typeof node === 'object') {
+      let currentFuncName = funcName || 'function';
+      if (node.type === 'FunctionDefinition') {
+        currentFuncName = node.name || 'fallback/receive';
+      }
       
       if (node.type === 'ForStatement' || node.type === 'WhileStatement') {
         const bodyStr = JSON.stringify(node.body || {});
@@ -78,11 +82,11 @@ function detect(ast, code) {
             code: sourceCode.trim(),
             fix: 'Use pull pattern instead of push. Let users withdraw funds individually.',
             simulation: [
-              '1️⃣ Contract loops through recipients',
-              '2️⃣ Sends funds to each one',
-              '3️⃣ One recipient rejects the transfer',
-              '4️⃣ Entire transaction reverts',
-              '5️⃣ No one receives funds (DoS)'
+              `1️⃣ \`${currentFuncName}\` loops through recipients`,
+              `2️⃣ Sends funds to each one`,
+              `3️⃣ One recipient rejects the transfer`,
+              `4️⃣ Entire transaction reverts`,
+              `5️⃣ No one receives funds (DoS)`
             ],
             fixExplanation: '❌ Vulnerable Code (Push Pattern):\n```solidity\nfunction distributeFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        // If one transfer fails, the entire loop reverts\n        payable(recipients[i]).transfer(amounts[i]);\n    }\n}\n```\n\n✅ Safe Code (Pull Pattern):\n```solidity\nmapping(address => uint256) public balances;\n\nfunction allocateFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        balances[recipients[i]] += amounts[i];\n    }\n}\n\nfunction withdraw() public {\n    uint256 amount = balances[msg.sender];\n    require(amount > 0, "No funds to withdraw");\n    balances[msg.sender] = 0;\n    payable(msg.sender).transfer(amount);\n}\n```',
             impact: 'Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.'
@@ -93,13 +97,13 @@ function detect(ast, code) {
       // Continue traversal
       for (const key in node) {
         if (key !== 'loc' && typeof node[key] === 'object') {
-          traverse(node[key]);
+          traverse(node[key], currentFuncName);
         }
       }
     }
   }
 
-  traverse(ast);
+  traverse(ast, 'contract');
 
   return vulnerabilities;
 }

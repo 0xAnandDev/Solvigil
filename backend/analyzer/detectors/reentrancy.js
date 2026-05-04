@@ -243,11 +243,11 @@ function detect(ast, code) {
             fix: 'Update state variables before making external calls. Use Checks-Effects-Interactions pattern.',
             fixExplanation: `// ❌ Vulnerable Pattern\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);\nbalances[msg.sender] = 0;\n\n// ✅ Fixed Pattern (Checks-Effects-Interactions)\nbalances[msg.sender] = 0;\n(bool success, ) = msg.sender.call{value: amount}("");\nrequire(success);`,
             simulation: [
-              '1️⃣ Attacker calls vulnerable function',
-              '2️⃣ Contract makes external call to attacker contract',
-              '3️⃣ Attacker contract calls back (reenters)',
-              '4️⃣ State not updated yet, function runs again',
-              '5️⃣ Funds transferred multiple times'
+              `1️⃣ Attacker calls vulnerable \`${funcNode.name || 'fallback/receive'}\` function`,
+              `2️⃣ Contract makes external call to attacker contract`,
+              `3️⃣ Attacker contract calls back into \`${funcNode.name || 'fallback/receive'}\` (reenters)`,
+              `4️⃣ \`${targetName || 'state variable'}\` not updated yet, function runs again`,
+              `5️⃣ Funds transferred multiple times before \`${targetName || 'state variable'}\` is finally updated`
             ],
             impact: severity === 'CRITICAL' ? 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.' : 'LOW: User can trigger reentrancy, but it only affects their own user-specific state.'
           });

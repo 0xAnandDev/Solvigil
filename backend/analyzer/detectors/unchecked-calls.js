@@ -120,6 +120,19 @@ function detect(ast, code) {
           // Skip if mitigated or not exploitable
           if (!isExploitable) conditionsVerified = 0;
 
+          let funcName = 'function';
+          for (let i = parents.length - 1; i >= 0; i--) {
+            if (parents[i].type === 'FunctionDefinition') {
+              funcName = parents[i].name || 'fallback/receive';
+              break;
+            }
+          }
+          
+          let targetVarName = 'external address';
+          if (node.expression && node.expression.expression && node.expression.expression.name) {
+            targetVarName = node.expression.expression.name;
+          }
+
           if (conditionsVerified === 4) {
             let confidence = 'HIGH';
 
@@ -137,11 +150,11 @@ function detect(ast, code) {
               code: sourceCode.trim(),
               fix: 'Check the return value or wrap in require().',
               simulation: [
-                '1️⃣ Contract calls external address',
-                '2️⃣ External call fails or throws',
-                '3️⃣ Return value is false/reverts',
-                '4️⃣ Contract ignores the failure',
-                '5️⃣ Logic continues as if call succeeded'
+                `1️⃣ \`${funcName}\` makes call to \`${targetVarName}\``,
+                `2️⃣ External call to \`${targetVarName}\` fails or throws`,
+                `3️⃣ Return value is false/reverts`,
+                `4️⃣ \`${funcName}\` ignores the failure`,
+                `5️⃣ Logic continues as if call succeeded, leaving state inconsistent`
               ],
               fixExplanation: '❌ Unchecked Call:\n```solidity\ncontractAddress.call{value: 1 ether}("");\n```\n\n✅ Checked Call:\n```solidity\n(bool success, ) = contractAddress.call{value: 1 ether}("");\nrequire(success, "Call failed");\n```',
               impact: 'HIGH: Failed external calls are silently ignored. Contract state may be inconsistent causing significant fund loss.'
