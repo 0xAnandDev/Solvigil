@@ -17,25 +17,6 @@ function detect(ast, code) {
   const vulnerabilities = [];
   const lines = code ? code.split(/\r?\n/) : [];
 
-  function validateExploitability(details) {
-    // Question 1: Can this actually be exploited?
-    // Is reentrancy actually possible?
-    if (!details.canRecurse) return "Not exploitable";
-
-    // Question 2: Does this require unrealistic conditions?
-    // Is the called address actually controllable?
-    if (!details.isTargetControlled) return "Not exploitable";
-
-    // Question 3: Are there safeguards already in place?
-    if (details.hasSafetyCheck) return "Not exploitable";
-
-    // Question 4: Does the pattern actually cause harm?
-    // Does this actually affect user funds or important state?
-    if (!details.isStateUpdate) return "Not exploitable";
-
-    return "Exploitable";
-  }
-
   // 1. Collect state variables to distinguish them from local variables
   const stateVariables = new Set();
   parser.visit(ast, {
@@ -54,59 +35,6 @@ function detect(ast, code) {
     if (node.type === 'Identifier') return node.name;
     if (node.type === 'IndexAccess') return getTargetName(node.base);
     if (node.type === 'MemberAccess') return getTargetName(node.expression);
-    return null;
-  }
-
-  // Helper to determine if the target address might be user-controlled
-  function isUserControlled(node, paramNames, stateVariables) {
-    if (!node) return false;
-
-    if (node.type === 'MemberAccess') {
-      if (node.expression && node.expression.type === 'Identifier') {
-        if (node.expression.name === 'msg' && node.memberName === 'sender') return true;
-        if (node.expression.name === 'tx' && node.memberName === 'origin') return true;
-      }
-      return isUserControlled(node.expression, paramNames, stateVariables);
-    }
-
-    if (node.type === 'Identifier') {
-      const name = node.name;
-      if (['this', 'address', 'msg', 'tx', 'block', 'require', 'assert'].includes(name)) return false;
-      if (stateVariables.has(name)) return false;
-      return true;
-    }
-
-    if (node.type === 'FunctionCall') {
-      if (node.arguments) {
-        for (const arg of node.arguments) {
-          if (isUserControlled(arg, paramNames, stateVariables)) return true;
-        }
-      }
-      return isUserControlled(node.expression, paramNames, stateVariables);
-    }
-
-    if (node.type === 'IndexAccess') {
-      return isUserControlled(node.base, paramNames, stateVariables) || isUserControlled(node.index, paramNames, stateVariables);
-    }
-
-    return false;
-  }
-
-  // Helper to extract the target expression of an external call
-  function getExternalCallTarget(node) {
-    let current = node.expression;
-    while (current) {
-      if (current.type === 'MemberAccess') {
-        if (['call', 'transfer', 'send'].includes(current.memberName)) {
-          return current.expression;
-        }
-        current = current.expression;
-      } else if (current.expression) {
-        current = current.expression;
-      } else {
-        break;
-      }
-    }
     return null;
   }
 
@@ -129,20 +57,7 @@ function detect(ast, code) {
     return false;
   }
 
-  function isUserSpecific(node, paramNames) {
-    if (!node) return false;
-    let isUser = false;
-    parser.visit(node, {
-      MemberAccess(maNode) {
-        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'msg' && maNode.memberName === 'sender') isUser = true;
-        if (maNode.expression && maNode.expression.type === 'Identifier' && maNode.expression.name === 'tx' && maNode.memberName === 'origin') isUser = true;
-      },
-      Identifier(idNode) {
-        if (paramNames && paramNames.includes(idNode.name)) isUser = true;
-      }
-    });
-    return isUser;
-  }
+  // Removed isUserSpecific
 
   // 2. Find external calls followed by state updates in each function
   parser.visit(ast, {
@@ -165,7 +80,6 @@ function detect(ast, code) {
 
       let hasExternalCall = false;
       let externalCallNode = null;
-      let isTargetControlled = false;
 
       const paramNames = funcNode.parameters ? funcNode.parameters.map(p => p.name) : [];
 
@@ -175,9 +89,6 @@ function detect(ast, code) {
           if (isExternalCall(callNode)) {
             hasExternalCall = true;
             externalCallNode = callNode;
-            
-            const targetNode = getExternalCallTarget(callNode);
-            isTargetControlled = isUserControlled(targetNode, paramNames, stateVariables);
           }
         },
         Assignment(assignNode) {
@@ -201,50 +112,17 @@ function detect(ast, code) {
            return; // State update is BEFORE external call -> safe, don't flag
         }
 
-        // --- EXPLOITABILITY CHECK ---
-        let isExploitable = true;
-        let hasSafetyCheck = false;
-
-        // 1. Check for guard modifiers (nonReentrant)
-        if (!canRecurse) {
-          isExploitable = false;
-        }
-
-        // 2. Check for require statements or if checks on balance
-        parser.visit(funcNode.body, {
-          FunctionCall(reqNode) {
-            if (reqNode.expression && reqNode.expression.name === 'require') {
-               if (reqNode.loc && reqNode.loc.start.line <= callLine) {
-                 hasSafetyCheck = true;
-               }
-            }
-          },
-          IfStatement(ifNode) {
-            if (ifNode.loc && ifNode.loc.start.line <= callLine) {
-              hasSafetyCheck = true;
-            }
-          }
-        });
-
-        let conditionsVerified = 1; // Condition 1: hasExternalCall
-        
         const targetName = getTargetName(assignNode.left);
         const isStateUpdate = !targetName || stateVariables.has(targetName);
         
-        const validation = validateExploitability({
-          canRecurse,
-          isTargetControlled,
-          hasSafetyCheck,
-          isStateUpdate
-        });
-
-        if (validation === "Not exploitable") {
-          return; // skip the issue
+        if (!isStateUpdate) {
+           return; // skip if it's not a state update
         }
 
-        if (isStateUpdate) conditionsVerified++; // Condition 2: State update after call
-        if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
-        if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
+        // Check for guard modifiers (nonReentrant)
+        if (!canRecurse) {
+          return; // Protected by nonReentrant
+        }
 
         let fundsInvolved = false;
         parser.visit(externalCallNode, {
@@ -259,9 +137,7 @@ function detect(ast, code) {
         let severity = fundsInvolved ? 'HIGH' : 'MEDIUM';
 
         // Deterministic Confidence Scoring
-        let confidence = 'LOW';
-        if (conditionsVerified === 4) confidence = 'HIGH';
-        else if (conditionsVerified >= 2) confidence = 'MEDIUM';
+        let confidence = (callLine > 0 && assignLine > 0 && assignLine > callLine) ? 'HIGH' : 'MEDIUM';
 
         const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
 
