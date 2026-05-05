@@ -14,15 +14,6 @@ function detect(ast, code) {
     // Question 1: Can this actually be exploited?
     if (!details.isUnbounded) return "Not exploitable";
 
-    // Question 2: Does this require unrealistic conditions?
-    if (!details.failureBreaks) return "Not exploitable";
-
-    // Question 3: Are there safeguards already in place?
-    if (!details.failureBreaks) return "Not exploitable";
-
-    // Question 4: Does the pattern actually cause harm?
-    if (!details.isUnbounded || !details.failureBreaks) return "Not exploitable";
-
     return "Exploitable";
   }
 
@@ -82,21 +73,12 @@ function detect(ast, code) {
           if (hasExternalMethod) conditionsVerified++; // External call found
           if (isUnbounded) conditionsVerified++; // Unbounded loop
 
-          let severity = (isUnbounded && failureBreaks) ? 'MEDIUM' : 'LOW';
+          let severity = failureBreaks ? 'HIGH' : 'MEDIUM';
           
           // Deterministic Confidence Scoring
           let confidence = 'LOW';
           if (conditionsVerified === 3) confidence = 'HIGH';
           else if (conditionsVerified === 2) confidence = 'MEDIUM';
-
-          // Sanity check confidence vs severity
-          if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH' || severity === 'CRITICAL')) {
-              severity = 'MEDIUM'; // DoS max
-          } else if (confidence === 'MEDIUM' && (severity === 'HIGH' || severity === 'CRITICAL')) {
-              severity = 'MEDIUM';
-          } else if (confidence === 'LOW') {
-              return; // don't flag
-          }
 
           const line = externalCallLine || (node.loc ? node.loc.start.line : 0);
           const column = externalCallCol || (node.loc ? node.loc.start.column : 0);

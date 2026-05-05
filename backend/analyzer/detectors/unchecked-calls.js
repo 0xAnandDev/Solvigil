@@ -159,14 +159,7 @@ function detect(ast, code) {
             if (conditionsVerified === 4) confidence = 'HIGH';
             else if (conditionsVerified >= 2) confidence = 'MEDIUM';
 
-            // Sanity check confidence vs severity
-            if (confidence === 'HIGH' && (severity === 'LOW')) {
-                severity = 'MEDIUM';
-            } else if (confidence === 'MEDIUM' && (severity === 'LOW' || severity === 'HIGH' || severity === 'CRITICAL')) {
-                severity = 'MEDIUM';
-            } else if (confidence === 'LOW') {
-                return; // don't flag
-            }
+
 
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;

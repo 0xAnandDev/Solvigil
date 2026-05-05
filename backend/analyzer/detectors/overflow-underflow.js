@@ -17,15 +17,9 @@ function detect(ast, code, version) {
 
   function validateExploitability(details) {
     // Question 1: Can this actually be exploited?
-    if (!details.isOldSolidity && !details.currentlyUnchecked) return "Not exploitable";
+    if (!details.isOldSolidity) return "Not exploitable";
 
     // Question 2: Does this require unrealistic conditions?
-    if (!details.isAssignment) return "Not exploitable";
-
-    // Question 3: Are there safeguards already in place?
-    if (!details.isOldSolidity && !details.currentlyUnchecked) return "Not exploitable";
-
-    // Question 4: Does the pattern actually cause harm?
     if (!details.isAssignment) return "Not exploitable";
 
     return "Exploitable";
@@ -110,32 +104,16 @@ function detect(ast, code, version) {
 
           if (validation === "Exploitable") {
             let conditionsVerified = 1; // Arithmetic found
-            if (isOldSolidity || currentlyUnchecked) conditionsVerified++; // Pragma/unchecked
+            if (isOldSolidity) conditionsVerified++; // Pragma/unchecked
             // Assume no SafeMath since no checks for library existence
             conditionsVerified++; 
 
-            let severity = 'LOW';
-            if (isOldSolidity && !isUserSpecific) {
-              severity = 'CRITICAL';
-            } else if (currentlyUnchecked) {
-              severity = 'MEDIUM';
-            } else if (isOldSolidity && isUserSpecific) {
-              severity = 'LOW';
-            }
+            let severity = 'CRITICAL';
 
             // Deterministic Confidence Scoring
             let confidence = 'LOW';
-            if (conditionsVerified === 3) confidence = 'HIGH';
+            if (conditionsVerified >= 3) confidence = 'HIGH';
             else if (conditionsVerified === 2) confidence = 'MEDIUM';
-
-            // Sanity check confidence vs severity
-            if (confidence === 'HIGH' && (severity === 'LOW' || severity === 'HIGH')) {
-                severity = isOldSolidity ? 'CRITICAL' : 'MEDIUM';
-            } else if (confidence === 'MEDIUM' && (severity === 'HIGH' || severity === 'CRITICAL')) {
-                severity = 'MEDIUM';
-            } else if (confidence === 'LOW') {
-                return; // don't flag
-            }
 
             const line = node.loc ? node.loc.start.line : 0;
             const column = node.loc ? node.loc.start.column : 0;

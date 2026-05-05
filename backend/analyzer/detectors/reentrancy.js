@@ -246,29 +246,19 @@ function detect(ast, code) {
         if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
         if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
 
-        let severity = 'MEDIUM'; // default pattern, unlikely to be exploited
+        let isEntireBalance = false;
+        parser.visit(externalCallNode, {
+          MemberAccess(maNode) {
+            if (maNode.memberName === 'balance') isEntireBalance = true;
+          }
+        });
 
-        if (isTargetControlled && isExploitable && !hasSafetyCheck) {
-            severity = 'CRITICAL';
-        } else if (isTargetControlled && (hasSafetyCheck || !isExploitable)) {
-            severity = 'HIGH';
-        } else {
-            severity = 'MEDIUM';
-        }
+        let severity = isEntireBalance ? 'CRITICAL' : 'HIGH';
 
         // Deterministic Confidence Scoring
         let confidence = 'LOW';
         if (conditionsVerified === 4) confidence = 'HIGH';
         else if (conditionsVerified >= 2) confidence = 'MEDIUM';
-
-        // Sanity check confidence vs severity
-        if (confidence === 'HIGH' && (severity === 'MEDIUM' || severity === 'LOW')) {
-            severity = 'HIGH';
-        } else if (confidence === 'MEDIUM' && severity === 'LOW') {
-            severity = 'MEDIUM';
-        } else if (confidence === 'LOW') {
-            return; // don't flag
-        }
 
         const callCol = externalCallNode.loc ? externalCallNode.loc.start.column : 0;
 
