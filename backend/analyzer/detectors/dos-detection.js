@@ -85,7 +85,7 @@ function detect(ast, code) {
           const sourceCode = getSourceLine(line, code) || '';
 
           vulnerabilities.push({
-            type: 'Denial of Service',
+            type: 'Denial of Service (DoS)',
             severity: severity,
             category: 'Logic Error',
             confidence: confidence,
@@ -102,7 +102,7 @@ function detect(ast, code) {
               `5️⃣ No one receives funds (DoS)`
             ],
             fixExplanation: '❌ Vulnerable Code (Push Pattern):\n```solidity\nfunction distributeFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        // If one transfer fails, the entire loop reverts\n        payable(recipients[i]).transfer(amounts[i]);\n    }\n}\n```\n\n✅ Safe Code (Pull Pattern):\n```solidity\nmapping(address => uint256) public balances;\n\nfunction allocateFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        balances[recipients[i]] += amounts[i];\n    }\n}\n\nfunction withdraw() public {\n    uint256 amount = balances[msg.sender];\n    require(amount > 0, "No funds to withdraw");\n    balances[msg.sender] = 0;\n    payable(msg.sender).transfer(amount);\n}\n```',
-            impact: severity === 'MEDIUM' ? 'MEDIUM: Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.' : 'LOW: External call in loop, but loop is bounded or has failure fallbacks.'
+            impact: severity === 'HIGH' ? 'HIGH: Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.' : 'MEDIUM: External call in unbounded loop can cause out-of-gas errors, preventing execution.'
           });
         }
       }

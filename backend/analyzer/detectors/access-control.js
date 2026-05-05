@@ -126,15 +126,11 @@ function analyzeCritical(funcNode) {
 
   if (severity === 'CRITICAL') {
     // Keep CRITICAL if it's selfdestruct
-  } else if (usesContractBalance || (hasTransferToArbitrary && modifiedUserStates.size === 0) || (modifiedGlobalStates.size > 0 && !isUserSpecific)) {
+  } else if (usesContractBalance || hasTransferToArbitrary || (modifiedGlobalStates.size > 0 && !isUserSpecific)) {
     severity = 'HIGH'; // actually transfers funds or changes global state
-  } else if (isUserSpecific && !hasTransferToArbitrary) {
-    severity = 'MEDIUM'; // public but user-specific operation
-  } else if (isReadOnly || (isUserSpecific && hasTransferToArbitrary)) {
-    severity = 'LOW'; // just reads data or user-specific withdrawal
+  } else {
+    severity = 'LOW'; // user-specific or read-only (SKIPPED)
   }
-
-  if (!severity) severity = 'LOW';
 
   return { severity, line: criticalLine, column: criticalCol };
 }

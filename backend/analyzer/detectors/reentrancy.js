@@ -246,14 +246,17 @@ function detect(ast, code) {
         if (isTargetControlled) conditionsVerified++; // Condition 3: Target is user-controlled
         if (isExploitable) conditionsVerified++; // Condition 4: Actually exploitable (no guards)
 
-        let isEntireBalance = false;
+        let fundsInvolved = false;
         parser.visit(externalCallNode, {
+          NameValueList(node) {
+             if (node.names && node.names.includes('value')) fundsInvolved = true;
+          },
           MemberAccess(maNode) {
-            if (maNode.memberName === 'balance') isEntireBalance = true;
+             if (['transfer', 'send'].includes(maNode.memberName)) fundsInvolved = true;
           }
         });
 
-        let severity = isEntireBalance ? 'CRITICAL' : 'HIGH';
+        let severity = fundsInvolved ? 'HIGH' : 'MEDIUM';
 
         // Deterministic Confidence Scoring
         let confidence = 'LOW';
@@ -280,7 +283,7 @@ function detect(ast, code) {
             `4️⃣ \`${targetName || 'state variable'}\` not updated yet, function runs again`,
             `5️⃣ Funds transferred multiple times before \`${targetName || 'state variable'}\` is finally updated`
           ],
-          impact: severity === 'CRITICAL' ? 'CRITICAL: Attacker can withdraw more funds than they own by exploiting callback.' : 'MEDIUM: User can trigger reentrancy, but exploitability is limited by mitigations or hardcoded addresses.'
+          impact: severity === 'HIGH' ? 'HIGH: Attacker can drain funds by exploiting callback.' : 'MEDIUM: Reentrancy possible but no funds directly at risk. May cause incorrect state behavior.'
         });
 
         // Reset the flag since we found one issue for this external call

@@ -1,8 +1,8 @@
 const STATUS_COLORS = {
-  "Critical risk": "#EF4444",
-  "Vulnerable": "#F59E0B",
-  "Needs review": "#FBBF24",
-  "Minor issues": "#3B82F6",
+  "Critical Risk": "#EF4444",
+  "High Risk": "#F59E0B",
+  "Needs Review": "#FBBF24",
+  "Low Risk": "#3B82F6",
   "Safe": "#10B981"
 };
 
@@ -38,20 +38,26 @@ class ScoreCalculator {
                            (severityBreakdown.medium * 10) + 
                            (severityBreakdown.low * 5);
 
-        const finalScore = Math.max(0, baseScore - deductions);
+        let finalScore = Math.max(0, baseScore - deductions);
+        const activeVulnerabilities = severityBreakdown.critical + severityBreakdown.high + severityBreakdown.medium + severityBreakdown.low;
+
+        // FINAL VALIDATION CHECK
+        if (activeVulnerabilities > 0 && finalScore > 90) {
+            finalScore = 90;
+        }
 
         let status = "Safe";
-        if (finalScore <= 39) status = "Critical risk";
-        else if (finalScore <= 59) status = "Vulnerable";
-        else if (finalScore <= 79) status = "Needs review";
-        else if (finalScore <= 94) status = "Minor issues";
+        if (severityBreakdown.critical > 0) status = "Critical Risk";
+        else if (severityBreakdown.high > 0) status = "High Risk";
+        else if (severityBreakdown.medium > 0) status = "Needs Review";
+        else if (severityBreakdown.low > 0) status = "Low Risk";
         else status = "Safe";
         
         let statusReasoning = 'No vulnerabilities detected.';
-        if (status === 'Critical risk') statusReasoning = 'Critical risk. DO NOT DEPLOY.';
-        else if (status === 'Vulnerable') statusReasoning = 'Vulnerable. Fix before deployment.';
-        else if (status === 'Needs review') statusReasoning = 'Needs review. Review required.';
-        else if (status === 'Minor issues') statusReasoning = 'Minor issues found that should be addressed.';
+        if (status === 'Critical Risk') statusReasoning = 'Critical risk. DO NOT DEPLOY.';
+        else if (status === 'High Risk') statusReasoning = 'High risk. Fix before deployment.';
+        else if (status === 'Needs Review') statusReasoning = 'Needs review. Review required.';
+        else if (status === 'Low Risk') statusReasoning = 'Low risk. Minor issues found that should be addressed.';
 
         return {
             DECISION: {
@@ -73,7 +79,7 @@ class ScoreCalculator {
             details: {
                 baseScore,
                 deductions,
-                vulnerabilityCount: severityBreakdown.critical + severityBreakdown.high + severityBreakdown.medium + severityBreakdown.low,
+                vulnerabilityCount: activeVulnerabilities,
                 severityBreakdown: {
                     critical: severityBreakdown.critical,
                     high: severityBreakdown.high,
