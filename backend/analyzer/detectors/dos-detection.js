@@ -1,3 +1,4 @@
+const parser = require('@solidity-parser/parser');
 const { getSourceLine } = require('../ast-builder');
 
 /**
@@ -10,13 +11,6 @@ const { getSourceLine } = require('../ast-builder');
 function detect(ast, code) {
   const vulnerabilities = [];
 
-  function validateExploitability(details) {
-    // Question 1: Can this actually be exploited?
-    if (!details.isUnbounded) return "Not exploitable";
-
-    return "Exploitable";
-  }
-
   function traverse(node, funcName) {
     if (Array.isArray(node)) {
       node.forEach(child => traverse(child, funcName));
@@ -26,72 +20,50 @@ function detect(ast, code) {
         currentFuncName = node.name || 'fallback/receive';
       }
       
+      // 3. SIMPLIFY loop detection: If node is ForStatement or WhileStatement -> valid loop
       if (node.type === 'ForStatement' || node.type === 'WhileStatement') {
-        const bodyStr = JSON.stringify(node.body || {});
-        const conditionStr = JSON.stringify(node.conditionExpression || node.condition || node.test || {});
         
-        const hasFunctionCall = bodyStr.includes('"type":"FunctionCall"');
-        const hasExternalMethod = bodyStr.includes('"memberName":"call"') || 
-                                  bodyStr.includes('"memberName":"transfer"') || 
-                                  bodyStr.includes('"memberName":"send"');
-
-        // --- EXPLOITABILITY CHECK ---
-        let isExploitable = true;
-
-        // 1. Is the loop unbounded? (Check for reachable exploit)
-        const isUnbounded = conditionStr.includes('"memberName":"length"') || conditionStr.includes('"type":"Identifier"');
-        if (!isUnbounded) isExploitable = false;
-
-        // 2. Are there guards/mitigations?
-        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || 
-                              bodyStr.includes('"name":"require"') || 
-                              bodyStr.includes('"memberName":"send"') || 
-                              bodyStr.includes('"memberName":"call"');
-        if (!failureBreaks) isExploitable = false;
-
+        let hasExternalCall = false;
         let externalCallLine = 0;
         let externalCallCol = 0;
 
-        parser.visit(node.body || node, {
-          FunctionCall(callNode) {
-            if (callNode.expression && callNode.expression.type === 'MemberAccess') {
-              const memberName = callNode.expression.memberName;
-              if (['call', 'transfer', 'send'].includes(memberName)) {
-                if (!externalCallLine && callNode.loc) {
-                  externalCallLine = callNode.loc.start.line;
-                  externalCallCol = callNode.loc.start.column;
-                }
+        // 4. SIMPLIFY external call detection: Detect MemberAccess with transfer, call, send
+        const loopBody = node.body || node;
+        parser.visit(loopBody, {
+          MemberAccess(maNode) {
+            if (['call', 'transfer', 'send'].includes(maNode.memberName)) {
+              hasExternalCall = true;
+              if (!externalCallLine && maNode.loc) {
+                externalCallLine = maNode.loc.start.line;
+                externalCallCol = maNode.loc.start.column;
               }
             }
           }
         });
 
-        const validation = validateExploitability({
-          isUnbounded,
-          failureBreaks
-        });
+        // 5. FIX unbounded loop logic: If loop condition references ANY variable -> treat as dynamic
+        let isDynamic = false;
+        const conditionNode = node.conditionExpression || node.condition || node.test;
+        if (conditionNode) {
+          parser.visit(conditionNode, {
+            Identifier() {
+              isDynamic = true;
+            }
+          });
+        }
 
-        if (hasFunctionCall && hasExternalMethod && validation === "Exploitable") {
-          let conditionsVerified = 1; // Loop found
-          if (hasExternalMethod) conditionsVerified++; // External call found
-          if (isUnbounded) conditionsVerified++; // Unbounded loop
-
-          let severity = 'HIGH';
-          
-          // Deterministic Confidence Scoring
-          let confidence = 'LOW';
-          if (conditionsVerified === 3) confidence = 'HIGH';
-          else if (conditionsVerified === 2) confidence = 'MEDIUM';
-
+        // 6 & 7. FINAL DETECTION RULE: If loop exists AND external call inside loop -> classify as DoS
+        // We include the isDynamic check to ensure it's not a hardcoded safe loop like `for(uint i=0; i<3; i++)`
+        if (hasExternalCall && isDynamic) {
           const line = externalCallLine || (node.loc ? node.loc.start.line : 0);
           const column = externalCallCol || (node.loc ? node.loc.start.column : 0);
           const sourceCode = getSourceLine(line, code) || '';
 
           vulnerabilities.push({
             type: 'Denial of Service (DoS)',
-            severity: severity,
+            severity: 'HIGH',
             category: 'Logic Error',
-            confidence: confidence,
+            confidence: 'HIGH',
             line: line,
             column: column,
             description: 'Loop contains external calls. A single failure will revert entire transaction, causing DoS.',
@@ -105,7 +77,7 @@ function detect(ast, code) {
               `5️⃣ No one receives funds (DoS)`
             ],
             fixExplanation: '❌ Vulnerable Code (Push Pattern):\n```solidity\nfunction distributeFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        // If one transfer fails, the entire loop reverts\n        payable(recipients[i]).transfer(amounts[i]);\n    }\n}\n```\n\n✅ Safe Code (Pull Pattern):\n```solidity\nmapping(address => uint256) public balances;\n\nfunction allocateFunds(address[] memory recipients, uint256[] memory amounts) public {\n    for (uint i = 0; i < recipients.length; i++) {\n        balances[recipients[i]] += amounts[i];\n    }\n}\n\nfunction withdraw() public {\n    uint256 amount = balances[msg.sender];\n    require(amount > 0, "No funds to withdraw");\n    balances[msg.sender] = 0;\n    payable(msg.sender).transfer(amount);\n}\n```',
-            impact: severity === 'HIGH' ? 'HIGH: Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.' : 'MEDIUM: External call in unbounded loop can cause out-of-gas errors, preventing execution.'
+            impact: 'HIGH: Contract functionality can be blocked by a single failing external call. Prevents legitimate operations.'
           });
         }
       }
