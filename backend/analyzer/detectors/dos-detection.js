@@ -28,7 +28,7 @@ function detect(ast, code) {
       
       if (node.type === 'ForStatement' || node.type === 'WhileStatement') {
         const bodyStr = JSON.stringify(node.body || {});
-        const conditionStr = JSON.stringify(node.condition || node.test || {});
+        const conditionStr = JSON.stringify(node.conditionExpression || node.condition || node.test || {});
         
         const hasFunctionCall = bodyStr.includes('"type":"FunctionCall"');
         const hasExternalMethod = bodyStr.includes('"memberName":"call"') || 
@@ -42,8 +42,11 @@ function detect(ast, code) {
         const isUnbounded = conditionStr.includes('"memberName":"length"') || conditionStr.includes('"type":"Identifier"');
         if (!isUnbounded) isExploitable = false;
 
-        // 2. Are there guards/mitigations? (e.g. failure breaks transaction)
-        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || bodyStr.includes('"name":"require"');
+        // 2. Are there guards/mitigations?
+        const failureBreaks = bodyStr.includes('"memberName":"transfer"') || 
+                              bodyStr.includes('"name":"require"') || 
+                              bodyStr.includes('"memberName":"send"') || 
+                              bodyStr.includes('"memberName":"call"');
         if (!failureBreaks) isExploitable = false;
 
         let externalCallLine = 0;
@@ -73,7 +76,7 @@ function detect(ast, code) {
           if (hasExternalMethod) conditionsVerified++; // External call found
           if (isUnbounded) conditionsVerified++; // Unbounded loop
 
-          let severity = failureBreaks ? 'HIGH' : 'MEDIUM';
+          let severity = 'HIGH';
           
           // Deterministic Confidence Scoring
           let confidence = 'LOW';
