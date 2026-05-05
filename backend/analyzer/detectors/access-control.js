@@ -79,9 +79,19 @@ function analyzeCritical(funcNode) {
     WhileStatement() { hasLoop = true; },
     BinaryOperation(binNode) {
       if (['=', '+=', '-=', '*=', '/='].includes(binNode.operator)) {
+        // Rule: Ensure arithmetic-only operations are NEVER flagged as access control issues
+        if (['+=', '-=', '*=', '/='].includes(binNode.operator)) return;
+        if (binNode.right && binNode.right.type === 'BinaryOperation' && ['+', '-', '*', '/'].includes(binNode.right.operator)) return;
+
         const targetName = getBaseIdentifier(binNode.left);
         if (targetName && stateVariables.has(targetName)) {
+          // Check if it modifies critical/global state affecting funds or permissions
+          const lowerName = targetName.toLowerCase();
+          const isCriticalState = ['owner', 'admin', 'role', 'auth', 'fee', 'treasury', 'fund', 'balance', 'allowance', 'lock', 'pause', 'stop', 'config', 'state', 'status'].some(kw => lowerName.includes(kw));
+
           if (!isMsgSender(binNode.left)) {
+            if (!isCriticalState) return; // Skip non-critical state modifications
+
             modifiedGlobalStates.add(targetName);
             if (!criticalLine && binNode.loc) {
               criticalLine = binNode.loc.start.line;
