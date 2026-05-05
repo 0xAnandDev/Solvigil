@@ -33,18 +33,13 @@ class ScoreCalculator {
             }
         });
 
-        const deductions = (severityBreakdown.critical * 30) + 
-                           (severityBreakdown.high * 20) + 
-                           (severityBreakdown.medium * 10) + 
+        const deductions = (severityBreakdown.critical * 40) + 
+                           (severityBreakdown.high * 25) + 
+                           (severityBreakdown.medium * 15) + 
                            (severityBreakdown.low * 5);
 
-        let finalScore = Math.max(0, baseScore - deductions);
+        let finalScore = Math.max(0, Math.min(100, baseScore - deductions));
         const activeVulnerabilities = severityBreakdown.critical + severityBreakdown.high + severityBreakdown.medium + severityBreakdown.low;
-
-        // FINAL VALIDATION CHECK
-        if (activeVulnerabilities > 0 && finalScore > 90) {
-            finalScore = 90;
-        }
 
         let status = "Safe";
         if (severityBreakdown.critical > 0) status = "Critical Risk";
@@ -52,6 +47,23 @@ class ScoreCalculator {
         else if (severityBreakdown.medium > 0) status = "Needs Review";
         else if (severityBreakdown.low > 0) status = "Low Risk";
         else status = "Safe";
+
+        // Score Normalization Rules
+        if (status === "Critical Risk" && finalScore > 40) {
+            finalScore = 40;
+        } else if (status === "High Risk" && finalScore > 70) {
+            finalScore = 70;
+        } else if (status === "Needs Review" && finalScore > 85) {
+            finalScore = 85;
+        } else if (status === "Low Risk" && finalScore > 95) {
+            finalScore = 95;
+        }
+
+        // FINAL VALIDATION CHECK
+        if (activeVulnerabilities > 0) {
+            if (finalScore > 95) finalScore = 95;
+            if (status === "Safe") status = "Low Risk";
+        }
         
         let statusReasoning = 'No vulnerabilities detected.';
         if (status === 'Critical Risk') statusReasoning = 'Critical risk. DO NOT DEPLOY.';

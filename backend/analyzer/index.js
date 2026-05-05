@@ -74,13 +74,21 @@ async function analyzeContract(code) {
       report.summary.low = lowCount;
       report.DECISION.severityBreakdown = { critical: critCount, high: highCount, medium: medCount, low: lowCount };
 
+      const STATUS_COLORS = {
+        "Critical Risk": "#EF4444",
+        "High Risk": "#F59E0B",
+        "Needs Review": "#FBBF24",
+        "Low Risk": "#3B82F6",
+        "Safe": "#10B981"
+      };
+
       if (totalVulns === 0) {
         // 1. If vulnerabilities array is empty
         if (report.securityStatus !== 'Safe') {
            console.warn(`[VALIDATION] Fixing status: empty vulns but status was ${report.securityStatus}`);
            report.securityStatus = 'Safe';
         }
-        if (report.securityScore < 95) {
+        if (report.securityScore !== 100) {
            console.warn(`[VALIDATION] Fixing score: empty vulns but score was ${report.securityScore}`);
            report.securityScore = 100;
         }
@@ -88,37 +96,40 @@ async function analyzeContract(code) {
         // 2. If vulnerabilities array NOT empty
         if (report.securityStatus === 'Safe') {
            console.warn(`[VALIDATION] Fixing status: has vulns but status was Safe`);
-           report.securityStatus = 'Low Risk'; // Temporary, will be overridden below
-        }
-        if (report.securityScore >= 90) {
-           console.warn(`[VALIDATION] Fixing score: has vulns but score was ${report.securityScore}`);
-           report.securityScore = 89;
+           report.securityStatus = 'Low Risk'; // Will be overridden below
         }
 
-        // 3. If CRITICAL severity found
+        // 3. Status is ALWAYS determined by highest severity
         if (critCount > 0) {
-           if (report.securityStatus !== 'Critical Risk') report.securityStatus = 'Critical Risk';
-           if (report.securityScore >= 70) report.securityScore = 69;
-        } 
-        // 4. If only HIGH severity found (no CRITICAL)
-        else if (highCount > 0) {
-           if (report.securityStatus !== 'High Risk') report.securityStatus = 'High Risk';
-           if (report.securityScore < 60 || report.securityScore > 80) report.securityScore = Math.min(Math.max(report.securityScore, 60), 79);
+           report.securityStatus = 'Critical Risk';
+        } else if (highCount > 0) {
+           report.securityStatus = 'High Risk';
+        } else if (medCount > 0) {
+           report.securityStatus = 'Needs Review';
+        } else if (lowCount > 0) {
+           report.securityStatus = 'Low Risk';
         }
-        // 5. If only MEDIUM found (no HIGH/CRITICAL)
-        else if (medCount > 0) {
-           if (report.securityStatus !== 'Moderate Risk') report.securityStatus = 'Moderate Risk';
-           if (report.securityScore < 60 || report.securityScore > 80) report.securityScore = Math.min(Math.max(report.securityScore, 60), 79);
-        }
-        // 6. If only LOW found
-        else if (lowCount > 0) {
-           if (report.securityStatus !== 'Low Risk') report.securityStatus = 'Low Risk';
-           if (report.securityScore < 80 || report.securityScore >= 95) report.securityScore = Math.min(Math.max(report.securityScore, 80), 94);
+
+        // 4. Score recalculation based on new weights
+        const deductions = (critCount * 40) + (highCount * 25) + (medCount * 15) + (lowCount * 5);
+        report.securityScore = Math.max(0, Math.min(100, 100 - deductions));
+
+        // 5. Score Normalization Rules based on status
+        if (report.securityStatus === 'Critical Risk' && report.securityScore > 40) {
+           report.securityScore = 40;
+        } else if (report.securityStatus === 'High Risk' && report.securityScore > 70) {
+           report.securityScore = 70;
+        } else if (report.securityStatus === 'Needs Review' && report.securityScore > 85) {
+           report.securityScore = 85;
+        } else if (report.securityStatus === 'Low Risk' && report.securityScore > 95) {
+           report.securityScore = 95;
         }
       }
       
       report.DECISION.securityStatus = report.securityStatus;
       report.DECISION.securityScore = report.securityScore;
+      report.DECISION.statusColor = STATUS_COLORS[report.securityStatus] || "#10B981";
+      report.statusColor = report.DECISION.statusColor;
       
       return report;
     }
