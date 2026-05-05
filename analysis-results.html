@@ -1125,18 +1125,11 @@ require(success, "External call failed");</div>
   }
 
   // Score Animation
-  function animateAnalysisScore(finalScore) {
+  function animateAnalysisScore(finalScore, status, color) {
     const duration = 2000; // ms
     const scoreText = document.getElementById('score-value-text');
     const progressBar = document.getElementById('score-progress-bar');
     const statusText = document.getElementById('score-status-text');
-    
-    let color = 'var(--status-critical)';
-    let status = 'Critical Risk';
-    
-    if (finalScore >= 80) { color = 'var(--status-safe)'; status = 'Safe'; }
-    else if (finalScore >= 50) { color = 'var(--status-review)'; status = 'Needs Review'; }
-    else if (finalScore >= 30) { color = 'var(--status-vulnerable)'; status = 'Vulnerable'; }
 
     if (statusText) {
       statusText.style.color = color;
@@ -1312,7 +1305,12 @@ require(success, "External call failed");</div>
       window.currentAnalysis = analysisData;
 
       // 4. UPDATE HEADER
-      animateAnalysisScore(analysisData.securityScore || 100);
+      const decision = analysisData.DECISION || analysisData;
+      animateAnalysisScore(
+        decision.securityScore !== undefined ? decision.securityScore : 100, 
+        decision.securityStatus || 'Safe', 
+        decision.statusColor || 'var(--status-safe)'
+      );
       
       if (analysisData.contractInfo) {
         const nameEl = document.querySelector('.contract-name');
@@ -1320,7 +1318,7 @@ require(success, "External call failed");</div>
       }
 
       // Update Summary Grid
-      const breakdown = analysisData.details?.severityBreakdown || analysisData.summary || { critical: 0, high: 0, medium: 0, low: 0 };
+      const breakdown = (decision.severityBreakdown) || analysisData.summary || { critical: 0, high: 0, medium: 0, low: 0 };
       const summaryGrid = document.querySelector('.summary-grid');
       if (summaryGrid) {
         summaryGrid.innerHTML = `
