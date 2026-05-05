@@ -12,18 +12,8 @@ function detect(ast, code) {
   const vulnerabilities = [];
 
   function validateExploitability(details) {
-    // Question 1: Can this actually be exploited?
     if (details.inTryCatch) return "Not exploitable";
-
-    // Question 2: Does this require unrealistic conditions?
-    if (!details.affectsState) return "Not exploitable";
-
-    // Question 3: Are there safeguards already in place?
     if (details.isChecked) return "Not exploitable";
-
-    // Question 4: Does the pattern actually cause harm?
-    if (!details.affectsState) return "Not exploitable";
-
     return "Exploitable";
   }
 
@@ -51,6 +41,19 @@ function detect(ast, code) {
         
         // Look for .call(), .send(), or .delegatecall()
         if (isExternal) {
+          let transfersValue = false;
+          let queue = [node.expression];
+          while (queue.length > 0) {
+            let n = queue.pop();
+            if (!n) continue;
+            if (n.type === 'NameValueList' && n.names && n.names.includes('value')) transfersValue = true;
+            if (n.type === 'MemberAccess' && ['send', 'transfer'].includes(n.memberName)) transfersValue = true;
+            for (let key in n) {
+              if (n[key] && typeof n[key] === 'object' && key !== 'loc') {
+                queue.push(n[key]);
+              }
+            }
+          }
           
           let isChecked = false;
           let inIfStatement = false;
@@ -103,30 +106,6 @@ function detect(ast, code) {
             }
           }
 
-          // Check if it affects state
-          let affectsState = false;
-          for (let i = parents.length - 1; i >= 0; i--) {
-            if (parents[i].type === 'FunctionDefinition') {
-              const funcStr = JSON.stringify(parents[i]);
-              if (funcStr.includes('"type":"Assignment"') || funcStr.includes('"type":"StateVariableDeclaration"')) {
-                affectsState = true;
-              }
-              break;
-            }
-          }
-
-          // --- EXPLOITABILITY CHECK ---
-          let isExploitable = true;
-
-          // 1. Are there safety checks? (require, if statements)
-          if (isChecked) isExploitable = false;
-
-          // 2. Are there guards or restrictions? (try-catch)
-          if (inTryCatch) isExploitable = false;
-
-          // 3. Is the dangerous part actually reachable/exploitable?
-          if (!affectsState) isExploitable = false;
-
           let funcName = 'function';
           for (let i = parents.length - 1; i >= 0; i--) {
             if (parents[i].type === 'FunctionDefinition') {
@@ -143,21 +122,19 @@ function detect(ast, code) {
           let conditionsVerified = 1; // 1. .call() found
           if (!isChecked) conditionsVerified++; // 2. Return value NOT in require()
           if (!inTryCatch) conditionsVerified++; // 3. NOT in try-catch
-          if (affectsState) conditionsVerified++; // 4. Affects state
 
           const validation = validateExploitability({
             isChecked,
-            inTryCatch,
-            affectsState
+            inTryCatch
           });
 
           if (isExternal && validation === "Exploitable") {
-            let severity = affectsState ? 'HIGH' : 'MEDIUM';
+            let severity = transfersValue ? 'HIGH' : 'MEDIUM';
             
             // Deterministic Confidence Scoring
             let confidence = 'LOW';
-            if (conditionsVerified === 4) confidence = 'HIGH';
-            else if (conditionsVerified >= 2) confidence = 'MEDIUM';
+            if (conditionsVerified === 3) confidence = 'HIGH';
+            else if (conditionsVerified === 2) confidence = 'MEDIUM';
 
 
 
