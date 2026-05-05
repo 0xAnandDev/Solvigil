@@ -66,6 +66,7 @@ function analyzeCritical(funcNode) {
   let severity = null;
   let criticalLine = null;
   let criticalCol = null;
+  let hasLoop = false;
   const modifiedGlobalStates = new Set();
   const modifiedUserStates = new Set();
   let hasTransferToArbitrary = false;
@@ -74,6 +75,8 @@ function analyzeCritical(funcNode) {
   if (!funcNode.body) return null;
 
   parser.visit(funcNode.body, {
+    ForStatement() { hasLoop = true; },
+    WhileStatement() { hasLoop = true; },
     BinaryOperation(binNode) {
       if (['=', '+=', '-=', '*=', '/='].includes(binNode.operator)) {
         const targetName = getBaseIdentifier(binNode.left);
@@ -124,7 +127,9 @@ function analyzeCritical(funcNode) {
   let isUserSpecific = modifiedUserStates.size > 0 && modifiedGlobalStates.size === 0 && !hasTransferToArbitrary;
   let isReadOnly = modifiedGlobalStates.size === 0 && modifiedUserStates.size === 0 && !hasTransferToArbitrary && !usesContractBalance && severity !== 'CRITICAL';
 
-  if (severity === 'CRITICAL') {
+  if (hasLoop) {
+    severity = 'LOW'; // skip batch payments/loops
+  } else if (severity === 'CRITICAL') {
     // Keep CRITICAL if it's selfdestruct
   } else if (usesContractBalance || hasTransferToArbitrary || (modifiedGlobalStates.size > 0 && !isUserSpecific)) {
     severity = 'HIGH'; // actually transfers funds or changes global state
