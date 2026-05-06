@@ -8,17 +8,53 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Poppins:wght@500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
   
   <!-- Styles -->
   <link rel="stylesheet" href="/css/scanner-styles.css">
   <link rel="stylesheet" href="/css/animations.css">
   <link rel="stylesheet" href="/css/responsive.css">
   <link rel="stylesheet" href="/css/results.css">
+  <link rel="stylesheet" href="/css/wind-animation.css">
 </head>
-<body>
+<body class="scanner-page font-body text-primary overflow-x-hidden selection:bg-mint selection:text-white">
   
-  <div class="container">
+  <!-- Wind Animation Background (Subtle) -->
+  <div class="wind-animation-container" style="opacity: 0.4; pointer-events: none; position: fixed; z-index: -1;">
+    <svg class="wind-svg-background" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="windGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#9ACFCA;stop-opacity:0.3" />
+          <stop offset="50%" style="stop-color:#C3E8E1;stop-opacity:0.5" />
+          <stop offset="100%" style="stop-color:#9ACFCA;stop-opacity:0.3" />
+        </linearGradient>
+        <linearGradient id="windGradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#8ABCB7;stop-opacity:0.4" />
+          <stop offset="50%" style="stop-color:#B3E0D8;stop-opacity:0.6" />
+          <stop offset="100%" style="stop-color:#8ABCB7;stop-opacity:0.3" />
+        </linearGradient>
+        <linearGradient id="windGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#D0F0E8;stop-opacity:0.5" />
+          <stop offset="50%" style="stop-color:#E2F7F2;stop-opacity:0.7" />
+          <stop offset="100%" style="stop-color:#D0F0E8;stop-opacity:0.4" />
+        </linearGradient>
+        <filter id="leafBlur1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur in="SourceGraphic" stdDeviation="3,3" /></filter>
+        <filter id="leafBlur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur in="SourceGraphic" stdDeviation="1,1" /></filter>
+        <g id="leaf"><path d="M0,15 C5,-2 25,-2 30,15 C25,32 5,32 0,15 Z" /></g>
+      </defs>
+      <g class="wind-layer wind-layer-1">
+        <path class="wind-curve" d="M -400,250 Q 150,150 400,350 T 1000,400 T 1600,300 T 2200,450" stroke="url(#windGradient1)" stroke-width="120" fill="none" opacity="0.8" />
+        <path class="wind-curve" d="M -400,450 Q 120,300 380,450 T 980,350 T 1580,500 T 2180,400" stroke="url(#windGradient2)" stroke-width="140" fill="none" opacity="0.7" />
+      </g>
+      <g class="wind-layer wind-layer-2">
+        <path class="wind-curve" d="M -500,300 Q 200,180 500,320 T 1200,280 T 1900,420 T 2600,350" stroke="url(#windGradient2)" stroke-width="160" fill="none" opacity="0.6" />
+      </g>
+      <g class="particle-layer particle-layer-1">
+        <use href="#leaf" class="floating-leaf" x="120" y="180" fill="#7EB3A7" opacity="0.6" transform="rotate(-25 150 200) scale(1.5)" filter="url(#leafBlur1)" />
+        <use href="#leaf" class="floating-leaf" x="780" y="150" fill="#7EB3A7" opacity="0.8" transform="rotate(35 800 150) scale(0.8)" filter="url(#leafBlur2)" />
+      </g>
+    </svg>
+  </div>
     <!-- Header -->
     <header class="header">
       <a href="/index.html" class="logo-container">
@@ -32,6 +68,8 @@
       </a>
       <div></div>
     </header>
+
+  <div class="container">
 
     <!-- Main Content -->
     <main class="main-content">
@@ -48,57 +86,86 @@
             <svg class="dropzone-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <h2 class="dropzone-title">Drop your .sol file here</h2>
-            <p class="dropzone-subtitle">or click to upload</p>
+            <h2 class="dropzone-title" id="dropzone-title">Drop your .sol file here</h2>
+            <p class="dropzone-subtitle" id="dropzone-subtitle">or click to upload</p>
             <p class="dropzone-info">Supported: Solidity (.sol) | Max size: 2 MB</p>
+            <div class="dropzone-progress-container" id="dropzone-progress-container" style="display: none;">
+              <div class="dropzone-progress-bar">
+                <div class="dropzone-progress-fill" id="dropzone-progress-fill"></div>
+              </div>
+              <p class="dropzone-progress-text" id="dropzone-progress-text">0%</p>
+            </div>
+            <div class="dropzone-success" id="dropzone-success" style="display: none;">
+              <svg class="checkmark-draw" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+            </div>
             <input type="file" id="file-input" class="file-input" accept=".sol">
             <button class="btn-secondary mt-4" id="btn-choose-file">Choose File</button>
           </div>
         </div>
 
         <!-- File Display (Hidden initially) -->
-        <div class="file-display" id="file-display">
-          <div class="file-display-header">
-            <svg class="file-display-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="file-display-title">File Successfully Loaded</span>
-          </div>
-          <div class="file-details">
-            <div class="file-name-size">
-              <span id="file-name">Contract.sol</span>
-              <br>
-              <span id="file-size" style="color: #999;">12.5 KB</span>
+        <div class="file-display premium-card" id="file-display">
+          <div class="file-display-content">
+            <div class="file-display-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div class="file-display-info">
+              <div class="file-name" id="file-name">Contract.sol</div>
+              <div class="file-meta">
+                <span class="file-size" id="file-size">12.5 KB</span>
+                <span class="file-status text-success">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="status-icon">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                  Complete
+                </span>
+              </div>
             </div>
             <div class="file-actions">
-              <button id="btn-remove-file">Remove</button>
+              <button id="btn-remove-file" class="btn-icon-text" title="Change file">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Error Message (Hidden initially) -->
         <div class="error-message" id="error-message">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span id="error-text">Only Solidity (.sol) files are supported.</span>
+          <div class="error-content">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span id="error-text">Only Solidity (.sol) files are supported.</span>
+          </div>
+          <button class="btn-error-close" id="btn-error-close" title="Dismiss">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <!-- Trust Indicators -->
         <div class="trust-indicators">
-          <div class="trust-item">
+          <div class="trust-item tooltip" data-tooltip="We never ask for your private keys">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
             No wallet required
           </div>
-          <div class="trust-item">
+          <div class="trust-item tooltip" data-tooltip="Analysis is performed securely">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             Secure analysis
           </div>
-          <div class="trust-item">
+          <div class="trust-item tooltip" data-tooltip="Completely free static analysis">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -107,9 +174,20 @@
         </div>
 
         <div class="actions-container">
-          <button class="btn-primary" id="btn-analyze" disabled>Analyze Contract</button>
-          <div style="margin-top: 16px;">
-            <button class="btn-text" id="btn-view-terms">View Terms & Conditions</button>
+          <button class="btn-primary" id="btn-analyze" disabled>
+            <span class="btn-text-content">Analyze Contract</span>
+            <svg class="btn-loader" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+          <div class="terms-link-wrapper mt-4">
+            <button class="btn-text tooltip" id="btn-view-terms" data-tooltip="Review our terms and conditions">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon-sm">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              View Terms & Conditions
+            </button>
           </div>
         </div>
       </section>

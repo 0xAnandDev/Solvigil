@@ -30,11 +30,12 @@ export function initAnalyzer() {
     }
 
     btnAnalyze.disabled = true;
+    btnAnalyze.classList.add('loading');
+    const btnTextContent = btnAnalyze.querySelector('.btn-text-content');
+    if (btnTextContent) btnTextContent.textContent = 'Analyzing...';
 
-    // Show loading section
-    uploadSection.style.display = 'none';
-    processingSection.style.display = 'flex';
-    resultsSection.style.display = 'none';
+    // Keep upload section visible to show the button state
+    // We don't hide it immediately anymore
 
     try {
       let result;
@@ -66,10 +67,22 @@ export function initAnalyzer() {
       }
 
       if (!result.success) {
-        if (window.showToast) window.showToast('Analysis failed: ' + result.error, 'error');
-        processingSection.style.display = 'none';
-        uploadSection.style.display = 'block';
+        // Show visible error in UI
+        const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        if (errorMessage && errorText) {
+          errorText.textContent = 'Analysis failed: ' + result.error;
+          errorMessage.style.display = 'flex';
+          setTimeout(() => { errorMessage.style.display = 'none'; }, 6000);
+        } else if (window.showToast) {
+          window.showToast('Analysis failed: ' + result.error, 'error');
+        } else {
+          alert('Analysis failed: ' + result.error);
+        }
+        
         btnAnalyze.disabled = false;
+        btnAnalyze.classList.remove('loading');
+        if (btnTextContent) btnTextContent.textContent = 'Analyze Contract';
         return;
       }
 
@@ -97,20 +110,51 @@ export function initAnalyzer() {
       };
 
       // Store in sessionStorage to pass it securely to the next page
-      sessionStorage.setItem('solvigil_analysis_result', JSON.stringify(reportData));
-      sessionStorage.setItem('solvigil_contract_code', window.currentUploadedFileContent || '');
+      try {
+        sessionStorage.setItem('solvigil_analysis_result', JSON.stringify(reportData));
+        sessionStorage.setItem('solvigil_contract_code', window.currentUploadedFileContent || '');
+      } catch (storageError) {
+        console.warn('Could not save to sessionStorage (quota exceeded?):', storageError);
+        // We still redirect, but the next page might have to handle missing data
+      }
       
-      // Navigate to the beautiful premium results interface
-      window.location.href = '/analysis-results.html';
+      // Show success state on button before redirecting
+      btnAnalyze.classList.remove('loading');
+      btnAnalyze.classList.add('success');
+      if (btnTextContent) {
+        btnTextContent.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Complete!';
+      }
+      
+      setTimeout(() => {
+        // Navigate to the beautiful premium results interface
+        window.location.href = '/analysis-results.html';
+      }, 800);
 
     } catch (error) {
       console.error('Analysis error:', error);
-      if (window.showToast) window.showToast('❌ ' + error.message, 'error');
-      processingSection.style.display = 'none';
-      uploadSection.style.display = 'block';
+      
+      // Provide visible feedback to user
+      const errorMessage = document.getElementById('error-message');
+      const errorText = document.getElementById('error-text');
+      let msg = error.message;
+      if (msg.includes('Failed to fetch')) {
+        msg = 'Could not connect to the analysis server. Please ensure the backend is running on localhost:5000.';
+      }
+      
+      if (errorMessage && errorText) {
+        errorText.textContent = 'Analysis error: ' + msg;
+        errorMessage.style.display = 'flex';
+        setTimeout(() => { errorMessage.style.display = 'none'; }, 6000);
+      } else if (window.showToast) {
+        window.showToast('❌ ' + msg, 'error');
+      } else {
+        alert('Analysis error: ' + msg);
+      }
+      
       btnAnalyze.disabled = false;
-    } finally {
-      btnAnalyze.disabled = false;
+      btnAnalyze.classList.remove('loading');
+      const btnTextContent = btnAnalyze.querySelector('.btn-text-content');
+      if (btnTextContent) btnTextContent.textContent = 'Analyze Contract';
     }
   });
   
