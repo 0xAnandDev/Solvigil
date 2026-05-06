@@ -14,51 +14,78 @@
       --primary: #00A19B;
       --primary-light: #E6F6F5;
       --secondary: #F5E6D3;
-      --text-dark: #1A1A1A;
+      --text-dark: #111827;
       --text-muted: #6B7280;
       --border: #E5E7EB;
-      --bg: #F9FAFB;
+      --bg: #F3F4F6;
       --surface: #FFFFFF;
 
       --status-safe: #10B981;
-      --status-review: #F59E0B;
-      --status-vulnerable: #F97316;
-      --status-critical: #EF4444;
+      --status-review: #FBBF24;
+      --status-vulnerable: #F59E0B;
+      --status-critical: #DC2626;
 
-      --critical: #EF4444;
-      --high: #F97316;
-      --medium: #F59E0B;
+      --critical: #DC2626;
+      --high: #F59E0B;
+      --medium: #FBBF24;
       --low: #3B82F6;
+
+      --critical-bg: #FEF2F2;
+      --high-bg: #FFFBEB;
+      --medium-bg: #FEFCE8;
+      --low-bg: #EFF6FF;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
+      background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
       color: var(--text-dark);
-      line-height: 1.5;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 60px 20px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Header Section */
     .header-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 4px solid var(--primary);
-      border-radius: 12px;
-      padding: 32px;
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 16px;
+      padding: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .header-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary) 0%, #00d2ca 100%);
     }
 
     .contract-info {
@@ -68,34 +95,38 @@
     .contract-header-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 16px;
+      margin-bottom: 12px;
     }
 
     .contract-name {
-      font-size: 24px;
-      font-weight: 700;
+      font-size: 28px;
+      font-weight: 800;
       color: var(--text-dark);
+      letter-spacing: -0.02em;
     }
 
     .confidence-badge {
       display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
-      background: var(--secondary);
-      color: var(--text-dark);
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
+      padding: 6px 14px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
       gap: 6px;
+      border: 1px solid rgba(0, 161, 155, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 161, 155, 0.05);
     }
 
     .file-meta {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 12px;
+      font-weight: 500;
     }
 
     .score-container {
@@ -106,13 +137,16 @@
     }
 
     .score-circle {
-      width: 120px;
-      height: 120px;
+      width: 140px;
+      height: 140px;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--primary-light) 0%, rgba(0, 161, 155, 0.05) 100%);
+      box-shadow: 0 0 40px rgba(0, 161, 155, 0.15), inset 0 0 20px rgba(255,255,255,0.8);
     }
 
     .score-circle svg {
@@ -120,11 +154,12 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       transform: rotate(-90deg);
+      overflow: visible;
     }
 
     .score-bg {
       fill: none;
-      stroke: var(--border);
+      stroke: #F1F5F9;
       stroke-width: 8;
     }
 
@@ -135,68 +170,74 @@
       stroke-dasharray: 314;
       stroke-dashoffset: 314;
       stroke-linecap: round;
-      transition: stroke-dashoffset 1.5s ease-out;
+      transition: stroke-dashoffset 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), stroke 0.5s ease;
+      filter: drop-shadow(0 0 8px currentColor);
     }
 
     .score-value {
-      font-size: 32px;
-      font-weight: 700;
+      font-size: 42px;
+      font-weight: 800;
       line-height: 1;
       position: absolute;
+      color: var(--text-dark);
     }
 
     .score-status {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background-color: color-mix(in srgb, currentColor 10%, transparent);
+      box-shadow: 0 4px 12px color-mix(in srgb, currentColor 20%, transparent);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: 0.02em;
     }
 
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 24px;
-      margin-bottom: 40px;
-      border-bottom: 1px solid var(--border);
-      width: 100%;
       position: relative;
+      margin-bottom: 48px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+      animation: fadeInUp 0.6s ease 0.2s forwards;
+      opacity: 0;
     }
 
     .tab-indicator {
-      display: none;
+      position: absolute;
+      top: 6px;
+      bottom: 6px;
+      left: 0;
+      background: var(--primary-light);
+      border-radius: 8px;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 2px 4px rgba(0,161,155,0.1);
+      z-index: 0;
     }
 
     .tab-btn {
+      flex: 1;
       background: transparent;
       border: none;
-      padding: 12px 4px;
+      padding: 14px;
       font-size: 15px;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
       position: relative;
-      transition: color 0.2s, transform 0.1s;
-    }
-
-    .tab-btn:active {
-      transform: scale(0.97);
-    }
-
-    .tab-btn::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: transparent;
-      transition: background 0.2s ease;
+      transition: color 0.3s ease;
+      z-index: 1;
+      border-radius: 8px;
     }
 
     .tab-btn.active {
       color: var(--primary);
-    }
-
-    .tab-btn.active::after {
-      background: var(--primary);
     }
 
     .tab-btn:not(.active):hover {
@@ -207,7 +248,7 @@
     .tab-content {
       display: none;
       opacity: 0;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.3s ease;
     }
 
     .tab-content.active {
@@ -223,31 +264,52 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      margin-bottom: 40px;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease 0.3s forwards;
+      opacity: 0;
     }
 
     .summary-box {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 24px;
       text-align: center;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+    
+    .summary-box::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
     }
 
-    .summary-box.critical { border-top: 3px solid var(--critical); }
-    .summary-box.high { border-top: 3px solid var(--high); }
-    .summary-box.medium { border-top: 3px solid var(--medium); }
-    .summary-box.low { border-top: 3px solid var(--low); }
+    .summary-box.critical::before { background: var(--critical); }
+    .summary-box.high::before { background: var(--high); }
+    .summary-box.medium::before { background: var(--medium); }
+    .summary-box.low::before { background: var(--low); }
+
+    .summary-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08);
+    }
 
     .summary-count {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 4px;
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      line-height: 1;
     }
 
     .summary-label {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -261,28 +323,30 @@
     .findings-list {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
     }
 
     .vuln-card {
+      position: relative;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      border-left-width: 4px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+      border-left: 6px solid transparent;
       opacity: 0;
-      animation: fadeInSlideUp 0.4s ease forwards;
+      animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     @keyframes fadeInSlideUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .vuln-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.08);
     }
 
     .vuln-card.critical { border-left-color: var(--critical); }
@@ -291,77 +355,106 @@
     .vuln-card.low { border-left-color: var(--low); }
 
     .vuln-header {
-      padding: 20px 24px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     .vuln-header-top {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .vuln-title-group {
       display: flex;
       align-items: center;
       gap: 12px;
+      width: 100%;
+      justify-content: space-between;
     }
 
     .vuln-badge {
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: absolute;
+      top: 32px;
+      right: 32px;
     }
 
-    .badge-critical { background: #FEE2E2; color: var(--critical); border: 1px solid #FCA5A5; }
-    .badge-high { background: #FFEDD5; color: var(--high); border: 1px solid #FDBA74; }
-    .badge-medium { background: #FEF3C7; color: var(--medium); border: 1px solid #FCD34D; }
-    .badge-low { background: #DBEAFE; color: var(--low); border: 1px solid #93C5FD; }
+    .badge-critical { background: var(--critical-bg); color: var(--critical); border: 1px solid rgba(220,38,38,0.2); }
+    .badge-high { background: var(--high-bg); color: var(--high); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-medium { background: var(--medium-bg); color: var(--medium); border: 1px solid rgba(251,191,36,0.2); }
+    .badge-low { background: var(--low-bg); color: var(--low); border: 1px solid rgba(59,130,246,0.2); }
 
     .vuln-title {
-      font-weight: 700;
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 20px;
       color: var(--text-dark);
+      padding-right: 100px; /* space for absolute badge */
     }
 
     .vuln-confidence {
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      background: var(--bg);
       color: var(--text-muted);
-      background: var(--surface);
-      padding: 4px 10px;
       border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
       border: 1px solid var(--border);
+    }
+
+    .vuln-confidence::before {
+      content: '🛡️';
+      margin-right: 6px;
     }
 
     .vuln-location {
       display: flex;
       gap: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
 
     .loc-item {
-      background: var(--surface);
+      background: #F8FAFC;
       border: 1px solid var(--border);
-      padding: 4px 12px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-family: 'Fira Code', monospace;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: #475569;
       box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .vuln-desc {
       font-size: 15px;
-      color: var(--text-dark);
-      margin-bottom: 16px;
+      color: #92400E;
+      background: #FFFBEB;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid #F59E0B;
+      margin-bottom: 24px;
       line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .vuln-desc::before {
+      content: '⚠️';
+      font-size: 18px;
     }
 
     .vuln-actions {
@@ -373,22 +466,23 @@
       background: var(--surface);
       border: 1px solid var(--border);
       color: var(--text-dark);
-      border-radius: 6px;
-      font-size: 13px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
+      gap: 8px;
+      padding: 10px 18px;
       transition: all 0.2s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .vuln-expand-btn:hover {
       background: var(--bg);
       border-color: #D1D5DB;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transform: translateY(-1px);
     }
 
     .vuln-expand-btn:active {
@@ -396,8 +490,8 @@
     }
 
     .vuln-expand-btn svg {
-      width: 14px; height: 14px;
-      transition: transform 0.2s;
+      width: 16px; height: 16px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .vuln-expand-btn.open svg {
@@ -407,30 +501,35 @@
     .vuln-details {
       display: none;
       border-top: 1px solid rgba(0,0,0,0.05);
-      background: rgba(255,255,255,0.4);
+      background: #FAFAFA;
     }
 
     .vuln-details.open {
       display: block;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .detail-section {
-      padding: 24px;
+      padding: 32px;
     }
 
     .detail-title {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       letter-spacing: 0.05em;
     }
 
     .code-block-wrapper {
       position: relative;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
     
     .code-block-wrapper:last-child {
@@ -439,133 +538,184 @@
 
     .code-label {
       position: absolute;
-      top: -10px;
-      left: 12px;
-      background: #1F2937;
-      color: #F3F4F6;
+      top: -12px;
+      left: 16px;
       font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 6px;
       letter-spacing: 0.05em;
-      border: 1px solid #374151;
       z-index: 1;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     }
 
-    .code-label.vulnerable { color: #FCA5A5; }
-    .code-label.fixed { color: #6EE7B7; }
+    .code-label.vulnerable { 
+      background: #7F1D1D; 
+      color: #FECACA; 
+      border: 1px solid #991B1B; 
+    }
+    .code-label.fixed { 
+      background: #064E3B; 
+      color: #A7F3D0; 
+      border: 1px solid #065F46; 
+    }
 
     .code-block {
-      background: #1F2937;
-      color: #F3F4F6;
-      font-family: 'Monaco', 'Menlo', 'Courier', monospace;
-      font-size: 13px;
-      padding: 20px 16px 16px 16px;
-      border-radius: 8px;
+      background: #0D1117;
+      color: #E6EDF3;
+      font-family: 'Fira Code', 'Monaco', 'Menlo', 'Courier', monospace;
+      font-size: 14px;
+      padding: 24px 20px 20px 20px;
+      border-radius: 12px;
       overflow-x: auto;
-      line-height: 1.5;
-      border: 1px solid #374151;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      line-height: 1.6;
+      border: 1px solid #30363D;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .code-block:hover {
       border-color: rgba(0, 161, 155, 0.4);
-      box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.1);
+      box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.2), inset 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .code-line.vulnerable,
     .vulnerable-line {
       background-color: rgba(239, 68, 68, 0.15);
       display: block;
-      margin: 0 -16px;
-      padding: 0 16px;
+      margin: 0 -20px;
+      padding: 0 20px;
+      border-left: 2px solid #EF4444;
     }
 
     .recommendation-text {
-      font-size: 14px;
-      color: var(--text-dark);
-      margin-bottom: 20px;
+      font-size: 15px;
+      color: #065F46;
+      background: #ECFDF5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid #10B981;
+      margin-bottom: 24px;
       line-height: 1.6;
+      font-weight: 500;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .recommendation-text::before {
+      content: '💡';
+      font-size: 18px;
     }
 
     /* Attack Simulation Tab */
     .sim-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 16px;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
       opacity: 0;
-      animation: fadeInSlideUp 0.4s ease forwards;
+      animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .sim-header {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
       margin-bottom: 32px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
+      padding-bottom: 24px;
     }
 
     .sim-icon {
-      font-size: 24px;
-      width: 48px;
-      height: 48px;
-      background: var(--secondary);
-      border-radius: 12px;
+      font-size: 28px;
+      width: 56px;
+      height: 56px;
+      background: var(--primary-light);
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 161, 155, 0.1);
+      border: 1px solid rgba(0, 161, 155, 0.2);
     }
 
     .sim-title {
-      font-weight: 700;
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 20px;
       color: var(--text-dark);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .sim-flow-vertical {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 8px;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+      padding-left: 36px;
+    }
+    
+    .sim-flow-vertical::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 17px;
+      width: 2px;
+      background: var(--border);
     }
 
     .sim-pill {
-      background: var(--primary-light);
-      border: 1px solid rgba(0, 161, 155, 0.2);
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
       color: var(--text-dark);
-      padding: 12px 24px;
-      border-radius: 999px;
+      padding: 16px 24px;
+      border-radius: 12px;
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      max-width: 90%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       
       opacity: 0;
-      transform: translateY(10px);
-      animation: slideUp 0.4s forwards;
+      transform: translateY(15px);
+      animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .sim-pill::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid var(--surface);
+      box-shadow: 0 0 0 3px var(--primary-light);
+      z-index: 1;
     }
 
     .sim-pill.attacker {
-      background: #FEE2E2;
+      border-left: 4px solid var(--critical);
+      background: #FEF2F2;
       border-color: #FCA5A5;
       color: #991B1B;
     }
 
+    .sim-pill.attacker::before {
+      background: var(--critical);
+      box-shadow: 0 0 0 3px #FEE2E2;
+    }
+
     .sim-arrow {
-      color: var(--border);
-      font-size: 20px;
-      font-weight: bold;
-      
-      opacity: 0;
-      transform: translateY(10px);
-      animation: slideUp 0.4s forwards;
+      display: none; /* Replaced by the vertical timeline line */
     }
 
     /* Staggered animation delays */
@@ -579,7 +729,7 @@
     .sim-flow-vertical > *:nth-child(8) { animation-delay: 0.8s; }
     .sim-flow-vertical > *:nth-child(9) { animation-delay: 0.9s; }
 
-    @keyframes slideUp {
+    @keyframes slideUpFade {
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -587,18 +737,18 @@
     .actions-bar {
       display: flex;
       gap: 16px;
-      margin-top: 40px;
+      margin-top: 48px;
       padding-top: 32px;
       border-top: 1px solid var(--border);
     }
 
     .btn {
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
       font-size: 15px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
       border: 1px solid transparent;
       display: inline-flex;
       align-items: center;
@@ -607,18 +757,18 @@
     }
 
     .btn:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
 
     .btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, #008B86 100%);
       color: white;
-      box-shadow: 0 4px 6px rgba(0, 161, 155, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 161, 155, 0.25);
     }
 
     .btn-primary:hover {
-      background: #008B86;
-      box-shadow: 0 6px 12px rgba(0, 161, 155, 0.3);
+      background: linear-gradient(135deg, #00B5AD 0%, var(--primary) 100%);
+      box-shadow: 0 8px 20px rgba(0, 161, 155, 0.4);
       transform: translateY(-2px);
     }
 
@@ -626,14 +776,14 @@
       background: var(--surface);
       border-color: var(--border);
       color: var(--text-dark);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .btn-secondary:hover {
       background: var(--bg);
       border-color: #D1D5DB;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
     }
 
     .btn-outline {
@@ -649,19 +799,24 @@
     }
 
     .btn-outline-teal {
-      background: var(--primary);
+      background: var(--surface);
       border-color: var(--primary);
-      color: white;
+      color: var(--primary);
+      box-shadow: 0 2px 4px rgba(0, 161, 155, 0.1);
     }
 
     .btn-outline-teal:hover {
-      background: #008B86;
-      box-shadow: 0 6px 12px rgba(0, 161, 155, 0.3);
+      background: var(--primary-light);
+      box-shadow: 0 6px 16px rgba(0, 161, 155, 0.2);
       transform: translateY(-2px);
+    }
+    
+    button[onclick="copyCode(this)"] {
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .score-animate {
-      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes popIn {
@@ -672,37 +827,35 @@
     /* Responsive Design */
     @media (max-width: 768px) {
       .container {
-        padding: 20px 16px;
+        padding: 30px 16px;
       }
       
-      /* Header Section */
       .header-card {
         flex-direction: column;
         text-align: center;
-        padding: 24px 16px;
+        padding: 32px 20px;
       }
       .contract-header-row {
         flex-direction: column;
         justify-content: center;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
       }
       .file-meta {
         justify-content: center;
-        margin-bottom: 24px;
+        margin-bottom: 32px;
         flex-wrap: wrap;
       }
       .score-container {
         width: 100%;
       }
       .score-circle {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
       }
       .score-value {
-        font-size: 28px;
+        font-size: 32px;
       }
 
-      /* Tabs */
       .tabs {
         width: 100%;
         overflow-x: auto;
@@ -715,24 +868,32 @@
         white-space: nowrap;
       }
 
-      /* Vulnerability Cards */
       .summary-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 16px;
       }
       .vuln-card {
-        border-radius: 8px;
+        border-radius: 12px;
       }
       .vuln-header {
-        padding: 16px;
+        padding: 24px;
+      }
+      .vuln-badge {
+        position: static;
+        margin-bottom: 12px;
+        display: inline-block;
+      }
+      .vuln-title {
+        padding-right: 0;
       }
       .vuln-header-top {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
       }
       .vuln-title-group {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
       }
       .vuln-location {
         flex-wrap: wrap;
@@ -743,17 +904,16 @@
       .vuln-expand-btn {
         width: 100%;
         justify-content: center;
-        min-height: 44px;
+        min-height: 48px;
       }
       .detail-section {
-        padding: 16px;
+        padding: 20px;
       }
       .code-block {
-        padding: 20px 12px 12px 12px;
-        font-size: 12px;
+        padding: 24px 16px 16px 16px;
+        font-size: 13px;
       }
 
-      /* Action Buttons */
       .actions-bar {
         flex-direction: column;
         gap: 12px;
@@ -763,9 +923,8 @@
         min-height: 48px;
       }
 
-      /* Attack Simulation */
       .sim-card {
-        padding: 16px;
+        padding: 20px;
       }
       .sim-header {
         flex-direction: column;
@@ -773,13 +932,76 @@
         align-items: center;
       }
       .sim-pill {
-        padding: 12px 16px;
-        font-size: 13px;
+        padding: 16px;
+        font-size: 14px;
         width: 100%;
         max-width: 100%;
       }
     }
 
+    .code-block-table {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .code-line-numbered {
+      display: table-row;
+    }
+    .code-line-number {
+      display: table-cell;
+      padding-right: 16px;
+      user-select: none;
+      color: #6B7280;
+      text-align: right;
+      width: 40px;
+      border-right: 1px solid #374151;
+      font-size: 12px;
+    }
+    .code-line-content {
+      display: table-cell;
+      padding-left: 16px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .vulnerable-line {
+      background-color: rgba(239, 68, 68, 0.15) !important;
+    }
+    .vulnerable-line .code-line-number {
+      color: #ef4444;
+      border-right-color: #ef4444;
+    }
+    .fixed-line {
+      background-color: rgba(16, 185, 129, 0.1) !important;
+    }
+    .fixed-line .code-line-number {
+      color: #10b981;
+      border-right-color: #10b981;
+    }
+    
+    .fix-comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    
+    /* Print Styles */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .vuln-details { display: block !important; opacity: 1 !important; border-top: 1px solid #ddd; margin-top: 10px; page-break-inside: avoid; }
+      .vuln-expand-btn { display: none !important; }
+      .code-block { border: 1px solid #ccc !important; background: #f9f9f9 !important; color: #333 !important; }
+      .code-label { color: #000 !important; box-shadow: none !important; border: 1px solid #ccc !important; background: white !important; }
+      .btn, .actions-bar, .tabs, .tab-indicator { display: none !important; }
+      .tab-content { display: block !important; opacity: 1 !important; }
+      #tab-simulation { display: none !important; }
+      .vuln-card { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; margin-bottom: 20px !important; }
+      .header-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+      .code-line-number { color: #999 !important; border-right: 1px solid #ccc !important; }
+      .vulnerable-line { background-color: #fee2e2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .fixed-line { background-color: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .recommendation-text { background: #f0fdf4 !important; border-left: 4px solid #16a34a !important; color: #166534 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
   </style>
 </head>
 <body>
@@ -893,21 +1115,47 @@
         <div class="vuln-details" id="fix-1">
           <div class="detail-section">
             <div class="detail-title">How to Fix</div>
-            <div class="recommendation-text">Implement the Checks-Effects-Interactions pattern. Always update state variables (like balances) before making external calls to untrusted addresses. Alternatively, apply a ReentrancyGuard modifier.</div>
             
-            <div class="code-block-wrapper">
-              <div class="code-label vulnerable">❌ VULNERABLE</div>
-              <div class="code-block"><span class="vulnerable-line">(bool success, ) = msg.sender.call{value: amount}("");</span>
-<span class="vulnerable-line">require(success, "Transfer failed");</span>
-<span class="vulnerable-line">balances[msg.sender] -= amount; // State is updated after</span></div>
+            <div class="fix-comparison-grid">
+              <div class="code-block-wrapper">
+                <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
+                <div class="code-block" style="padding: 24px 0 20px 0;">
+                  <div class="code-block-table">
+                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">1</div><div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div></div>
+                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">2</div><div class="code-line-content">require(success, "Transfer failed");</div></div>
+                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">3</div><div class="code-line-content">balances[msg.sender] -= amount; // State is updated after</div></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="code-block-wrapper">
+                <div class="code-label fixed">✅ FIXED CODE</div>
+                <div class="code-block" style="padding: 24px 0 20px 0;">
+                  <div class="code-block-table">
+                    <div class="code-line-numbered fixed-line"><div class="code-line-number">1</div><div class="code-line-content">balances[msg.sender] -= amount; // Update state FIRST</div></div>
+                    <div class="code-line-numbered fixed-line"><div class="code-line-number">2</div><div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div></div>
+                    <div class="code-line-numbered fixed-line"><div class="code-line-number">3</div><div class="code-line-content">require(success, "Transfer failed");</div></div>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div class="code-block-wrapper">
-              <div class="code-label fixed">✅ FIXED</div>
-              <div class="code-block">balances[msg.sender] -= amount; // Update state FIRST
-(bool success, ) = msg.sender.call{value: amount}("");
-require(success, "Transfer failed");</div>
+            <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
+            <div class="recommendation-text" style="display: block;">
+              <ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
+                <li>Implement the Checks-Effects-Interactions pattern.</li>
+                <li>Always update state variables (like balances) before making external calls to untrusted addresses.</li>
+                <li>Alternatively, apply a ReentrancyGuard modifier.</li>
+              </ul>
             </div>
+            
+            <div style="margin-top: 24px; text-align: right;">
+              <button class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="balances[msg.sender] -= amount; // Update state FIRST&#10;(bool success, ) = msg.sender.call{value: amount}(&quot;&quot;);&#10;require(success, &quot;Transfer failed&quot;);">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span class="copy-text">Copy Fix Code</span>
+              </button>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -955,18 +1203,43 @@ require(success, "Transfer failed");</div>
         <div class="vuln-details" id="fix-2">
           <div class="detail-section">
             <div class="detail-title">How to Fix</div>
-            <div class="recommendation-text">Always check the boolean return value from low-level calls (call, send, delegatecall). Wrap the call in a require() statement to ensure the transaction reverts if the target contract throws an error.</div>
             
-            <div class="code-block-wrapper">
-              <div class="code-label vulnerable">❌ VULNERABLE</div>
-              <div class="code-block"><span class="vulnerable-line">targetContract.call(abi.encodeWithSignature("doSomething()"));</span></div>
+            <div class="fix-comparison-grid">
+              <div class="code-block-wrapper">
+                <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
+                <div class="code-block" style="padding: 24px 0 20px 0;">
+                  <div class="code-block-table">
+                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">1</div><div class="code-line-content">targetContract.call(abi.encodeWithSignature("doSomething()"));</div></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="code-block-wrapper">
+                <div class="code-label fixed">✅ FIXED CODE</div>
+                <div class="code-block" style="padding: 24px 0 20px 0;">
+                  <div class="code-block-table">
+                    <div class="code-line-numbered fixed-line"><div class="code-line-number">1</div><div class="code-line-content">(bool success, ) = targetContract.call(abi.encodeWithSignature("doSomething()"));</div></div>
+                    <div class="code-line-numbered fixed-line"><div class="code-line-number">2</div><div class="code-line-content">require(success, "External call failed");</div></div>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div class="code-block-wrapper">
-              <div class="code-label fixed">✅ FIXED</div>
-              <div class="code-block">(bool success, ) = targetContract.call(abi.encodeWithSignature("doSomething()"));
-require(success, "External call failed");</div>
+            <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
+            <div class="recommendation-text" style="display: block;">
+              <ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
+                <li>Always check the boolean return value from low-level calls (call, send, delegatecall).</li>
+                <li>Wrap the call in a require() statement to ensure the transaction reverts if the target contract throws an error.</li>
+              </ul>
             </div>
+            
+            <div style="margin-top: 24px; text-align: right;">
+              <button class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="(bool success, ) = targetContract.call(abi.encodeWithSignature(&quot;doSomething()&quot;));&#10;require(success, &quot;External call failed&quot;);">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span class="copy-text">Copy Fix Code</span>
+              </button>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -1184,17 +1457,54 @@ require(success, "External call failed");</div>
 
     function formatCodeWithVulnerableLines(code) {
       if (!code) return 'No code provided';
-      // simple wrapper to apply vulnerable line highlighting
       return code.split('\n').map(line => `<span class="vulnerable-line">${escapeHtml(line)}</span>`).join('\n');
+    }
+
+    function formatCodeWithLineNumbers(code, type = 'none') {
+      if (!code) return 'No code provided';
+      const lines = code.split('\n');
+      let html = '<div class="code-block-table">';
+      lines.forEach((line, i) => {
+        const lineNum = i + 1;
+        let bgClass = '';
+        if (type === 'vulnerable') bgClass = 'vulnerable-line';
+        if (type === 'fixed') bgClass = 'fixed-line';
+        
+        html += `
+          <div class="code-line-numbered ${bgClass}">
+            <div class="code-line-number">${lineNum}</div>
+            <div class="code-line-content">${escapeHtml(line) || ' '}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function generateBullets(text) {
+      if (!text) return '<ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;"><li>No explanation provided.</li></ul>';
+      let sentences = text.split(/\.\s+/).filter(s => s.trim().length > 0);
+      if (sentences.length === 1) {
+        sentences = text.split(/(?<=\w{4,})\s+and\s+(?=\w{4,})/i);
+      }
+      let html = '<ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">';
+      sentences.slice(0, 3).forEach(s => {
+        let bulletText = s.trim();
+        if (!bulletText.endsWith('.')) bulletText += '.';
+        html += `<li>${escapeHtml(bulletText)}</li>`;
+      });
+      html += '</ul>';
+      return html;
     }
 
     window.copyCode = function(btn) {
       const code = btn.getAttribute('data-code');
       const decoded = code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
       navigator.clipboard.writeText(decoded).then(() => {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✅ Copied!';
-        setTimeout(() => btn.innerHTML = originalText, 2000);
+        const textSpan = btn.querySelector('.copy-text') || btn;
+        const originalText = textSpan.innerHTML;
+        textSpan.innerHTML = '✅ Copied!';
+        setTimeout(() => textSpan.innerHTML = originalText, 2000);
       });
     };
 
@@ -1401,15 +1711,28 @@ require(success, "External call failed");</div>
               <div class="vuln-details" id="fix-${index}">
                 <div class="detail-section">
                   <div class="detail-title">How to Fix</div>
-                  <div class="recommendation-text">${escapeHtml(vuln.fix || vuln.fixRecommendation || 'No recommendation')}</div>
-                  <div class="code-block-wrapper">
-                    <div class="code-label fixed">✅ FIXED</div>
-                    <div class="code-block">${escapeHtml(vuln.fixExplanation || vuln.fixedCode || 'No fix code provided')}</div>
+                  
+                  <div class="fix-comparison-grid">
+                    <div class="code-block-wrapper">
+                      <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
+                      <div class="code-block" style="padding: 24px 0 20px 0;">${formatCodeWithLineNumbers(vuln.code || vuln.vulnerableCode, 'vulnerable')}</div>
+                    </div>
+                    
+                    <div class="code-block-wrapper">
+                      <div class="code-label fixed">✅ FIXED CODE</div>
+                      <div class="code-block" style="padding: 24px 0 20px 0;">${formatCodeWithLineNumbers(vuln.fixExplanation || vuln.fixedCode || 'No fix code provided', 'fixed')}</div>
+                    </div>
                   </div>
-                  <div style="margin-top: 16px; text-align: right;">
-                    <button class="btn-primary" style="padding: 8px 16px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="${escapeHtml(vuln.fixExplanation || vuln.fixedCode || '')}">
+                  
+                  <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
+                  <div class="recommendation-text" style="display: block;">
+                    ${generateBullets(vuln.fix || vuln.fixRecommendation || 'No recommendation provided.')}
+                  </div>
+                  
+                  <div style="margin-top: 24px; text-align: right;">
+                    <button class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="${escapeHtml(vuln.fixExplanation || vuln.fixedCode || '')}">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      Copy Fix Code
+                      <span class="copy-text">Copy Fix Code</span>
                     </button>
                   </div>
                 </div>
