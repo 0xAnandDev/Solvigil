@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis Results | Solvigil</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap"
+    rel="stylesheet">
+
   <style>
     :root {
       --primary: #00A19B;
@@ -36,8 +38,12 @@
       --low-bg: #EFF6FF;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+        padding: 0;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
@@ -50,28 +56,43 @@
     .container {
       max-width: 900px;
       margin: 0 auto;
-      padding: 60px 20px;
+        padding: 60px 20px;
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Header Section */
     .header-card {
       background: var(--surface);
-      border: 1px solid rgba(255,255,255,0.8);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       border-radius: 16px;
       padding: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
       margin-bottom: 48px;
       position: relative;
       overflow: hidden;
@@ -146,13 +167,15 @@
       margin-bottom: 16px;
       border-radius: 50%;
       background: radial-gradient(circle, var(--primary-light) 0%, rgba(0, 161, 155, 0.05) 100%);
-      box-shadow: 0 0 40px rgba(0, 161, 155, 0.15), inset 0 0 20px rgba(255,255,255,0.8);
+      box-shadow: 0 0 40px rgba(0, 161, 155, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.8);
     }
 
     .score-circle svg {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       transform: rotate(-90deg);
       overflow: visible;
     }
@@ -203,7 +226,7 @@
       background: var(--surface);
       padding: 6px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       border: 1px solid var(--border);
       animation: fadeInUp 0.6s ease 0.2s forwards;
       opacity: 0;
@@ -217,7 +240,7 @@
       background: var(--primary-light);
       border-radius: 8px;
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 2px 4px rgba(0,161,155,0.1);
+      box-shadow: 0 2px 4px rgba(0, 161, 155, 0.1);
       z-index: 0;
     }
 
@@ -280,7 +303,7 @@
       overflow: hidden;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
     }
-    
+
     .summary-box::before {
       content: '';
       position: absolute;
@@ -290,10 +313,21 @@
       width: 6px;
     }
 
-    .summary-box.critical::before { background: var(--critical); }
-    .summary-box.high::before { background: var(--high); }
-    .summary-box.medium::before { background: var(--medium); }
-    .summary-box.low::before { background: var(--low); }
+    .summary-box.critical::before {
+      background: var(--critical);
+    }
+
+    .summary-box.high::before {
+      background: var(--high);
+    }
+
+    .summary-box.medium::before {
+      background: var(--medium);
+    }
+
+    .summary-box.low::before {
+      background: var(--low);
+    }
 
     .summary-box:hover {
       transform: translateY(-4px);
@@ -315,10 +349,21 @@
       letter-spacing: 0.05em;
     }
 
-    .summary-box.critical .summary-count { color: var(--critical); }
-    .summary-box.high .summary-count { color: var(--high); }
-    .summary-box.medium .summary-count { color: var(--medium); }
-    .summary-box.low .summary-count { color: var(--low); }
+    .summary-box.critical .summary-count {
+      color: var(--critical);
+    }
+
+    .summary-box.high .summary-count {
+      color: var(--high);
+    }
+
+    .summary-box.medium .summary-count {
+      color: var(--medium);
+    }
+
+    .summary-box.low .summary-count {
+      color: var(--low);
+    }
 
     .findings-list {
       display: flex;
@@ -340,8 +385,15 @@
     }
 
     @keyframes fadeInSlideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .vuln-card:hover {
@@ -349,10 +401,21 @@
       box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.08);
     }
 
-    .vuln-card.critical { border-left-color: var(--critical); }
-    .vuln-card.high { border-left-color: var(--high); }
-    .vuln-card.medium { border-left-color: var(--medium); }
-    .vuln-card.low { border-left-color: var(--low); }
+    .vuln-card.critical {
+      border-left-color: var(--critical);
+    }
+
+    .vuln-card.high {
+      border-left-color: var(--high);
+    }
+
+    .vuln-card.medium {
+      border-left-color: var(--medium);
+    }
+
+    .vuln-card.low {
+      border-left-color: var(--low);
+    }
 
     .vuln-header {
       padding: 32px;
@@ -384,22 +447,42 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       position: absolute;
       top: 32px;
       right: 32px;
     }
 
-    .badge-critical { background: var(--critical-bg); color: var(--critical); border: 1px solid rgba(220,38,38,0.2); }
-    .badge-high { background: var(--high-bg); color: var(--high); border: 1px solid rgba(245,158,11,0.2); }
-    .badge-medium { background: var(--medium-bg); color: var(--medium); border: 1px solid rgba(251,191,36,0.2); }
-    .badge-low { background: var(--low-bg); color: var(--low); border: 1px solid rgba(59,130,246,0.2); }
+    .badge-critical {
+      background: var(--critical-bg);
+      color: var(--critical);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    .badge-high {
+      background: var(--high-bg);
+      color: var(--high);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-medium {
+      background: var(--medium-bg);
+      color: var(--medium);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    .badge-low {
+      background: var(--low-bg);
+      color: var(--low);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
 
     .vuln-title {
       font-weight: 800;
       font-size: 20px;
       color: var(--text-dark);
-      padding-right: 100px; /* space for absolute badge */
+      padding-right: 100px;
+      /* space for absolute badge */
     }
 
     .vuln-confidence {
@@ -434,7 +517,7 @@
       font-size: 13px;
       font-weight: 600;
       color: #475569;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
     .vuln-desc {
@@ -475,13 +558,13 @@
       gap: 8px;
       padding: 10px 18px;
       transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     .vuln-expand-btn:hover {
       background: var(--bg);
       border-color: #D1D5DB;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       transform: translateY(-1px);
     }
 
@@ -490,7 +573,8 @@
     }
 
     .vuln-expand-btn svg {
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -500,7 +584,7 @@
 
     .vuln-details {
       display: none;
-      border-top: 1px solid rgba(0,0,0,0.05);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
       background: #FAFAFA;
     }
 
@@ -510,8 +594,13 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     .detail-section {
@@ -531,7 +620,7 @@
       position: relative;
       margin-bottom: 32px;
     }
-    
+
     .code-block-wrapper:last-child {
       margin-bottom: 0;
     }
@@ -546,18 +635,19 @@
       border-radius: 6px;
       letter-spacing: 0.05em;
       z-index: 1;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
     }
 
-    .code-label.vulnerable { 
-      background: #7F1D1D; 
-      color: #FECACA; 
-      border: 1px solid #991B1B; 
+    .code-label.vulnerable {
+      background: #7F1D1D;
+      color: #FECACA;
+      border: 1px solid #991B1B;
     }
-    .code-label.fixed { 
-      background: #064E3B; 
-      color: #A7F3D0; 
-      border: 1px solid #065F46; 
+
+    .code-label.fixed {
+      background: #064E3B;
+      color: #A7F3D0;
+      border: 1px solid #065F46;
     }
 
     .code-block {
@@ -571,20 +661,20 @@
       line-height: 1.6;
       border: 1px solid #30363D;
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .code-block:hover {
       border-color: rgba(0, 161, 155, 0.4);
-      box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.2), inset 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 0 0 1px rgba(0, 161, 155, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    
+
     .code-line.vulnerable,
     .vulnerable-line {
       background-color: rgba(239, 68, 68, 0.15);
       display: block;
       margin: 0 -20px;
-      padding: 0 20px;
+        padding: 0 20px;
       border-left: 2px solid #EF4444;
     }
 
@@ -602,7 +692,7 @@
       align-items: flex-start;
       gap: 12px;
     }
-    
+
     .recommendation-text::before {
       content: '💡';
       font-size: 18px;
@@ -657,7 +747,7 @@
       position: relative;
       padding-left: 36px;
     }
-    
+
     .sim-flow-vertical::before {
       content: '';
       position: absolute;
@@ -680,8 +770,8 @@
       font-weight: 600;
       text-align: left;
       width: 100%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
       opacity: 0;
       transform: translateY(15px);
       animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -715,22 +805,52 @@
     }
 
     .sim-arrow {
-      display: none; /* Replaced by the vertical timeline line */
+      display: none;
+      /* Replaced by the vertical timeline line */
     }
 
     /* Staggered animation delays */
-    .sim-flow-vertical > *:nth-child(1) { animation-delay: 0.1s; }
-    .sim-flow-vertical > *:nth-child(2) { animation-delay: 0.2s; }
-    .sim-flow-vertical > *:nth-child(3) { animation-delay: 0.3s; }
-    .sim-flow-vertical > *:nth-child(4) { animation-delay: 0.4s; }
-    .sim-flow-vertical > *:nth-child(5) { animation-delay: 0.5s; }
-    .sim-flow-vertical > *:nth-child(6) { animation-delay: 0.6s; }
-    .sim-flow-vertical > *:nth-child(7) { animation-delay: 0.7s; }
-    .sim-flow-vertical > *:nth-child(8) { animation-delay: 0.8s; }
-    .sim-flow-vertical > *:nth-child(9) { animation-delay: 0.9s; }
+    .sim-flow-vertical>*:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .sim-flow-vertical>*:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .sim-flow-vertical>*:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .sim-flow-vertical>*:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .sim-flow-vertical>*:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+
+    .sim-flow-vertical>*:nth-child(6) {
+      animation-delay: 0.6s;
+    }
+
+    .sim-flow-vertical>*:nth-child(7) {
+      animation-delay: 0.7s;
+    }
+
+    .sim-flow-vertical>*:nth-child(8) {
+      animation-delay: 0.8s;
+    }
+
+    .sim-flow-vertical>*:nth-child(9) {
+      animation-delay: 0.9s;
+    }
 
     @keyframes slideUpFade {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Action Buttons */
@@ -776,13 +896,13 @@
       background: var(--surface);
       border-color: var(--border);
       color: var(--text-dark);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .btn-secondary:hover {
       background: var(--bg);
       border-color: #D1D5DB;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
       transform: translateY(-2px);
     }
 
@@ -810,7 +930,7 @@
       box-shadow: 0 6px 16px rgba(0, 161, 155, 0.2);
       transform: translateY(-2px);
     }
-    
+
     button[onclick="copyCode(this)"] {
       transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -820,8 +940,15 @@
     }
 
     @keyframes popIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     /* Responsive Design */
@@ -829,29 +956,34 @@
       .container {
         padding: 30px 16px;
       }
-      
+
       .header-card {
         flex-direction: column;
         text-align: center;
         padding: 32px 20px;
       }
+
       .contract-header-row {
         flex-direction: column;
         justify-content: center;
         margin-bottom: 16px;
       }
+
       .file-meta {
         justify-content: center;
         margin-bottom: 32px;
         flex-wrap: wrap;
       }
+
       .score-container {
         width: 100%;
       }
+
       .score-circle {
         width: 120px;
         height: 120px;
       }
+
       .score-value {
         font-size: 32px;
       }
@@ -862,6 +994,7 @@
         -webkit-overflow-scrolling: touch;
         padding: 6px;
       }
+
       .tab-btn {
         padding: 12px 20px;
         min-height: 48px;
@@ -872,43 +1005,54 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 16px;
       }
+
       .vuln-card {
         border-radius: 12px;
       }
+
       .vuln-header {
         padding: 24px;
       }
+
       .vuln-badge {
         position: static;
         margin-bottom: 12px;
         display: inline-block;
       }
+
       .vuln-title {
         padding-right: 0;
       }
+
       .vuln-header-top {
         flex-direction: column;
         align-items: flex-start;
       }
+
       .vuln-title-group {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
       }
+
       .vuln-location {
         flex-wrap: wrap;
       }
+
       .vuln-actions {
         flex-direction: column;
       }
+
       .vuln-expand-btn {
         width: 100%;
         justify-content: center;
         min-height: 48px;
       }
+
       .detail-section {
         padding: 20px;
       }
+
       .code-block {
         padding: 24px 16px 16px 16px;
         font-size: 13px;
@@ -918,6 +1062,7 @@
         flex-direction: column;
         gap: 12px;
       }
+
       .actions-bar .btn {
         width: 100%;
         min-height: 48px;
@@ -926,11 +1071,13 @@
       .sim-card {
         padding: 20px;
       }
+
       .sim-header {
         flex-direction: column;
         text-align: center;
         align-items: center;
       }
+
       .sim-pill {
         padding: 16px;
         font-size: 14px;
@@ -944,9 +1091,11 @@
       width: 100%;
       border-collapse: collapse;
     }
+
     .code-line-numbered {
       display: table-row;
     }
+
     .code-line-number {
       display: table-cell;
       padding-right: 16px;
@@ -957,503 +1106,828 @@
       border-right: 1px solid #374151;
       font-size: 12px;
     }
+
     .code-line-content {
       display: table-cell;
       padding-left: 16px;
       white-space: pre-wrap;
       word-break: break-all;
     }
+
     .vulnerable-line {
       background-color: rgba(239, 68, 68, 0.15) !important;
     }
+
     .vulnerable-line .code-line-number {
       color: #ef4444;
       border-right-color: #ef4444;
     }
+
     .fixed-line {
       background-color: rgba(16, 185, 129, 0.1) !important;
     }
+
     .fixed-line .code-line-number {
       color: #10b981;
       border-right-color: #10b981;
     }
-    
+
     .fix-comparison-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 24px;
       margin-bottom: 24px;
     }
-    
-    /* Print Styles */
-    @media print {
-      body { background: white !important; color: black !important; }
-      .vuln-details { display: block !important; opacity: 1 !important; border-top: 1px solid #ddd; margin-top: 10px; page-break-inside: avoid; }
-      .vuln-expand-btn { display: none !important; }
-      .code-block { border: 1px solid #ccc !important; background: #f9f9f9 !important; color: #333 !important; }
-      .code-label { color: #000 !important; box-shadow: none !important; border: 1px solid #ccc !important; background: white !important; }
-      .btn, .actions-bar, .tabs, .tab-indicator { display: none !important; }
-      .tab-content { display: block !important; opacity: 1 !important; }
-      #tab-simulation { display: none !important; }
-      .vuln-card { page-break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; margin-bottom: 20px !important; }
-      .header-card { box-shadow: none !important; border: 1px solid #ccc !important; }
-      .code-line-number { color: #999 !important; border-right: 1px solid #ccc !important; }
-      .vulnerable-line { background-color: #fee2e2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .fixed-line { background-color: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .recommendation-text { background: #f0fdf4 !important; border-left: 4px solid #16a34a !important; color: #166534 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    /* Premium PDF Report Styles */
+    .report-container {
+      background: white !important;
+      color: #1F2937 !important;
+      font-family: 'Inter', sans-serif;
+      padding: 40px;
+      width: 794px;
+    }
+
+    /* Base layout */
+    .report-page {
+      position: relative;
+      padding-bottom: 40px;
+      margin-bottom: 40px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .report-page:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    /* Colors */
+    .report-text-critical {
+      color: #DC2626 !important;
+    }
+
+    .report-text-high {
+      color: #F59E0B !important;
+    }
+
+    .report-text-medium {
+      color: #FBBF24 !important;
+    }
+
+    .report-text-low {
+      color: #3B82F6 !important;
+    }
+
+    .report-bg-critical {
+      background-color: #DC2626 !important;
+      color: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-bg-high {
+      background-color: #F59E0B !important;
+      color: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-bg-medium {
+      background-color: #FBBF24 !important;
+      color: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-bg-low {
+      background-color: #3B82F6 !important;
+      color: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Typography */
+    .report-title {
+      font-size: 28pt;
+      font-weight: bold;
+      margin-bottom: 24px;
+      color: #111827;
+    }
+
+    .report-h1 {
+      font-size: 24pt;
+      font-weight: bold;
+      margin-bottom: 24px;
+      color: #111827;
+      border-bottom: 2px solid #E5E7EB;
+      padding-bottom: 8px;
+    }
+
+    .report-h2 {
+      font-size: 16pt;
+      font-weight: bold;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: #374151;
+    }
+
+    .report-h3 {
+      font-size: 14pt;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      color: #4B5563;
+    }
+
+    .report-body {
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    .report-label {
+      font-size: 10pt;
+      font-weight: bold;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    /* Cover Page */
+    .report-cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: 60px;
+    }
+
+    .report-branding {
+      font-size: 32pt;
+      font-weight: 800;
+      color: #00A19B !important;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+      margin-top: 48px;
+      text-align: left;
+      background: #F9FAFB !important;
+      padding: 24px;
+      border-radius: 8px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      border: 1px solid #E5E7EB;
+    }
+
+    .report-score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 12px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36pt;
+      font-weight: bold;
+      margin: 48px auto;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Overview Table */
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
+
+    .report-table th,
+    .report-table td {
+      border: 1px solid #E5E7EB;
+      padding: 12px;
+      text-align: left;
+      font-size: 11pt;
+    }
+
+    .report-table th {
+      background-color: #F3F4F6 !important;
+      font-weight: bold;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color: #374151;
+    }
+
+    /* Code Blocks */
+    .report-code-wrapper {
+      background: #1E293B !important;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-code-header {
+      background: #0F172A !important;
+      padding: 8px 16px;
+      color: white !important;
+      font-size: 10pt;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #334155;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-code {
+      font-family: 'Fira Code', monospace;
+      font-size: 10pt;
+      padding: 16px;
+      color: #E2E8F0 !important;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .report-code-wrapper .code-line-number {
+      color: #64748B !important;
+      border-right: 1px solid #334155 !important;
+    }
+
+    .report-code-wrapper .code-line-content {
+      color: #E2E8F0 !important;
+    }
+
+    .report-vuln-step {
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      background: #FEF2F2 !important;
+      border-left: 4px solid #DC2626 !important;
+      font-size: 11pt;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Footer */
+    .report-footer {
+      display: none !important;
     }
   </style>
 </head>
+
 <body>
 
-<div class="container">
-  
-  <!-- HEADER SECTION -->
-  <header class="header-card">
-    <div class="contract-info">
-      <div class="contract-header-row">
-        <h1 class="contract-name">Vault.sol</h1>
-        <div class="confidence-badge">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          High Confidence
-        </div>
-      </div>
-      <div class="file-meta">
-        <span>Contract: Vault Storage Component</span>
-        <span>•</span>
-        <span>Size: 4.2 KB</span>
-      </div>
-    </div>
-    
-    <div class="score-container score-animate">
-      <div class="score-circle">
-        <svg viewBox="0 0 120 120">
-          <circle class="score-bg" cx="60" cy="60" r="50" />
-          <circle class="score-progress" cx="60" cy="60" r="50" id="score-progress-bar" />
-        </svg>
-        <div class="score-value" id="score-value-text">0</div>
-      </div>
-      <div class="score-status" id="score-status-text">Needs Review</div>
-    </div>
-  </header>
+  <div class="container">
 
-  <!-- TWO TABS -->
-  <div class="tabs">
-    <div class="tab-indicator" id="tab-indicator"></div>
-    <button class="tab-btn active" onclick="switchTab(event, 'findings')">Findings</button>
-    <button class="tab-btn" onclick="switchTab(event, 'simulation')">Attack Simulation</button>
-  </div>
-
-  <!-- FINDINGS TAB -->
-  <div id="tab-findings" class="tab-content active show">
-    <!-- Summary Boxes -->
-    <div class="summary-grid">
-      <div class="summary-box critical">
-        <div class="summary-count">1</div>
-        <div class="summary-label">Critical</div>
-      </div>
-      <div class="summary-box high">
-        <div class="summary-count">1</div>
-        <div class="summary-label">High</div>
-      </div>
-      <div class="summary-box medium">
-        <div class="summary-count">0</div>
-        <div class="summary-label">Medium</div>
-      </div>
-      <div class="summary-box low">
-        <div class="summary-count">0</div>
-        <div class="summary-label">Low</div>
-      </div>
-    </div>
-
-    <!-- Vulnerabilities List -->
-    <div class="findings-list">
-      
-      <!-- Critical Vulnerability Card -->
-      <div class="vuln-card critical" style="animation-delay: 0.1s;">
-        <div class="vuln-header">
-          
-          <div class="vuln-header-top">
-            <div class="vuln-title-group">
-              <div class="vuln-badge badge-critical">Critical</div>
-              <div class="vuln-title">Reentrancy</div>
-            </div>
-            <div class="vuln-confidence">Confidence: HIGH</div>
-          </div>
-          
-          <div class="vuln-location">
-            <span class="loc-item">Line 42</span>
-            <span class="loc-item">Column 12</span>
-          </div>
-          
-          <div class="vuln-desc">State variables are updated after an external call, allowing malicious contracts to repeatedly call the function before the balance is safely updated.</div>
-          
-          <div class="vuln-actions">
-            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-1')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-              View Code
-            </button>
-            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-1')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z"></path></svg>
-              How to Fix
-            </button>
-          </div>
-          
-        </div>
-        
-        <div class="vuln-details" id="code-1">
-          <div class="detail-section">
-            <div class="detail-title">Vulnerable Code</div>
-            <div class="code-block-wrapper">
-              <div class="code-block"><span class="vulnerable-line">(bool success, ) = msg.sender.call{value: amount}("");</span>
-<span class="vulnerable-line">require(success, "Transfer failed");</span>
-<span class="vulnerable-line">balances[msg.sender] -= amount; // State is updated after the external call</span></div>
-            </div>
+    <!-- HEADER SECTION -->
+    <header class="header-card">
+      <div class="contract-info">
+        <div class="contract-header-row">
+          <h1 class="contract-name">Vault.sol</h1>
+          <div class="confidence-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            High Confidence
           </div>
         </div>
-
-        <div class="vuln-details" id="fix-1">
-          <div class="detail-section">
-            <div class="detail-title">How to Fix</div>
-            
-            <div class="fix-comparison-grid">
-              <div class="code-block-wrapper">
-                <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
-                <div class="code-block" style="padding: 24px 0 20px 0;">
-                  <div class="code-block-table">
-                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">1</div><div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div></div>
-                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">2</div><div class="code-line-content">require(success, "Transfer failed");</div></div>
-                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">3</div><div class="code-line-content">balances[msg.sender] -= amount; // State is updated after</div></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="code-block-wrapper">
-                <div class="code-label fixed">✅ FIXED CODE</div>
-                <div class="code-block" style="padding: 24px 0 20px 0;">
-                  <div class="code-block-table">
-                    <div class="code-line-numbered fixed-line"><div class="code-line-number">1</div><div class="code-line-content">balances[msg.sender] -= amount; // Update state FIRST</div></div>
-                    <div class="code-line-numbered fixed-line"><div class="code-line-number">2</div><div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div></div>
-                    <div class="code-line-numbered fixed-line"><div class="code-line-number">3</div><div class="code-line-content">require(success, "Transfer failed");</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
-            <div class="recommendation-text" style="display: block;">
-              <ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
-                <li>Implement the Checks-Effects-Interactions pattern.</li>
-                <li>Always update state variables (like balances) before making external calls to untrusted addresses.</li>
-                <li>Alternatively, apply a ReentrancyGuard modifier.</li>
-              </ul>
-            </div>
-            
-            <div style="margin-top: 24px; text-align: right;">
-              <button class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="balances[msg.sender] -= amount; // Update state FIRST&#10;(bool success, ) = msg.sender.call{value: amount}(&quot;&quot;);&#10;require(success, &quot;Transfer failed&quot;);">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span class="copy-text">Copy Fix Code</span>
-              </button>
-            </div>
-            
-          </div>
-        </div>
-      </div>
-      
-      <!-- High Vulnerability Card -->
-      <div class="vuln-card high" style="animation-delay: 0.2s;">
-        <div class="vuln-header">
-          
-          <div class="vuln-header-top">
-            <div class="vuln-title-group">
-              <div class="vuln-badge badge-high">High</div>
-              <div class="vuln-title">Unchecked Call Return Value</div>
-            </div>
-            <div class="vuln-confidence">Confidence: MEDIUM</div>
-          </div>
-          
-          <div class="vuln-location">
-            <span class="loc-item">Line 115</span>
-          </div>
-          
-          <div class="vuln-desc">The return value of a low-level external call is not checked. If the call fails, execution will continue silently, potentially causing state inconsistencies.</div>
-          
-          <div class="vuln-actions">
-            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-2')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-              View Code
-            </button>
-            <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-2')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z"></path></svg>
-              How to Fix
-            </button>
-          </div>
-          
-        </div>
-        
-        <div class="vuln-details" id="code-2">
-          <div class="detail-section">
-            <div class="detail-title">Vulnerable Code</div>
-            <div class="code-block-wrapper">
-              <div class="code-block">targetContract.call(abi.encodeWithSignature("doSomething()"));</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="vuln-details" id="fix-2">
-          <div class="detail-section">
-            <div class="detail-title">How to Fix</div>
-            
-            <div class="fix-comparison-grid">
-              <div class="code-block-wrapper">
-                <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
-                <div class="code-block" style="padding: 24px 0 20px 0;">
-                  <div class="code-block-table">
-                    <div class="code-line-numbered vulnerable-line"><div class="code-line-number">1</div><div class="code-line-content">targetContract.call(abi.encodeWithSignature("doSomething()"));</div></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="code-block-wrapper">
-                <div class="code-label fixed">✅ FIXED CODE</div>
-                <div class="code-block" style="padding: 24px 0 20px 0;">
-                  <div class="code-block-table">
-                    <div class="code-line-numbered fixed-line"><div class="code-line-number">1</div><div class="code-line-content">(bool success, ) = targetContract.call(abi.encodeWithSignature("doSomething()"));</div></div>
-                    <div class="code-line-numbered fixed-line"><div class="code-line-number">2</div><div class="code-line-content">require(success, "External call failed");</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
-            <div class="recommendation-text" style="display: block;">
-              <ul style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
-                <li>Always check the boolean return value from low-level calls (call, send, delegatecall).</li>
-                <li>Wrap the call in a require() statement to ensure the transaction reverts if the target contract throws an error.</li>
-              </ul>
-            </div>
-            
-            <div style="margin-top: 24px; text-align: right;">
-              <button class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;" onclick="copyCode(this)" data-code="(bool success, ) = targetContract.call(abi.encodeWithSignature(&quot;doSomething()&quot;));&#10;require(success, &quot;External call failed&quot;);">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span class="copy-text">Copy Fix Code</span>
-              </button>
-            </div>
-            
-          </div>
+        <div class="file-meta">
+          <span>Contract: Vault Storage Component</span>
+          <span>•</span>
+          <span>Size: 4.2 KB</span>
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- ATTACK SIMULATION TAB -->
-  <div id="tab-simulation" class="tab-content">
-    
-    <div class="sim-card" style="animation-delay: 0.1s;">
-      <div class="sim-header">
-        <div class="sim-icon">🔄</div>
-        <div>
-          <div class="sim-title">Reentrancy Attack Simulator</div>
-          <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on Line 42</div>
-        </div>
-      </div>
-      
-      <div class="sim-flow-vertical">
-        <div class="sim-pill attacker">Step 1: Attacker calls withdraw() requesting 1 ETH</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill">Step 2: Vault sends 1 ETH to Attacker via .call()</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill attacker">Step 3: Attacker's fallback() is triggered upon receiving ETH</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill attacker">Step 4: Inside fallback(), Attacker calls withdraw() AGAIN</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill">Step 5: Vault sends another 1 ETH (balance wasn't updated!)</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill attacker">Step 6: Vault is drained.</div>
-      </div>
-    </div>
-
-    <div class="sim-card" style="animation-delay: 0.25s;">
-      <div class="sim-header">
-        <div class="sim-icon">💥</div>
-        <div>
-          <div class="sim-title">Unchecked Call Exploit Simulator</div>
-          <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on Line 115</div>
-        </div>
-      </div>
-      
-      <div class="sim-flow-vertical">
-        <div class="sim-pill">Step 1: Vault executes external call to TargetContract</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill attacker">Step 2: TargetContract encounters an error and REVERTS</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill">Step 3: Vault ignores the revert and continues execution</div>
-        <div class="sim-arrow">↓</div>
-        <div class="sim-pill attacker">Step 4: Vault state is updated inconsistently, leading to loss of funds</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- BOTTOM ACTION BUTTONS -->
-  <div class="actions-bar" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
-    <button class="btn btn-primary" onclick="showReviewModal()">
-      🔍 Review Contract
-    </button>
-    <button class="btn btn-primary" onclick="window.location.href='/scanner.html'">
-      🔄 Analyze Another
-    </button>
-    <div style="position: relative; display: inline-block;">
-      <button class="btn btn-primary" onclick="toggleDownloadDropdown(event)">
-        📥 Download Report
-      </button>
-      <div id="download-dropdown" style="display: none; position: absolute; bottom: 100%; left: 0; background: white; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); margin-bottom: 8px; overflow: hidden; z-index: 100; min-width: 180px;">
-        <button onclick="downloadReport('pdf')" style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; border-bottom: 1px solid #f0f0f0; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📄 PDF Format</button>
-        <button onclick="downloadReport('json')" style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📋 JSON Format</button>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Code Review Modal -->
-<div class="modal-overlay" id="code-review-modal" style="display: none; opacity: 0; transition: opacity 0.3s ease; z-index: 1010; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
-  <div class="modal-content" style="max-width: 800px; width: 100%; height: 80vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-    <div class="modal-header" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding: 16px 24px; background: #fafafa;">
-      <h3 class="modal-title" style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">Contract Source Code</h3>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <button id="btn-close-code-review" onclick="closeReviewModal()" style="background: none; border: none; cursor: pointer; color: #666; padding: 4px; border-radius: 4px; transition: background 0.2s;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      <div class="score-container score-animate">
+        <div class="score-circle">
+          <svg viewBox="0 0 120 120">
+            <circle class="score-bg" cx="60" cy="60" r="50" />
+            <circle class="score-progress" cx="60" cy="60" r="50" id="score-progress-bar" />
           </svg>
-        </button>
+          <div class="score-value" id="score-value-text">0</div>
+        </div>
+        <div class="score-status" id="score-status-text">Needs Review</div>
+      </div>
+    </header>
+
+    <!-- TWO TABS -->
+    <div class="tabs">
+      <div class="tab-indicator" id="tab-indicator"></div>
+      <button class="tab-btn active" onclick="switchTab(event, 'findings')">Findings</button>
+      <button class="tab-btn" onclick="switchTab(event, 'simulation')">Attack Simulation</button>
+    </div>
+
+    <!-- FINDINGS TAB -->
+    <div id="tab-findings" class="tab-content active show">
+      <!-- Summary Boxes -->
+      <div class="summary-grid">
+        <div class="summary-box critical">
+          <div class="summary-count">1</div>
+          <div class="summary-label">Critical</div>
+        </div>
+        <div class="summary-box high">
+          <div class="summary-count">1</div>
+          <div class="summary-label">High</div>
+        </div>
+        <div class="summary-box medium">
+          <div class="summary-count">0</div>
+          <div class="summary-label">Medium</div>
+        </div>
+        <div class="summary-box low">
+          <div class="summary-count">0</div>
+          <div class="summary-label">Low</div>
+        </div>
+      </div>
+
+      <!-- Vulnerabilities List -->
+      <div class="findings-list">
+
+        <!-- Critical Vulnerability Card -->
+        <div class="vuln-card critical" style="animation-delay: 0.1s;">
+          <div class="vuln-header">
+
+            <div class="vuln-header-top">
+              <div class="vuln-title-group">
+                <div class="vuln-badge badge-critical">Critical</div>
+                <div class="vuln-title">Reentrancy</div>
+              </div>
+              <div class="vuln-confidence">Confidence: HIGH</div>
+            </div>
+
+            <div class="vuln-location">
+              <span class="loc-item">Line 42</span>
+              <span class="loc-item">Column 12</span>
+            </div>
+
+            <div class="vuln-desc">State variables are updated after an external call, allowing malicious contracts to
+              repeatedly call the function before the balance is safely updated.</div>
+
+            <div class="vuln-actions">
+              <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-1')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                View Code
+              </button>
+              <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-1')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z">
+                  </path>
+                </svg>
+                How to Fix
+              </button>
+            </div>
+
+          </div>
+
+          <div class="vuln-details" id="code-1">
+            <div class="detail-section">
+              <div class="detail-title">Vulnerable Code</div>
+              <div class="code-block-wrapper">
+                <div class="code-block"><span class="vulnerable-line">(bool success, ) = msg.sender.call{value:
+                    amount}("");</span>
+                  <span class="vulnerable-line">require(success, "Transfer failed");</span>
+                  <span class="vulnerable-line">balances[msg.sender] -= amount; // State is updated after the external
+                    call</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vuln-details" id="fix-1">
+            <div class="detail-section">
+              <div class="detail-title">How to Fix</div>
+
+              <div class="fix-comparison-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
+                  <div class="code-block" style="padding: 24px 0 20px 0;">
+                    <div class="code-block-table">
+                      <div class="code-line-numbered vulnerable-line">
+                        <div class="code-line-number">1</div>
+                        <div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div>
+                      </div>
+                      <div class="code-line-numbered vulnerable-line">
+                        <div class="code-line-number">2</div>
+                        <div class="code-line-content">require(success, "Transfer failed");</div>
+                      </div>
+                      <div class="code-line-numbered vulnerable-line">
+                        <div class="code-line-number">3</div>
+                        <div class="code-line-content">balances[msg.sender] -= amount; // State is updated after</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-label fixed">✅ FIXED CODE</div>
+                  <div class="code-block" style="padding: 24px 0 20px 0;">
+                    <div class="code-block-table">
+                      <div class="code-line-numbered fixed-line">
+                        <div class="code-line-number">1</div>
+                        <div class="code-line-content">balances[msg.sender] -= amount; // Update state FIRST</div>
+                      </div>
+                      <div class="code-line-numbered fixed-line">
+                        <div class="code-line-number">2</div>
+                        <div class="code-line-content">(bool success, ) = msg.sender.call{value: amount}("");</div>
+                      </div>
+                      <div class="code-line-numbered fixed-line">
+                        <div class="code-line-number">3</div>
+                        <div class="code-line-content">require(success, "Transfer failed");</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
+              <div class="recommendation-text" style="display: block;">
+                <ul
+                  style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
+                  <li>Implement the Checks-Effects-Interactions pattern.</li>
+                  <li>Always update state variables (like balances) before making external calls to untrusted addresses.
+                  </li>
+                  <li>Alternatively, apply a ReentrancyGuard modifier.</li>
+                </ul>
+              </div>
+
+              <div style="margin-top: 24px; text-align: right;">
+                <button class="btn-primary"
+                  style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;"
+                  onclick="copyCode(this)"
+                  data-code="balances[msg.sender] -= amount; // Update state FIRST&#10;(bool success, ) = msg.sender.call{value: amount}(&quot;&quot;);&#10;require(success, &quot;Transfer failed&quot;);">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span class="copy-text">Copy Fix Code</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- High Vulnerability Card -->
+        <div class="vuln-card high" style="animation-delay: 0.2s;">
+          <div class="vuln-header">
+
+            <div class="vuln-header-top">
+              <div class="vuln-title-group">
+                <div class="vuln-badge badge-high">High</div>
+                <div class="vuln-title">Unchecked Call Return Value</div>
+              </div>
+              <div class="vuln-confidence">Confidence: MEDIUM</div>
+            </div>
+
+            <div class="vuln-location">
+              <span class="loc-item">Line 115</span>
+            </div>
+
+            <div class="vuln-desc">The return value of a low-level external call is not checked. If the call fails,
+              execution will continue silently, potentially causing state inconsistencies.</div>
+
+            <div class="vuln-actions">
+              <button class="vuln-expand-btn" onclick="toggleDetails(this, 'code-2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                View Code
+              </button>
+              <button class="vuln-expand-btn" onclick="toggleDetails(this, 'fix-2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z">
+                  </path>
+                </svg>
+                How to Fix
+              </button>
+            </div>
+
+          </div>
+
+          <div class="vuln-details" id="code-2">
+            <div class="detail-section">
+              <div class="detail-title">Vulnerable Code</div>
+              <div class="code-block-wrapper">
+                <div class="code-block">targetContract.call(abi.encodeWithSignature("doSomething()"));</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vuln-details" id="fix-2">
+            <div class="detail-section">
+              <div class="detail-title">How to Fix</div>
+
+              <div class="fix-comparison-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-label vulnerable">❌ VULNERABLE CODE</div>
+                  <div class="code-block" style="padding: 24px 0 20px 0;">
+                    <div class="code-block-table">
+                      <div class="code-line-numbered vulnerable-line">
+                        <div class="code-line-number">1</div>
+                        <div class="code-line-content">targetContract.call(abi.encodeWithSignature("doSomething()"));
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-label fixed">✅ FIXED CODE</div>
+                  <div class="code-block" style="padding: 24px 0 20px 0;">
+                    <div class="code-block-table">
+                      <div class="code-line-numbered fixed-line">
+                        <div class="code-line-number">1</div>
+                        <div class="code-line-content">(bool success, ) =
+                          targetContract.call(abi.encodeWithSignature("doSomething()"));</div>
+                      </div>
+                      <div class="code-line-numbered fixed-line">
+                        <div class="code-line-number">2</div>
+                        <div class="code-line-content">require(success, "External call failed");</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-title" style="margin-top: 8px;">Why It Works</div>
+              <div class="recommendation-text" style="display: block;">
+                <ul
+                  style="margin: 0; padding-left: 20px; list-style-type: disc; display: flex; flex-direction: column; gap: 8px;">
+                  <li>Always check the boolean return value from low-level calls (call, send, delegatecall).</li>
+                  <li>Wrap the call in a require() statement to ensure the transaction reverts if the target contract
+                    throws an error.</li>
+                </ul>
+              </div>
+
+              <div style="margin-top: 24px; text-align: right;">
+                <button class="btn-primary"
+                  style="padding: 10px 20px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;"
+                  onclick="copyCode(this)"
+                  data-code="(bool success, ) = targetContract.call(abi.encodeWithSignature(&quot;doSomething()&quot;));&#10;require(success, &quot;External call failed&quot;);">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span class="copy-text">Copy Fix Code</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="modal-body" style="flex-grow: 1; overflow-y: auto; padding: 0; background: #1F2937; color: #F3F4F6;">
-      <div id="code-review-container" style="font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.6; display: table; width: 100%;">
-        <!-- Code lines will be injected here -->
+
+    <!-- ATTACK SIMULATION TAB -->
+    <div id="tab-simulation" class="tab-content">
+
+      <div class="sim-card" style="animation-delay: 0.1s;">
+        <div class="sim-header">
+          <div class="sim-icon">🔄</div>
+          <div>
+            <div class="sim-title">Reentrancy Attack Simulator</div>
+            <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on
+              Line 42</div>
+          </div>
+        </div>
+
+        <div class="sim-flow-vertical">
+          <div class="sim-pill attacker">Step 1: Attacker calls withdraw() requesting 1 ETH</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill">Step 2: Vault sends 1 ETH to Attacker via .call()</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill attacker">Step 3: Attacker's fallback() is triggered upon receiving ETH</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill attacker">Step 4: Inside fallback(), Attacker calls withdraw() AGAIN</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill">Step 5: Vault sends another 1 ETH (balance wasn't updated!)</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill attacker">Step 6: Vault is drained.</div>
+        </div>
+      </div>
+
+      <div class="sim-card" style="animation-delay: 0.25s;">
+        <div class="sim-header">
+          <div class="sim-icon">💥</div>
+          <div>
+            <div class="sim-title">Unchecked Call Exploit Simulator</div>
+            <div style="font-size: 14px; color: var(--text-muted);">Visualizing the flow of the vulnerability found on
+              Line 115</div>
+          </div>
+        </div>
+
+        <div class="sim-flow-vertical">
+          <div class="sim-pill">Step 1: Vault executes external call to TargetContract</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill attacker">Step 2: TargetContract encounters an error and REVERTS</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill">Step 3: Vault ignores the revert and continues execution</div>
+          <div class="sim-arrow">↓</div>
+          <div class="sim-pill attacker">Step 4: Vault state is updated inconsistently, leading to loss of funds</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM ACTION BUTTONS -->
+    <div class="actions-bar"
+      style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+      <button class="btn btn-primary" onclick="showReviewModal()">
+        🔍 Review Contract
+      </button>
+      <button class="btn btn-primary" onclick="window.location.href='/scanner.html'">
+        🔄 Analyze Another
+      </button>
+      <div style="position: relative; display: inline-block;">
+        <button class="btn btn-primary" onclick="toggleDownloadDropdown(event)">
+          📥 Download Report
+        </button>
+        <div id="download-dropdown"
+          style="display: none; position: absolute; bottom: 100%; left: 0; background: white; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); margin-bottom: 8px; overflow: hidden; z-index: 100; min-width: 180px;">
+          <button onclick="downloadReport('pdf')"
+            style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; border-bottom: 1px solid #f0f0f0; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📄
+            PDF Format</button>
+          <button onclick="downloadReport('json')"
+            style="display: block; width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; cursor: pointer; font-size: 14px; transition: background 0.2s; color: #333;">📋
+            JSON Format</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Code Review Modal -->
+  <div class="modal-overlay" id="code-review-modal"
+    style="display: none; opacity: 0; transition: opacity 0.3s ease; z-index: 1010; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div class="modal-content"
+      style="max-width: 794px; width: 100%; height: 80vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <div class="modal-header"
+        style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding: 16px 24px; background: #fafafa;">
+        <h3 class="modal-title"
+          style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">
+          Contract Source Code</h3>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button id="btn-close-code-review" onclick="closeReviewModal()"
+            style="background: none; border: none; cursor: pointer; color: #666; padding: 4px; border-radius: 4px; transition: background 0.2s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" style="flex-grow: 1; overflow-y: auto; padding: 0; background: #1F2937; color: #F3F4F6;">
+        <div id="code-review-container"
+          style="font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.6; display: table; width: 100%;">
+          <!-- Code lines will be injected here -->
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  // Tab Switching
-  function switchTab(event, tabId) {
-    const btn = event.currentTarget || event.target;
-    if (btn.classList.contains('active')) return;
+  <script>
+    // Tab Switching
+    function switchTab(event, tabId) {
+      const btn = event.currentTarget || event.target;
+      if (btn.classList.contains('active')) return;
 
-    // Move indicator
-    const indicator = document.getElementById('tab-indicator');
-    indicator.style.width = btn.offsetWidth + 'px';
-    indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
+      // Move indicator
+      const indicator = document.getElementById('tab-indicator');
+      indicator.style.width = btn.offsetWidth + 'px';
+      indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
 
-    // Update buttons
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+      // Update buttons
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-    // Handle Content Transition
-    const currentTab = document.querySelector('.tab-content.active');
-    const nextTab = document.getElementById('tab-' + tabId);
+      // Handle Content Transition
+      const currentTab = document.querySelector('.tab-content.active');
+      const nextTab = document.getElementById('tab-' + tabId);
 
-    if (currentTab) {
-      currentTab.classList.remove('show');
-      setTimeout(() => {
-        currentTab.classList.remove('active');
-        nextTab.classList.add('active');
-        // Small delay to ensure display block applies before opacity transition
-        setTimeout(() => nextTab.classList.add('show'), 10);
-      }, 200); // 200ms duration
+      if (currentTab) {
+        currentTab.classList.remove('show');
+        setTimeout(() => {
+          currentTab.classList.remove('active');
+          nextTab.classList.add('active');
+          // Small delay to ensure display block applies before opacity transition
+          setTimeout(() => nextTab.classList.add('show'), 10);
+        }, 200); // 200ms duration
+      }
     }
-  }
 
-  // Toggle Details
-  function toggleDetails(btn, detailsId) {
-    const details = document.getElementById(detailsId);
-    
-    if (details.classList.contains('open')) {
-      details.classList.remove('open');
-      btn.innerHTML = btn.innerHTML.replace('Hide', 'View');
-    } else {
-      // Find parent card and close other sections if desired
-      const card = btn.closest('.vuln-card');
-      card.querySelectorAll('.vuln-details').forEach(d => d.classList.remove('open'));
-      
-      // Update text back to "View" on all buttons in this card
-      card.querySelectorAll('.vuln-expand-btn').forEach(b => {
-        if (b.innerHTML.includes('Hide')) {
-          b.innerHTML = b.innerHTML.replace('Hide', 'View');
-        }
-      });
-      
-      details.classList.add('open');
-      btn.innerHTML = btn.innerHTML.replace('View', 'Hide');
-      
-      // Smooth scroll the expanded detail section into view after rendering
-      setTimeout(() => {
-        details.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 50);
-    }
-  }
+    // Toggle Details
+    function toggleDetails(btn, detailsId) {
+      const details = document.getElementById(detailsId);
 
-  // Score Animation
-  function animateAnalysisScore(finalScore, status, color) {
-    const duration = 2000; // ms
-    const scoreText = document.getElementById('score-value-text');
-    const progressBar = document.getElementById('score-progress-bar');
-    const statusText = document.getElementById('score-status-text');
-
-    if (statusText) {
-      statusText.style.color = color;
-      statusText.innerText = status;
-    }
-    
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const currentScore = Math.floor(easeOut * finalScore);
-      
-      if (scoreText) scoreText.innerText = currentScore;
-      
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
+      if (details.classList.contains('open')) {
+        details.classList.remove('open');
+        btn.innerHTML = btn.innerHTML.replace('Hide', 'View');
       } else {
-        if (scoreText) scoreText.innerText = finalScore;
-        if (progressBar) progressBar.style.stroke = color;
+        // Find parent card and close other sections if desired
+        const card = btn.closest('.vuln-card');
+        card.querySelectorAll('.vuln-details').forEach(d => d.classList.remove('open'));
+
+        // Update text back to "View" on all buttons in this card
+        card.querySelectorAll('.vuln-expand-btn').forEach(b => {
+          if (b.innerHTML.includes('Hide')) {
+            b.innerHTML = b.innerHTML.replace('Hide', 'View');
+          }
+        });
+
+        details.classList.add('open');
+        btn.innerHTML = btn.innerHTML.replace('View', 'Hide');
+
+        // Smooth scroll the expanded detail section into view after rendering
+        setTimeout(() => {
+          details.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
       }
-    };
-    window.requestAnimationFrame(step);
+    }
 
-    setTimeout(() => {
-      if (progressBar) {
-        const radius = 50;
-        const circumference = 2 * Math.PI * radius;
-        const offset = circumference - (finalScore / 100) * circumference;
-        progressBar.style.strokeDashoffset = offset;
+    // Score Animation
+    function animateAnalysisScore(finalScore, status, color) {
+      const duration = 2000; // ms
+      const scoreText = document.getElementById('score-value-text');
+      const progressBar = document.getElementById('score-progress-bar');
+      const statusText = document.getElementById('score-status-text');
+
+      if (statusText) {
+        statusText.style.color = color;
+        statusText.innerText = status;
       }
-    }, 100);
-  }
 
-  function getAttackIcon(type) {
-    const t = (type || '').toLowerCase();
-    if (t.includes('reentrancy')) return '💣';
-    if (t.includes('access control') || t.includes('authorization')) return '🔓';
-    if (t.includes('overflow') || t.includes('underflow')) return '💥';
-    if (t.includes('unchecked') || t.includes('return value')) return '⚠️';
-    if (t.includes('dos') || t.includes('denial of service')) return '🧨';
-    if (t.includes('version') || t.includes('compiler') || t.includes('pragma')) return '🧠';
-    return '⚔️';
-  }
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
 
-  function escapeHtml(text) {
-    if (!text) return '';
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-    return text.replace(/[&<>"']/g, m => map[m]);
-  }
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentScore = Math.floor(easeOut * finalScore);
+
+        if (scoreText) scoreText.innerText = currentScore;
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          if (scoreText) scoreText.innerText = finalScore;
+          if (progressBar) progressBar.style.stroke = color;
+        }
+      };
+      window.requestAnimationFrame(step);
+
+      setTimeout(() => {
+        if (progressBar) {
+          const radius = 50;
+          const circumference = 2 * Math.PI * radius;
+          const offset = circumference - (finalScore / 100) * circumference;
+          progressBar.style.strokeDashoffset = offset;
+        }
+      }, 100);
+    }
+
+    function getAttackIcon(type) {
+      const t = (type || '').toLowerCase();
+      if (t.includes('reentrancy')) return '💣';
+      if (t.includes('access control') || t.includes('authorization')) return '🔓';
+      if (t.includes('overflow') || t.includes('underflow')) return '💥';
+      if (t.includes('unchecked') || t.includes('return value')) return '⚠️';
+      if (t.includes('dos') || t.includes('denial of service')) return '🧨';
+      if (t.includes('version') || t.includes('compiler') || t.includes('pragma')) return '🧠';
+      return '⚔️';
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
 
     function formatCodeWithVulnerableLines(code) {
       if (!code) return 'No code provided';
@@ -1469,7 +1943,7 @@
         let bgClass = '';
         if (type === 'vulnerable') bgClass = 'vulnerable-line';
         if (type === 'fixed') bgClass = 'fixed-line';
-        
+
         html += `
           <div class="code-line-numbered ${bgClass}">
             <div class="code-line-number">${lineNum}</div>
@@ -1479,6 +1953,11 @@
       });
       html += '</div>';
       return html;
+    }
+
+    function formatCodeForPDF(code) {
+      if (!code) return 'No code provided';
+      return `<pre style="background: #1E293B; color: #E2E8F0; padding: 16px; margin: 0; white-space: pre-wrap; word-wrap: break-word; font-family: monospace; font-size: 12px; border-radius: 4px; text-align: left;">${escapeHtml(code)}</pre>`;
     }
 
     function generateBullets(text) {
@@ -1497,7 +1976,7 @@
       return html;
     }
 
-    window.copyCode = function(btn) {
+    window.copyCode = function (btn) {
       const code = btn.getAttribute('data-code');
       const decoded = code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
       navigator.clipboard.writeText(decoded).then(() => {
@@ -1508,7 +1987,7 @@
       });
     };
 
-    window.toggleDownloadDropdown = function(event) {
+    window.toggleDownloadDropdown = function (event) {
       event.stopPropagation();
       const dropdown = document.getElementById('download-dropdown');
       dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
@@ -1519,7 +1998,7 @@
       if (dropdown) dropdown.style.display = 'none';
     });
 
-    window.downloadReport = function(format) {
+    window.downloadReport = function (format) {
       const analysisData = window.currentAnalysis;
       if (!analysisData) return alert('No analysis data to download.');
 
@@ -1532,17 +2011,291 @@
         a.click();
         URL.revokeObjectURL(url);
       } else if (format === 'pdf') {
-        // Since we don't have a backend PDF generator or html2pdf library linked,
-        // we'll trigger the browser's native print-to-pdf dialog as a clean alternative.
-        window.print();
+        const btn = event && event.target ? event.target.closest('button') : null;
+        const originalText = btn ? btn.innerHTML : '📄 PDF Format';
+        if (btn) btn.innerHTML = '⏳ Generating PDF...';
+
+        const executeDownload = () => {
+          // Grab existing styles from the page to ensure the PDF is styled correctly
+          const styleTag = document.querySelector('style');
+          const cssContent = styleTag ? styleTag.innerHTML : '';
+
+          // Construct a standalone HTML payload
+          const finalHtml = `
+            ${generatePDFReportHTML(analysisData)}
+          `;
+
+          const contractName = analysisData.contractInfo?.name ? analysisData.contractInfo.name.replace('.sol', '') : 'Contract';
+          const dateStr = new Date().toISOString().split('T')[0];
+          const filename = `Solvigil_Analysis_${contractName}_${dateStr}.pdf`;
+
+          const opt = {
+            margin: 0,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+          };
+
+          html2pdf().set(opt).from(finalHtml).save().then(() => {
+            if (btn) btn.innerHTML = originalText;
+          }).catch(err => {
+            console.error("PDF generation failed:", err);
+            if (btn) btn.innerHTML = originalText;
+            alert("Failed to generate PDF.");
+          });
+        };
+
+        if (typeof window.html2pdf === 'undefined') {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          script.onload = executeDownload;
+          document.head.appendChild(script);
+        } else {
+          executeDownload();
+        }
       }
     };
 
-    window.showReviewModal = function() {
+    function generatePDFReportHTML(data) {
+      const decision = data.DECISION || data;
+      const breakdown = decision.severityBreakdown || data.summary || { critical: 0, high: 0, medium: 0, low: 0 };
+      const score = decision.securityScore !== undefined ? decision.securityScore : 100;
+      const scoreStatus = decision.securityStatus || 'Safe';
+
+      const severities = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+      const sortedVulns = [...(data.vulnerabilities || [])].sort((a, b) => {
+        let idxA = severities.indexOf(a.severity);
+        let idxB = severities.indexOf(b.severity);
+        if (idxA === -1) idxA = 4;
+        if (idxB === -1) idxB = 4;
+        return idxA - idxB;
+      });
+
+      const dateStr = new Date().toLocaleString();
+      const contractName = data.contractInfo?.name || 'Smart Contract';
+      const totalFindings = breakdown.critical + breakdown.high + breakdown.medium + breakdown.low;
+
+      let html = '';
+
+      // GLOBAL STYLES FOR PDF
+      html += `
+        <style>
+          * { box-sizing: border-box; font-family: 'Inter', Arial, sans-serif; }
+          body { margin: 0; padding: 0; background: white; }
+          .pdf-page { width: 800px; margin: 0 auto; padding: 40px; page-break-after: always; background: white; }
+          .pdf-center { text-align: center; margin: 0 auto; }
+          .pdf-table { width: 90%; max-width: 700px; margin: 20px auto; border-collapse: collapse; page-break-inside: avoid; }
+          .pdf-table th, .pdf-table td { border: 1px solid #E5E7EB; padding: 12px; text-align: left; }
+          .pdf-table th { background: #F3F4F6; font-weight: bold; }
+          .pdf-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; color: white; font-weight: bold; font-size: 12px; }
+          .pdf-code { background: #0D1117; color: #E6EDF3; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 12px; line-height: 1.5; border: 1px solid #30363D; overflow-wrap: break-word; white-space: pre-wrap; page-break-inside: avoid; margin-bottom: 20px; text-align: left; max-width: 100%; overflow: hidden; }
+          .pdf-section { margin-bottom: 20px; page-break-inside: avoid; }
+          h1, h2, h3 { margin-top: 20px; margin-bottom: 20px; }
+          p { margin-bottom: 20px; }
+          .pdf-sim-step { padding: 8px 12px; background: #FEF2F2; border-left: 4px solid #DC2626; margin-bottom: 8px; font-size: 14px; page-break-inside: avoid; }
+        </style>
+      `;
+
+      // COVER PAGE
+      html += `
+        <div class="pdf-page pdf-center">
+          <div style="height: 100px;"></div>
+          <h1 style="color: #00A19B; font-size: 48px; font-weight: bold; margin-bottom: 40px; letter-spacing: -1px;">SOLVIGIL</h1>
+          <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: #111827;">Smart Contract Security Analysis Report</h2>
+          <p style="font-size: 16px; color: #6B7280; margin-bottom: 60px;">Automated Vulnerability Scan</p>
+          
+          <div style="font-size: 72px; font-weight: bold; color: #00A19B; margin: 60px 0; letter-spacing: -2px;">${score}</div>
+          <p style="font-size: 18px; font-weight: bold; margin-bottom: 60px;">Security Score</p>
+          
+          <table class="pdf-table">
+            <tr>
+              <td style="font-weight: bold;">Analysis Date</td>
+              <td style="text-align: right;">${dateStr}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold;">Target File</td>
+              <td style="text-align: right;">${escapeHtml(contractName)}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold;">Risk Status</td>
+              <td style="text-align: right; font-weight: bold;">${escapeHtml(scoreStatus)}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold;">Total Findings</td>
+              <td style="text-align: right;">${totalFindings}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // OVERVIEW PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Findings Overview</h2>
+          
+          <h3 style="font-size: 18px;">Severity Breakdown</h3>
+          <table class="pdf-table pdf-center">
+            <tr>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+                <div style="font-size: 32px; font-weight: bold; color: #DC2626;">${breakdown.critical}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">CRITICAL</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+                <div style="font-size: 32px; font-weight: bold; color: #F59E0B;">${breakdown.high}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">HIGH</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+                <div style="font-size: 32px; font-weight: bold; color: #FBBF24;">${breakdown.medium}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">MEDIUM</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+                <div style="font-size: 32px; font-weight: bold; color: #3B82F6;">${breakdown.low}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">LOW</div>
+              </td>
+            </tr>
+          </table>
+
+          <h3 style="font-size: 18px;">Vulnerability Summary</h3>
+          <table class="pdf-table" style="width: 100%; max-width: none;">
+            <tr>
+              <th>Vulnerability Type</th>
+              <th>Severity</th>
+              <th>Confidence</th>
+              <th>Location</th>
+            </tr>
+            ${sortedVulns.map(v => `
+              <tr>
+                <td style="font-weight: bold;">${escapeHtml(v.type || v.name)}</td>
+                <td><span class="pdf-badge" style="background: ${v.severity === 'CRITICAL' ? '#DC2626' : v.severity === 'HIGH' ? '#F59E0B' : v.severity === 'MEDIUM' ? '#FBBF24' : '#3B82F6'};">${v.severity}</span></td>
+                <td>${v.confidence || 'HIGH'}</td>
+                <td>Line ${v.line || '?'}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+      `;
+
+      // DETAILED FINDINGS
+      sortedVulns.forEach((v, idx) => {
+        html += `
+          <div class="pdf-page">
+            <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 8px; margin-bottom: 20px;">
+              ${escapeHtml(v.type || v.name)}
+            </h2>
+            
+            <div class="pdf-section">
+              <p style="font-size: 14px; color: #6B7280;">
+                <span class="pdf-badge" style="background: ${v.severity === 'CRITICAL' ? '#DC2626' : v.severity === 'HIGH' ? '#F59E0B' : v.severity === 'MEDIUM' ? '#FBBF24' : '#3B82F6'}; margin-right: 12px;">${v.severity}</span>
+                Finding ${idx + 1} of ${sortedVulns.length} | Line ${v.line}${v.column ? ' | Col ' + v.column : ''}
+              </p>
+            </div>
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">Description</h3>
+              <p style="font-size: 14px; color: #374151;">${escapeHtml(v.description || '')}</p>
+            </div>
+
+            ${v.simulation && v.simulation.length > 0 ? `
+              <div class="pdf-section">
+                <h3 style="font-size: 16px;">Attack Simulation</h3>
+                ${v.simulation.map((step, sIdx) => `
+                  <div class="pdf-sim-step">
+                    <strong>Step ${sIdx + 1}:</strong> ${escapeHtml(step)}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">Vulnerable Code</h3>
+              <pre class="pdf-code">${escapeHtml(v.code || v.vulnerableCode || 'No code provided')}</pre>
+            </div>
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">How to Fix</h3>
+              <p style="font-size: 14px; color: #374151;">${escapeHtml(v.fix || '')}</p>
+              <pre class="pdf-code">${escapeHtml(v.fixExplanation || v.fixedCode || 'No fix provided')}</pre>
+            </div>
+
+            ${v.impact ? `
+              <div class="pdf-section">
+                <h3 style="font-size: 16px;">Impact</h3>
+                <p style="font-size: 14px; color: #374151;">${escapeHtml(v.impact)}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      // RECOMMENDATIONS PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Recommendations & Summary</h2>
+          
+          <h3 style="font-size: 16px;">Action Items</h3>
+          <div class="pdf-section" style="font-size: 14px; color: #374151; margin-bottom: 40px;">
+            ${breakdown.critical > 0 ? `<p><strong>Immediate Action Required:</strong> Address the ${breakdown.critical} CRITICAL vulnerabilities before deployment. These represent imminent risks of fund loss.</p>` : ''}
+            ${breakdown.high > 0 ? `<p><strong>High Priority:</strong> Fix the ${breakdown.high} HIGH severity issues. These can cause logic failures or DoS.</p>` : ''}
+            ${breakdown.medium > 0 ? `<p><strong>Medium Priority:</strong> Review the ${breakdown.medium} MEDIUM severity findings for compliance.</p>` : ''}
+            <p><strong>Best Practice:</strong> Conduct thorough testing covering all edge cases identified.</p>
+          </div>
+
+          <h3 style="font-size: 16px;">Code Analysis Summary</h3>
+          <table class="pdf-table">
+            <tr style="background: #F9FAFB;">
+              <td style="font-weight: bold;">File Size</td>
+              <td>${escapeHtml(data.contractInfo?.size || 'Unknown')}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold;">Total Vulnerabilities</td>
+              <td>${totalFindings}</td>
+            </tr>
+            <tr style="background: #F9FAFB;">
+              <td style="font-weight: bold;">Overall Status</td>
+              <td style="font-weight: bold;">${escapeHtml(scoreStatus)}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // METHODOLOGY PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Methodology & Disclaimer</h2>
+          
+          <div class="pdf-section">
+            <h3 style="font-size: 16px;">Detection Methodology</h3>
+            <p style="font-size: 14px; color: #374151;">
+              Solvigil employs static analysis of Solidity source code. Each detector operates in two phases: Pattern Detection (identifies potentially unsafe structures) and Exploitability Validation (confirms realistic exploit paths).
+            </p>
+          </div>
+
+          <div class="pdf-section">
+            <h3 style="font-size: 16px;">Limitations</h3>
+            <p style="font-size: 14px; color: #374151;">
+              Static analysis cannot understand complete business logic, economic design, or complex multi-transaction exploits. This is an automated analysis, not a professional manual audit.
+            </p>
+          </div>
+
+          <div class="pdf-section" style="padding: 20px; border: 2px solid #DC2626; background: #FEF2F2; border-radius: 6px; margin-top: 40px; text-align: left;">
+            <h3 style="font-size: 16px; color: #DC2626; margin-top: 0;">DISCLAIMER</h3>
+            <p style="font-size: 13px; color: #5F1F1F; margin-bottom: 0;">
+              This report was generated by automated analysis. It does NOT constitute a professional manual security audit. We strongly recommend engaging a professional security firm for a comprehensive audit before mainnet deployment.
+            </p>
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    window.showReviewModal = function () {
       const modal = document.getElementById('code-review-modal');
       const container = document.getElementById('code-review-container');
       const code = sessionStorage.getItem('solvigil_contract_code') || '// No source code available in session';
-      
+
       const vulnerableLines = new Set();
       if (window.currentAnalysis && window.currentAnalysis.vulnerabilities) {
         window.currentAnalysis.vulnerabilities.forEach(v => {
@@ -1556,7 +2309,7 @@
         const isVuln = vulnerableLines.has(lineNum);
         const bg = isVuln ? 'background: rgba(239, 68, 68, 0.2);' : '';
         const numColor = isVuln ? '#ef4444' : '#6B7280';
-        
+
         html += `<div style="display: table-row; ${bg}">
           <div style="display: table-cell; padding: 0 16px; text-align: right; border-right: 1px solid #374151; color: ${numColor}; user-select: none; width: 50px;">${lineNum}</div>
           <div style="display: table-cell; padding: 0 16px; white-space: pre-wrap; word-break: break-all;">${escapeHtml(line) || ' '}</div>
@@ -1568,70 +2321,70 @@
       setTimeout(() => modal.style.opacity = '1', 10);
     };
 
-    window.closeReviewModal = function() {
+    window.closeReviewModal = function () {
       const modal = document.getElementById('code-review-modal');
       modal.style.opacity = '0';
       setTimeout(() => modal.style.display = 'none', 300);
     };
 
-  // Populate UI
-  async function loadAndPopulateData() {
-    try {
-      // 1. RECEIVE DATA FROM BACKEND (or Local Storage / Mock)
-      let analysisData = window.currentAnalysis;
-      
-      if (!analysisData) {
-        const stored = sessionStorage.getItem('solvigil_analysis_result');
-        if (stored) {
-          analysisData = JSON.parse(stored);
-        } else {
-          // Fallback to mock data
-          const response = await fetch('/data/sample-vulnerabilities.json');
-          if (response.ok) {
-            const vulnerabilities = await response.json();
-            let critical = 0, high = 0, medium = 0, low = 0;
-            vulnerabilities.forEach(v => {
-              if (v.severity === 'CRITICAL') critical++;
-              else if (v.severity === 'HIGH') high++;
-              else if (v.severity === 'MEDIUM') medium++;
-              else low++;
-            });
-            analysisData = {
-              securityScore: 45,
-              contractInfo: { name: 'Vault.sol', size: '4.2 KB' },
-              details: {
-                confidence: 'High Confidence',
-                severityBreakdown: { critical, high, medium, low }
-              },
-              vulnerabilities: vulnerabilities
-            };
+    // Populate UI
+    async function loadAndPopulateData() {
+      try {
+        // 1. RECEIVE DATA FROM BACKEND (or Local Storage / Mock)
+        let analysisData = window.currentAnalysis;
+
+        if (!analysisData) {
+          const stored = sessionStorage.getItem('solvigil_analysis_result');
+          if (stored) {
+            analysisData = JSON.parse(stored);
+          } else {
+            // Fallback to mock data
+            const response = await fetch('/data/sample-vulnerabilities.json');
+            if (response.ok) {
+              const vulnerabilities = await response.json();
+              let critical = 0, high = 0, medium = 0, low = 0;
+              vulnerabilities.forEach(v => {
+                if (v.severity === 'CRITICAL') critical++;
+                else if (v.severity === 'HIGH') high++;
+                else if (v.severity === 'MEDIUM') medium++;
+                else low++;
+              });
+              analysisData = {
+                securityScore: 45,
+                contractInfo: { name: 'Vault.sol', size: '4.2 KB' },
+                details: {
+                  confidence: 'High Confidence',
+                  severityBreakdown: { critical, high, medium, low }
+                },
+                vulnerabilities: vulnerabilities
+              };
+            }
           }
         }
-      }
 
-      if (!analysisData) return;
-      
-      // Keep globally for Download functionality
-      window.currentAnalysis = analysisData;
+        if (!analysisData) return;
 
-      // 4. UPDATE HEADER
-      const decision = analysisData.DECISION || analysisData;
-      animateAnalysisScore(
-        decision.securityScore !== undefined ? decision.securityScore : 100, 
-        decision.securityStatus || 'Safe', 
-        decision.statusColor || 'var(--status-safe)'
-      );
-      
-      if (analysisData.contractInfo) {
-        const nameEl = document.querySelector('.contract-name');
-        if (nameEl) nameEl.textContent = analysisData.contractInfo.name || 'Contract.sol';
-      }
+        // Keep globally for Download functionality
+        window.currentAnalysis = analysisData;
 
-      // Update Summary Grid
-      const breakdown = (decision.severityBreakdown) || analysisData.summary || { critical: 0, high: 0, medium: 0, low: 0 };
-      const summaryGrid = document.querySelector('.summary-grid');
-      if (summaryGrid) {
-        summaryGrid.innerHTML = `
+        // 4. UPDATE HEADER
+        const decision = analysisData.DECISION || analysisData;
+        animateAnalysisScore(
+          decision.securityScore !== undefined ? decision.securityScore : 100,
+          decision.securityStatus || 'Safe',
+          decision.statusColor || 'var(--status-safe)'
+        );
+
+        if (analysisData.contractInfo) {
+          const nameEl = document.querySelector('.contract-name');
+          if (nameEl) nameEl.textContent = analysisData.contractInfo.name || 'Contract.sol';
+        }
+
+        // Update Summary Grid
+        const breakdown = (decision.severityBreakdown) || analysisData.summary || { critical: 0, high: 0, medium: 0, low: 0 };
+        const summaryGrid = document.querySelector('.summary-grid');
+        if (summaryGrid) {
+          summaryGrid.innerHTML = `
           <div class="summary-box critical">
             <div class="summary-count">${breakdown.critical}</div>
             <div class="summary-label">Critical</div>
@@ -1649,27 +2402,27 @@
             <div class="summary-label">Low</div>
           </div>
         `;
-      }
-
-      // 2. POPULATE FINDINGS TAB
-      const findingsList = document.querySelector('.findings-list');
-      if (findingsList) {
-        findingsList.innerHTML = '';
-        
-        const severityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'INFO': 4 };
-        const sorted = [...(analysisData.vulnerabilities || [])].sort((a, b) => 
-          (severityOrder[a.severity] ?? 5) - (severityOrder[b.severity] ?? 5)
-        );
-
-        if (sorted.length === 0) {
-          findingsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No vulnerabilities found.</div>';
         }
 
-        sorted.forEach((vuln, index) => {
-          const type = vuln.type || vuln.name || 'Unknown';
-          const sevClass = (vuln.severity || 'low').toLowerCase();
-          
-          let html = `
+        // 2. POPULATE FINDINGS TAB
+        const findingsList = document.querySelector('.findings-list');
+        if (findingsList) {
+          findingsList.innerHTML = '';
+
+          const severityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'INFO': 4 };
+          const sorted = [...(analysisData.vulnerabilities || [])].sort((a, b) =>
+            (severityOrder[a.severity] ?? 5) - (severityOrder[b.severity] ?? 5)
+          );
+
+          if (sorted.length === 0) {
+            findingsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No vulnerabilities found.</div>';
+          }
+
+          sorted.forEach((vuln, index) => {
+            const type = vuln.type || vuln.name || 'Unknown';
+            const sevClass = (vuln.severity || 'low').toLowerCase();
+
+            let html = `
             <div class="vuln-card ${sevClass}" style="animation-delay: ${index * 0.1}s">
               <div class="vuln-header">
                 <div class="vuln-header-top">
@@ -1739,26 +2492,26 @@
               </div>
             </div>
           `;
-          findingsList.innerHTML += html;
-        });
-      }
-
-      // 3. POPULATE ATTACK SIMULATION TAB
-      const simTab = document.getElementById('tab-simulation');
-      if (simTab) {
-        simTab.innerHTML = '';
-        const vulnerabilities = analysisData.vulnerabilities || [];
-        
-        if (vulnerabilities.length === 0) {
-          simTab.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No attack simulations available.</div>';
+            findingsList.innerHTML += html;
+          });
         }
 
-        vulnerabilities.forEach((vuln, index) => {
-          const icon = getAttackIcon(vuln.type);
-          const type = vuln.type || vuln.name || 'Attack';
-          const steps = vuln.simulation || ['Deploy malicious contract', 'Execute exploit'];
-          
-          let simHtml = `
+        // 3. POPULATE ATTACK SIMULATION TAB
+        const simTab = document.getElementById('tab-simulation');
+        if (simTab) {
+          simTab.innerHTML = '';
+          const vulnerabilities = analysisData.vulnerabilities || [];
+
+          if (vulnerabilities.length === 0) {
+            simTab.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No attack simulations available.</div>';
+          }
+
+          vulnerabilities.forEach((vuln, index) => {
+            const icon = getAttackIcon(vuln.type);
+            const type = vuln.type || vuln.name || 'Attack';
+            const steps = vuln.simulation || ['Deploy malicious contract', 'Execute exploit'];
+
+            let simHtml = `
             <div class="sim-card" style="animation-delay: ${index * 0.15}s">
               <div class="sim-header">
                 <div class="sim-icon">${icon}</div>
@@ -1769,39 +2522,40 @@
               </div>
               <div class="sim-flow-vertical">
           `;
-          
-          steps.forEach((step, index) => {
-            const isAttacker = step.toLowerCase().includes('attacker') || step.toLowerCase().includes('malicious');
-            const pillClass = isAttacker ? 'sim-pill attacker' : 'sim-pill';
-            
-            simHtml += `<div class="${pillClass}" style="animation-delay: ${index * 0.15}s">Step ${index + 1}: ${escapeHtml(step)}</div>`;
-            if (index < steps.length - 1) {
-              simHtml += `<div class="sim-arrow" style="animation-delay: ${index * 0.15 + 0.05}s">↓</div>`;
-            }
+
+            steps.forEach((step, index) => {
+              const isAttacker = step.toLowerCase().includes('attacker') || step.toLowerCase().includes('malicious');
+              const pillClass = isAttacker ? 'sim-pill attacker' : 'sim-pill';
+
+              simHtml += `<div class="${pillClass}" style="animation-delay: ${index * 0.15}s">Step ${index + 1}: ${escapeHtml(step)}</div>`;
+              if (index < steps.length - 1) {
+                simHtml += `<div class="sim-arrow" style="animation-delay: ${index * 0.15 + 0.05}s">↓</div>`;
+              }
+            });
+
+            simHtml += `</div></div>`;
+            simTab.innerHTML += simHtml;
           });
-          
-          simHtml += `</div></div>`;
-          simTab.innerHTML += simHtml;
-        });
+        }
+
+      } catch (e) {
+        console.error("Error populating data", e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize tab indicator
+      const activeBtn = document.querySelector('.tab-btn.active');
+      const indicator = document.getElementById('tab-indicator');
+      if (activeBtn && indicator) {
+        indicator.style.width = activeBtn.offsetWidth + 'px';
+        indicator.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
       }
 
-    } catch (e) {
-      console.error("Error populating data", e);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // Initialize tab indicator
-    const activeBtn = document.querySelector('.tab-btn.active');
-    const indicator = document.getElementById('tab-indicator');
-    if (activeBtn && indicator) {
-      indicator.style.width = activeBtn.offsetWidth + 'px';
-      indicator.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
-    }
-    
-    // Call our populator
-    loadAndPopulateData();
-  });
-</script>
+      // Call our populator
+      loadAndPopulateData();
+    });
+  </script>
 </body>
+
 </html>
