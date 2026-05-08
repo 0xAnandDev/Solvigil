@@ -41,7 +41,7 @@
     * {
       box-sizing: border-box;
       margin: 0;
-        padding: 0;
+      padding: 0;
     }
 
     body {
@@ -56,7 +56,7 @@
     .container {
       max-width: 900px;
       margin: 0 auto;
-        padding: 60px 20px;
+      padding: 60px 20px;
     }
 
     @keyframes fadeInUp {
@@ -674,7 +674,7 @@
       background-color: rgba(239, 68, 68, 0.15);
       display: block;
       margin: 0 -20px;
-        padding: 0 20px;
+      padding: 0 20px;
       border-left: 2px solid #EF4444;
     }
 
@@ -1790,8 +1790,7 @@
       style="max-width: 794px; width: 100%; height: 80vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
       <div class="modal-header"
         style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; padding: 16px 24px; background: #fafafa;">
-        <h3 class="modal-title"
-          style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">
+        <h3 class="modal-title" style="margin: 0; font-family: 'Inter', sans-serif; font-size: 18px; color: #111;">
           Contract Source Code</h3>
         <div style="display: flex; gap: 12px; align-items: center;">
           <button id="btn-close-code-review" onclick="closeReviewModal()"
@@ -2016,34 +2015,43 @@
         if (btn) btn.innerHTML = '⏳ Generating PDF...';
 
         const executeDownload = () => {
-          // Grab existing styles from the page to ensure the PDF is styled correctly
-          const styleTag = document.querySelector('style');
-          const cssContent = styleTag ? styleTag.innerHTML : '';
-
-          // Construct a standalone HTML payload
-          const finalHtml = `
-            ${generatePDFReportHTML(analysisData)}
-          `;
-
           const contractName = analysisData.contractInfo?.name ? analysisData.contractInfo.name.replace('.sol', '') : 'Contract';
           const dateStr = new Date().toISOString().split('T')[0];
           const filename = `Solvigil_Analysis_${contractName}_${dateStr}.pdf`;
 
+          // CREATE A SEPARATE PDF EXPORT CONTAINER
+          const pdfContainer = document.createElement('div');
+          pdfContainer.style.position = 'absolute';
+          pdfContainer.style.left = '-9999px';
+          pdfContainer.style.top = '-9999px';
+          pdfContainer.style.width = '794px'; // Fixed A4-friendly width
+          pdfContainer.style.backgroundColor = '#ffffff';
+          // Render PDF HTML inside isolated container
+          pdfContainer.innerHTML = generatePDFReportHTML(analysisData);
+          document.body.appendChild(pdfContainer);
+
           const opt = {
-            margin: 0,
+            margin: 0.5, // Consistent padding
             filename: filename,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+            html2canvas: { 
+              scale: 2, 
+              useCORS: true, 
+              logging: false, 
+              windowWidth: 794 // Match container width
+            },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['css', 'legacy'] }
           };
 
-          html2pdf().set(opt).from(finalHtml).save().then(() => {
+          html2pdf().set(opt).from(pdfContainer).save().then(() => {
             if (btn) btn.innerHTML = originalText;
+            document.body.removeChild(pdfContainer);
           }).catch(err => {
             console.error("PDF generation failed:", err);
             if (btn) btn.innerHTML = originalText;
             alert("Failed to generate PDF.");
+            document.body.removeChild(pdfContainer);
           });
         };
 
@@ -2082,49 +2090,121 @@
       // GLOBAL STYLES FOR PDF
       html += `
         <style>
-          * { box-sizing: border-box; font-family: 'Inter', Arial, sans-serif; }
-          body { margin: 0; padding: 0; background: white; }
-          .pdf-page { width: 800px; margin: 0 auto; padding: 40px; page-break-after: always; background: white; }
+          * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+          }
+          .pdf-export-wrapper {
+            background: #ffffff;
+            width: 750px;
+            margin: 0 auto;
+            color: #111827;
+          }
+          .pdf-page { 
+            width: 100%; 
+            margin: 0 auto; 
+            padding: 20px 0; 
+            page-break-after: always; 
+            background: #ffffff; 
+            overflow: hidden;
+          }
           .pdf-center { text-align: center; margin: 0 auto; }
-          .pdf-table { width: 90%; max-width: 700px; margin: 20px auto; border-collapse: collapse; page-break-inside: avoid; }
-          .pdf-table th, .pdf-table td { border: 1px solid #E5E7EB; padding: 12px; text-align: left; }
-          .pdf-table th { background: #F3F4F6; font-weight: bold; }
-          .pdf-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; color: white; font-weight: bold; font-size: 12px; }
-          .pdf-code { background: #0D1117; color: #E6EDF3; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 12px; line-height: 1.5; border: 1px solid #30363D; overflow-wrap: break-word; white-space: pre-wrap; page-break-inside: avoid; margin-bottom: 20px; text-align: left; max-width: 100%; overflow: hidden; }
-          .pdf-section { margin-bottom: 20px; page-break-inside: avoid; }
-          h1, h2, h3 { margin-top: 20px; margin-bottom: 20px; }
-          p { margin-bottom: 20px; }
-          .pdf-sim-step { padding: 8px 12px; background: #FEF2F2; border-left: 4px solid #DC2626; margin-bottom: 8px; font-size: 14px; page-break-inside: avoid; }
+          .pdf-table { 
+            width: 100%; 
+            margin: 20px 0; 
+            border-collapse: collapse; 
+            page-break-inside: avoid; 
+          }
+          .pdf-table th, .pdf-table td { 
+            border: 1px solid #E5E7EB; 
+            padding: 12px; 
+            text-align: left; 
+            vertical-align: top;
+          }
+          .pdf-table th { background: #F3F4F6; font-weight: bold; color: #374151; }
+          .pdf-badge { 
+            display: inline-block; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 12px; 
+          }
+          .pdf-code { 
+            background: #0D1117; 
+            color: #E6EDF3; 
+            padding: 16px; 
+            border-radius: 6px; 
+            font-family: 'Fira Code', Consolas, Monaco, monospace; 
+            font-size: 12px; 
+            line-height: 1.5; 
+            border: 1px solid #30363D; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+            page-break-inside: avoid; 
+            margin-bottom: 20px; 
+            text-align: left; 
+            width: 100%; 
+            display: block;
+          }
+          .pdf-section { margin-bottom: 24px; page-break-inside: avoid; width: 100%; }
+          h1, h2, h3, h4, h5 { margin-top: 20px; margin-bottom: 12px; color: #111827; }
+          p { margin-bottom: 16px; line-height: 1.6; color: #374151; }
+          .pdf-sim-step { 
+            padding: 10px 14px; 
+            background: #FEF2F2; 
+            border-left: 4px solid #DC2626; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            page-break-inside: avoid; 
+            color: #991B1B;
+          }
+          .score-circle-pdf {
+            width: 140px;
+            height: 140px;
+            margin: 40px auto;
+            border-radius: 50%;
+            border: 10px solid #E5E7EB;
+            font-size: 48px;
+            font-weight: bold;
+            color: #00A19B;
+            line-height: 120px;
+            text-align: center;
+          }
         </style>
+        <div class="pdf-export-wrapper">
       `;
 
       // COVER PAGE
       html += `
         <div class="pdf-page pdf-center">
           <div style="height: 100px;"></div>
-          <h1 style="color: #00A19B; font-size: 48px; font-weight: bold; margin-bottom: 40px; letter-spacing: -1px;">SOLVIGIL</h1>
-          <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 20px; color: #111827;">Smart Contract Security Analysis Report</h2>
-          <p style="font-size: 16px; color: #6B7280; margin-bottom: 60px;">Automated Vulnerability Scan</p>
+          <h1 style="color: #00A19B; font-size: 48px; font-weight: bold; margin-bottom: 30px; letter-spacing: -1px;">SOLVIGIL</h1>
+          <h2 style="font-size: 32px; font-weight: bold; margin-bottom: 16px; color: #111827;">Smart Contract Security Analysis Report</h2>
+          <p style="font-size: 16px; color: #6B7280; margin-bottom: 40px;">Automated Vulnerability Scan</p>
           
-          <div style="font-size: 72px; font-weight: bold; color: #00A19B; margin: 60px 0; letter-spacing: -2px;">${score}</div>
-          <p style="font-size: 18px; font-weight: bold; margin-bottom: 60px;">Security Score</p>
+          <div class="score-circle-pdf">${score}</div>
+          <p style="font-size: 18px; font-weight: bold; margin-bottom: 40px; color: #111827;">Security Score</p>
           
-          <table class="pdf-table">
+          <table class="pdf-table" style="max-width: 500px; margin: 0 auto;">
             <tr>
-              <td style="font-weight: bold;">Analysis Date</td>
-              <td style="text-align: right;">${dateStr}</td>
+              <td style="font-weight: bold; color: #374151; width: 50%;">Analysis Date</td>
+              <td style="text-align: right; color: #111827;">${dateStr}</td>
             </tr>
             <tr>
-              <td style="font-weight: bold;">Target File</td>
-              <td style="text-align: right;">${escapeHtml(contractName)}</td>
+              <td style="font-weight: bold; color: #374151;">Target File</td>
+              <td style="text-align: right; color: #111827;">${escapeHtml(contractName)}</td>
             </tr>
             <tr>
-              <td style="font-weight: bold;">Risk Status</td>
-              <td style="text-align: right; font-weight: bold;">${escapeHtml(scoreStatus)}</td>
+              <td style="font-weight: bold; color: #374151;">Risk Status</td>
+              <td style="text-align: right; font-weight: bold; color: #111827;">${escapeHtml(scoreStatus)}</td>
             </tr>
             <tr>
-              <td style="font-weight: bold;">Total Findings</td>
-              <td style="text-align: right;">${totalFindings}</td>
+              <td style="font-weight: bold; color: #374151;">Total Findings</td>
+              <td style="text-align: right; color: #111827;">${totalFindings}</td>
             </tr>
           </table>
         </div>
@@ -2133,32 +2213,32 @@
       // OVERVIEW PAGE
       html += `
         <div class="pdf-page">
-          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Findings Overview</h2>
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px; color: #111827;">Findings Overview</h2>
           
-          <h3 style="font-size: 18px;">Severity Breakdown</h3>
-          <table class="pdf-table pdf-center">
+          <h3 style="font-size: 18px; color: #374151;">Severity Breakdown</h3>
+          <table class="pdf-table pdf-center" style="margin-bottom: 40px;">
             <tr>
-              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
                 <div style="font-size: 32px; font-weight: bold; color: #DC2626;">${breakdown.critical}</div>
                 <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">CRITICAL</div>
               </td>
-              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
                 <div style="font-size: 32px; font-weight: bold; color: #F59E0B;">${breakdown.high}</div>
                 <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">HIGH</div>
               </td>
-              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
                 <div style="font-size: 32px; font-weight: bold; color: #FBBF24;">${breakdown.medium}</div>
                 <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">MEDIUM</div>
               </td>
-              <td style="background: #F9FAFB; padding: 20px; width: 25%;">
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
                 <div style="font-size: 32px; font-weight: bold; color: #3B82F6;">${breakdown.low}</div>
                 <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">LOW</div>
               </td>
             </tr>
           </table>
 
-          <h3 style="font-size: 18px;">Vulnerability Summary</h3>
-          <table class="pdf-table" style="width: 100%; max-width: none;">
+          <h3 style="font-size: 18px; color: #374151;">Vulnerability Summary</h3>
+          <table class="pdf-table">
             <tr>
               <th>Vulnerability Type</th>
               <th>Severity</th>
@@ -2167,10 +2247,10 @@
             </tr>
             ${sortedVulns.map(v => `
               <tr>
-                <td style="font-weight: bold;">${escapeHtml(v.type || v.name)}</td>
+                <td style="font-weight: bold; color: #111827;">${escapeHtml(v.type || v.name)}</td>
                 <td><span class="pdf-badge" style="background: ${v.severity === 'CRITICAL' ? '#DC2626' : v.severity === 'HIGH' ? '#F59E0B' : v.severity === 'MEDIUM' ? '#FBBF24' : '#3B82F6'};">${v.severity}</span></td>
-                <td>${v.confidence || 'HIGH'}</td>
-                <td>Line ${v.line || '?'}</td>
+                <td style="color: #374151;">${v.confidence || 'HIGH'}</td>
+                <td style="color: #374151;">Line ${v.line || '?'}</td>
               </tr>
             `).join('')}
           </table>
@@ -2285,6 +2365,7 @@
               This report was generated by automated analysis. It does NOT constitute a professional manual security audit. We strongly recommend engaging a professional security firm for a comprehensive audit before mainnet deployment.
             </p>
           </div>
+        </div>
         </div>
       `;
 
@@ -2556,6 +2637,7 @@
       loadAndPopulateData();
     });
   </script>
+
 </body>
 
 </html>
