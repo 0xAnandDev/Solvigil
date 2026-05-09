@@ -4,7 +4,7 @@ const http = require('http');
 
 // Test 1: Health Check
 console.log('TEST 1: Health Check');
-http.get('http://localhost:5000/api/health', (res) => {
+http.get('https://solvigil.onrender.com/api/health', (res) => {
     let data = '';
     res.on('data', chunk => data += chunk);
     res.on('end', () => console.log('✓ Health:', JSON.parse(data)));

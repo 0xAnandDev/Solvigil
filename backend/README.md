@@ -39,7 +39,7 @@ FRONTEND_URL=http://localhost:3000
 npm start
 ```
 
-Server runs on http://localhost:5000
+Server runs on https://solvigil.onrender.com
 
 ## API Endpoints
 
@@ -119,7 +119,7 @@ Health check endpoint.
 ```bash
 curl -X POST \
   -F "file=@Contract.sol" \
-  http://localhost:5000/api/analyze
+  https://solvigil.onrender.com/api/analyze
 ```
 
 ## Project Structure
