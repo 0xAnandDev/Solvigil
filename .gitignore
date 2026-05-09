@@ -3,3 +3,7 @@ uploads/
 .env
 dist/
 build/
+solidity_tests/
+security_reports/
+backend/last_analyzed.sol
+*.sol   
