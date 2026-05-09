@@ -8,3 +8,4 @@ security_reports/
 backend/last_analyzed.sol
 *.sol
 *.txt
+*.mp4

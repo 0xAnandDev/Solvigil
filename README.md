@@ -13,6 +13,10 @@
 
 <br />
 
+## 🎥 Demo Video
+
+[▶ Watch Full Demo on YouTube](https://youtu.be/X0S605g34yM)
+
 ## 📖 Project Overview
 
 Solvigil is a specialized static analysis tool designed to identify vulnerabilities in Solidity smart contracts. Built with a fast Node.js backend and a modern web interface, it analyzes smart contract code to detect critical security flaws, providing developers and auditors with immediate, actionable feedback to secure decentralized applications before deployment.
