@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: MIT
+// Save as: test-access-control.sol
 pragma solidity ^0.8.0;
 
-contract DoSVulnerable {
-    address[] public users;
-
-    function addUser(address user) public {
-        users.push(user);
-    }
-
-    function payAll() public payable {
-        for (uint i = 0; i < users.length; i++) {
-            // ❌ If one transfer fails, entire loop fails
-            payable(users[i]).transfer(1 ether);
-        }
+contract VulnerableContract {
+    function withdraw() public {
+        msg.sender.transfer(address(this).balance);  // ← No permission check
     }
 }

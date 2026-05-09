@@ -7,24 +7,7 @@ body {
   background-color: #E4DDD3; /* theme('colors.ice') */
 }
 
-/* Scroll Animations */
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity;
-}
 
-.animate-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger delays */
-.delay-100 { transition-delay: 100ms; }
-.delay-200 { transition-delay: 200ms; }
-.delay-300 { transition-delay: 300ms; }
-.delay-400 { transition-delay: 400ms; }
 
 /* Subtle Background Wave */
 .bg-wave {

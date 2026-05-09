@@ -15,7 +15,7 @@
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
-  background: linear-gradient(135deg, #FDFBF7 0%, #F9F6EF 50%, #FDFBF7 100%);
+  background: transparent;
 }
 
 .wind-svg-background {
@@ -43,63 +43,54 @@ html {
 /* LAYER ANIMATIONS - CONTINUOUS FLOW */
 /* ============================================================ */
 
-/* Layer 1: FAST-MOVING PRIMARY WAVES (18 seconds) */
+/* Layer 1: FAST-MOVING PRIMARY WAVES */
 .wind-layer-1 {
-  animation: windFlow-layer1 18s linear infinite;
+  animation: windFlow-layer1 10s ease-in-out infinite;
   transform-origin: center center;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
 
 @keyframes windFlow-layer1 {
-  0% {
-    transform: translateX(-400px) translateY(0px);
+  0%, 100% {
+    transform: translate(calc(0px + (var(--mouse-x, 0) * 30px)), calc(0px + (var(--mouse-y, 0) * 30px)));
   }
   50% {
-    transform: translateX(0px) translateY(-8px);
-  }
-  100% {
-    transform: translateX(400px) translateY(0px);
+    transform: translate(calc(-150px + (var(--mouse-x, 0) * 30px)), calc(-15px + (var(--mouse-y, 0) * 30px)));
   }
 }
 
-/* Layer 2: MEDIUM-SPEED SECONDARY WAVES (25 seconds) */
+/* Layer 2: MEDIUM-SPEED SECONDARY WAVES */
 .wind-layer-2 {
-  animation: windFlow-layer2 25s linear infinite;
+  animation: windFlow-layer2 14s ease-in-out infinite;
   transform-origin: center center;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
 
 @keyframes windFlow-layer2 {
-  0% {
-    transform: translateX(-500px) translateY(0px);
+  0%, 100% {
+    transform: translate(calc(0px + (var(--mouse-x, 0) * -20px)), calc(0px + (var(--mouse-y, 0) * -20px)));
   }
   50% {
-    transform: translateX(0px) translateY(6px);
-  }
-  100% {
-    transform: translateX(500px) translateY(0px);
+    transform: translate(calc(-200px + (var(--mouse-x, 0) * -20px)), calc(10px + (var(--mouse-y, 0) * -20px)));
   }
 }
 
-/* Layer 3: SLOW-MOVING BASE WAVES (35 seconds) */
+/* Layer 3: SLOW-MOVING BASE WAVES */
 .wind-layer-3 {
-  animation: windFlow-layer3 35s linear infinite;
+  animation: windFlow-layer3 20s ease-in-out infinite;
   transform-origin: center center;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
 
 @keyframes windFlow-layer3 {
-  0% {
-    transform: translateX(-600px) translateY(0px);
+  0%, 100% {
+    transform: translate(calc(0px + (var(--mouse-x, 0) * 15px)), calc(0px + (var(--mouse-y, 0) * 15px)));
   }
   50% {
-    transform: translateX(0px) translateY(-10px);
-  }
-  100% {
-    transform: translateX(600px) translateY(0px);
+    transform: translate(calc(-100px + (var(--mouse-x, 0) * 15px)), calc(-20px + (var(--mouse-y, 0) * 15px)));
   }
 }
 
