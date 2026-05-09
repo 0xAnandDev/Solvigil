@@ -6,4 +6,5 @@ build/
 solidity_tests/
 security_reports/
 backend/last_analyzed.sol
-*.sol   
+*.sol
+*.txt
