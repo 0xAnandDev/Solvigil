@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Solvigil Security Audit Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #ffffff;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pdf-export-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .pdf-page {
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 0;
+      page-break-after: always;
+      background: #ffffff;
+    }
+
+    .pdf-page:last-child {
+      page-break-after: auto;
+    }
+
+    .pdf-center {
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .pdf-table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+      page-break-inside: avoid;
+    }
+
+    .pdf-table th,
+    .pdf-table td {
+      border: 1px solid #E5E7EB;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .pdf-table th {
+      background: #F3F4F6;
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .pdf-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .pdf-code {
+      background: #0D1117;
+      color: #E6EDF3;
+      padding: 16px;
+      border-radius: 6px;
+      font-family: 'Fira Code', Consolas, Monaco, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      border: 1px solid #30363D;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      page-break-inside: avoid;
+      margin-bottom: 20px;
+      text-align: left;
+      width: 100%;
+      display: block;
+    }
+
+    .pdf-section {
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+      width: 100%;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      margin-top: 20px;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    p {
+      margin-bottom: 16px;
+      line-height: 1.6;
+      color: #374151;
+    }
+
+    .pdf-sim-step {
+      padding: 10px 14px;
+      background: #FEF2F2;
+      border-left: 4px solid #DC2626;
+      margin-bottom: 8px;
+      font-size: 14px;
+      page-break-inside: avoid;
+      color: #991B1B;
+    }
+
+    .score-circle-pdf {
+      width: 140px;
+      height: 140px;
+      margin: 40px auto;
+      border-radius: 50%;
+      border: 10px solid #E5E7EB;
+      font-size: 48px;
+      font-weight: bold;
+      color: #00A19B;
+      line-height: 120px;
+      text-align: center;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .pdf-export-wrapper {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .pdf-page {
+        padding: 0;
+      }
+
+      .pdf-code {
+        border: 1px solid #ccc;
+      }
+
+      /* Prevent page breaks inside code blocks and sections */
+      pre,
+      blockquote,
+      tr {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="content">Loading report data...</div>
+
+  <script>
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function renderReport() {
+      const storedData = sessionStorage.getItem('solvigil_print_data');
+      if (!storedData) {
+        document.getElementById('content').innerHTML = '<p>No report data found. Please generate the report from the main application.</p>';
+        return;
+      }
+
+      let data;
+      try {
+        data = JSON.parse(storedData);
+      } catch (e) {
+        document.getElementById('content').innerHTML = '<p>Error parsing report data.</p>';
+        return;
+      }
+
+      const decision = data.DECISION || data;
+      const breakdown = decision.severityBreakdown || data.summary || { critical: 0, high: 0, medium: 0, low: 0 };
+      const score = decision.securityScore !== undefined ? decision.securityScore : 100;
+      const scoreStatus = decision.securityStatus || 'Safe';
+
+      const severities = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+      const sortedVulns = [...(data.vulnerabilities || [])].sort((a, b) => {
+        let idxA = severities.indexOf(a.severity);
+        let idxB = severities.indexOf(b.severity);
+        if (idxA === -1) idxA = 4;
+        if (idxB === -1) idxB = 4;
+        return idxA - idxB;
+      });
+
+      const dateStr = new Date().toLocaleString();
+      const contractName = data.contractInfo?.name || 'Smart Contract';
+      const totalFindings = breakdown.critical + breakdown.high + breakdown.medium + breakdown.low;
+
+      let html = '<div class="pdf-export-wrapper">';
+
+      // COVER PAGE
+      html += `
+        <div class="pdf-page pdf-center">
+          <div style="height: 100px;"></div>
+          <h1 style="color: #00A19B; font-size: 48px; font-weight: bold; margin-bottom: 30px; letter-spacing: -1px;">SOLVIGIL</h1>
+          <h2 style="font-size: 32px; font-weight: bold; margin-bottom: 16px; color: #111827;">Smart Contract Security Analysis Report</h2>
+          <p style="font-size: 16px; color: #6B7280; margin-bottom: 40px;">Automated Vulnerability Scan</p>
+          
+          <div class="score-circle-pdf">${score}</div>
+          <p style="font-size: 18px; font-weight: bold; margin-bottom: 40px; color: #111827;">Security Score</p>
+          
+          <table class="pdf-table" style="max-width: 500px; margin: 0 auto;">
+            <tr>
+              <td style="font-weight: bold; color: #374151; width: 50%;">Analysis Date</td>
+              <td style="text-align: right; color: #111827;">${dateStr}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; color: #374151;">Target File</td>
+              <td style="text-align: right; color: #111827;">${escapeHtml(contractName)}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; color: #374151;">Risk Status</td>
+              <td style="text-align: right; font-weight: bold; color: #111827;">${escapeHtml(scoreStatus)}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; color: #374151;">Total Findings</td>
+              <td style="text-align: right; color: #111827;">${totalFindings}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // OVERVIEW PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px; color: #111827;">Findings Overview</h2>
+          
+          <h3 style="font-size: 18px; color: #374151;">Severity Breakdown</h3>
+          <table class="pdf-table pdf-center" style="margin-bottom: 40px;">
+            <tr>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #DC2626;">${breakdown.critical}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">CRITICAL</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #F59E0B;">${breakdown.high}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">HIGH</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #FBBF24;">${breakdown.medium}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">MEDIUM</div>
+              </td>
+              <td style="background: #F9FAFB; padding: 20px; width: 25%; text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #3B82F6;">${breakdown.low}</div>
+                <div style="font-size: 14px; color: #6B7280; margin-top: 8px;">LOW</div>
+              </td>
+            </tr>
+          </table>
+
+          <h3 style="font-size: 18px; color: #374151;">Vulnerability Summary</h3>
+          <table class="pdf-table">
+            <tr>
+              <th>Vulnerability Type</th>
+              <th>Severity</th>
+              <th>Confidence</th>
+              <th>Location</th>
+            </tr>
+            ${sortedVulns.map(v => `
+              <tr>
+                <td style="font-weight: bold; color: #111827;">${escapeHtml(v.type || v.name)}</td>
+                <td><span class="pdf-badge" style="background: ${v.severity === 'CRITICAL' ? '#DC2626' : v.severity === 'HIGH' ? '#F59E0B' : v.severity === 'MEDIUM' ? '#FBBF24' : '#3B82F6'};">${v.severity}</span></td>
+                <td style="color: #374151;">${v.confidence || 'HIGH'}</td>
+                <td style="color: #374151;">Line ${v.line || '?'}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+      `;
+
+      // DETAILED FINDINGS
+      sortedVulns.forEach((v, idx) => {
+        html += `
+          <div class="pdf-page">
+            <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 8px; margin-bottom: 20px;">
+              ${escapeHtml(v.type || v.name)}
+            </h2>
+            
+            <div class="pdf-section">
+              <p style="font-size: 14px; color: #6B7280;">
+                <span class="pdf-badge" style="background: ${v.severity === 'CRITICAL' ? '#DC2626' : v.severity === 'HIGH' ? '#F59E0B' : v.severity === 'MEDIUM' ? '#FBBF24' : '#3B82F6'}; margin-right: 12px;">${v.severity}</span>
+                Finding ${idx + 1} of ${sortedVulns.length} | Line ${v.line}${v.column ? ' | Col ' + v.column : ''}
+              </p>
+            </div>
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">Description</h3>
+              <p style="font-size: 14px; color: #374151;">${escapeHtml(v.description || '')}</p>
+            </div>
+
+            ${v.simulation && v.simulation.length > 0 ? `
+              <div class="pdf-section">
+                <h3 style="font-size: 16px;">Attack Simulation</h3>
+                ${v.simulation.map((step, sIdx) => `
+                  <div class="pdf-sim-step">
+                    <strong>Step ${sIdx + 1}:</strong> ${escapeHtml(step)}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">Vulnerable Code</h3>
+              <pre class="pdf-code">${escapeHtml(v.code || v.vulnerableCode || 'No code provided')}</pre>
+            </div>
+
+            <div class="pdf-section">
+              <h3 style="font-size: 16px;">How to Fix</h3>
+              <p style="font-size: 14px; color: #374151;">${escapeHtml(v.fix || '')}</p>
+              <pre class="pdf-code">${escapeHtml(v.fixExplanation || v.fixedCode || 'No fix provided')}</pre>
+            </div>
+
+            ${v.impact ? `
+              <div class="pdf-section">
+                <h3 style="font-size: 16px;">Impact</h3>
+                <p style="font-size: 14px; color: #374151;">${escapeHtml(v.impact)}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      // RECOMMENDATIONS PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Recommendations & Summary</h2>
+          
+          <h3 style="font-size: 16px;">Action Items</h3>
+          <div class="pdf-section" style="font-size: 14px; color: #374151; margin-bottom: 40px;">
+            ${breakdown.critical > 0 ? `<p><strong>Immediate Action Required:</strong> Address the ${breakdown.critical} CRITICAL vulnerabilities before deployment. These represent imminent risks of fund loss.</p>` : ''}
+            ${breakdown.high > 0 ? `<p><strong>High Priority:</strong> Fix the ${breakdown.high} HIGH severity issues. These can cause logic failures or DoS.</p>` : ''}
+            ${breakdown.medium > 0 ? `<p><strong>Medium Priority:</strong> Review the ${breakdown.medium} MEDIUM severity findings for compliance.</p>` : ''}
+            <p><strong>Best Practice:</strong> Conduct thorough testing covering all edge cases identified.</p>
+          </div>
+
+          <h3 style="font-size: 16px;">Code Analysis Summary</h3>
+          <table class="pdf-table">
+            <tr style="background: #F9FAFB;">
+              <td style="font-weight: bold;">File Size</td>
+              <td>${escapeHtml(data.contractInfo?.size || 'Unknown')}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold;">Total Vulnerabilities</td>
+              <td>${totalFindings}</td>
+            </tr>
+            <tr style="background: #F9FAFB;">
+              <td style="font-weight: bold;">Overall Status</td>
+              <td style="font-weight: bold;">${escapeHtml(scoreStatus)}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // METHODOLOGY PAGE
+      html += `
+        <div class="pdf-page">
+          <h2 style="font-size: 28px; border-bottom: 2px solid #00A19B; padding-bottom: 12px;">Methodology & Disclaimer</h2>
+          
+          <div class="pdf-section">
+            <h3 style="font-size: 16px;">Detection Methodology</h3>
+            <p style="font-size: 14px; color: #374151;">
+              Solvigil employs static analysis of Solidity source code. Each detector operates in two phases: Pattern Detection (identifies potentially unsafe structures) and Exploitability Validation (confirms realistic exploit paths).
+            </p>
+          </div>
+
+          <div class="pdf-section">
+            <h3 style="font-size: 16px;">Limitations</h3>
+            <p style="font-size: 14px; color: #374151;">
+              Static analysis cannot understand complete business logic, economic design, or complex multi-transaction exploits. This is an automated analysis, not a professional manual audit.
+            </p>
+          </div>
+
+          <div class="pdf-section" style="padding: 20px; border: 2px solid #DC2626; background: #FEF2F2; border-radius: 6px; margin-top: 40px; text-align: left;">
+            <h3 style="font-size: 16px; color: #DC2626; margin-top: 0;">DISCLAIMER</h3>
+            <p style="font-size: 13px; color: #5F1F1F; margin-bottom: 0;">
+              This report was generated by automated analysis. It does NOT constitute a professional manual security audit. We strongly recommend engaging a professional security firm for a comprehensive audit before mainnet deployment.
+            </p>
+          </div>
+        </div>
+      `;
+
+      html += '</div>';
+
+      document.getElementById('content').innerHTML = html;
+
+      // Automatically trigger print dialog
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+
+    // Run on load
+    window.onload = renderReport;
+  </script>
+</body>
+
+</html>
