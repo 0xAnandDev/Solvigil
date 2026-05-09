@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract AccessControlVulnerable {
-    address public owner;
+contract ReentrancyVuln {
+    mapping(address => uint256) public balances;
 
-    constructor() {
-        owner = msg.sender;
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
     }
 
-    // ❌ Missing access control
-    function withdrawAll() public {
-        payable(msg.sender).transfer(address(this).balance);
+    function withdraw() public {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0);
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success);
+
+        balances[msg.sender] = 0; // ❌ wrong order
     }
 }
