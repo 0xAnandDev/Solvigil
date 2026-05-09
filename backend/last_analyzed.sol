@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.0;
 
-contract AccessControlVulnerable {
-    address public owner;
+contract OverflowUnderflow {
+    uint256 public count = 0;
 
-    constructor() {
-        owner = msg.sender;
+    function decrement() public {
+        count--; // ❌ Underflow: becomes very large number
     }
 
-    // ❌ Missing access control
-    function withdrawAll() public {
-        payable(msg.sender).transfer(address(this).balance);
+    function increment() public {
+        count++; // ❌ Overflow possible
     }
-}
+}   
