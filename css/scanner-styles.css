@@ -635,9 +635,24 @@ a {
 }
 
 .btn-primary.success {
-  background-color: var(--color-success);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  background-color: var(--color-success) !important;
+  color: white !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.2) !important;
   pointer-events: none;
+  opacity: 1 !important;
+  transform: scale(1.03) !important;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes completeTextFade {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.btn-primary.success .btn-text-content {
+  animation: completeTextFade 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-secondary {
