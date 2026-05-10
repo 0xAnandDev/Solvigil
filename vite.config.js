@@ -12,7 +12,8 @@ export default defineConfig({
       input: {
         main: './index.html',
         scanner: './scanner.html',
-        analysisResults: './analysis-results.html'
+        analysisResults: './analysis-results.html',
+        reportPrint: './report-print.html'
       }
     }
   }
