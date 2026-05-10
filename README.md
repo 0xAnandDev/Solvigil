@@ -13,6 +13,14 @@
 
 <br />
 
+## 🚀 Live Demo
+
+Experience Solvigil live:
+
+👉 **[Launch Solvigil Scanner](https://solvigil-scanner.vercel.app/)**
+
+> Upload Solidity smart contracts, analyze vulnerabilities, and generate professional security audit reports instantly.
+
 ## 🎥 Demo Video
 
 [▶ Watch Full Demo on YouTube](https://youtu.be/X0S605g34yM)
