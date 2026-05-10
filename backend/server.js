@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://solvigil.vercel.app'
+    //'https://solvigil.vercel.app'
   ],
   methods: ['GET', 'POST'],
   credentials: true
