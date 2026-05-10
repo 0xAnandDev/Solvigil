@@ -11,7 +11,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
-        scanner: './scanner.html'
+        scanner: './scanner.html',
+        analysisResults: './analysis-results.html'
       }
     }
   }
