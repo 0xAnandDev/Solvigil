@@ -49,7 +49,7 @@ export function initAnalyzer() {
           formData.append('file', blob, 'contract.sol');
         }
 
-        const response = await fetch('https://solvigil.onrender.com/api/analyze', {
+        const response = await fetch("https://solvigil.onrender.com/api/analyze", {
           method: 'POST',
           body: formData
         });
