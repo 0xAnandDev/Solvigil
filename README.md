@@ -15,11 +15,15 @@
 
 ## 🚀 Live Demo
 
-Experience Solvigil live:
+<p align="center">
+  <a href="https://solvigil-scanner.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚀 Launch%20Solvigil-00A19B?style=for-the-badge&logo=vercel&logoColor=white" />
+  </a>
+</p>
 
-👉 **[Launch Solvigil Scanner](https://solvigil-scanner.vercel.app/)**
-
-> Upload Solidity smart contracts, analyze vulnerabilities, and generate professional security audit reports instantly.
+<p align="center">
+  Upload Solidity smart contracts, analyze vulnerabilities, and generate professional audit-style security reports instantly.
+</p>
 
 ## 🎥 Demo Video
 
