@@ -4,27 +4,17 @@ const multer = require('multer');
 const path = require('path');
 const errorHandler = require('./middleware/error-handler');
 require('dotenv').config();
+const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-/* app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://solvigil.vercel.app',
-    'https://solvigil-backend.onrender.com'
-  ],
-  methods: ['GET', 'POST'],
-  credentials: true
-})); */
-
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    //'https://solvigil.vercel.app'
+    'https://solvigil.vercel.app',
+    'https://solvigil-scanner.vercel.app'
   ],
   methods: ['GET', 'POST'],
   credentials: true
@@ -34,7 +24,7 @@ app.use(express.json());
 // Multer setup for .sol file uploads (max 2MB)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'uploads/'));
+    cb(null, os.tmpdir());
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
